@@ -1,7 +1,34 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { initializeApp } from 'firebase/app';
-import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, setDoc, collection, query, where, getDocs } from 'firebase/firestore'; 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burak Data Co-Pilot (Production POC)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load React and Babel for JSX in browser -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* Base styles for dark theme */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Slate Blue */
+            color: #e5e7eb;
+        }
+        .glow-text { 
+            text-shadow: 0 0 5px rgba(6, 182, 212, 0.5); 
+        }
+    </style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useCallback, useMemo } = React;
+// This section includes the entire application code structure.
 
 // --- MOCK BULK PATIENT DATA (Simulating the 20 uploaded files) ---
 const MOCK_PATIENT_RECORDS = [
@@ -28,7 +55,7 @@ const MOCK_PATIENT_RECORDS = [
             ldl: { value: 4.2, ref: "<2.6", status: "🔴", trend: [3.0, 3.5, 4.0, 4.2], unit: 'mmol/L', role: "LDL Cholesterol", action: "Elevated, requiring immediate review of lipid management strategy." }, 
             tg: { value: 2.4, ref: "<1.7", status: "🟠", trend: [1.5, 1.8, 2.0, 2.4], unit: 'mmol/L', role: "Triglycerides", action: "High triglycerides linked to insulin resistance." }, 
             sdll: { value: 48, ref: "<35", status: "🔴", trend: [30, 35, 40, 48], unit: '%', role: "Small Dense LDL %", action: "Critical marker for cardiovascular risk. (GCC Priority)." },
-            ldlp: { value: 1680, ref: "<1300", status: "🔴", trend: [1700, 1800, 1850, 1900], unit: 'nmol/L', role: "LDL Particle Number", action: "Extremely high particle count." }, 
+            ldlp: { value: 1680, ref: "<1300", status: "🟠", trend: [1200, 1400, 1550, 1680], unit: 'nmol/L', role: "LDL Particle Number", action: "Extremely high particle count." }, 
             
             // GUT HEALTH (4)
             shannon: { value: 2.1, ref: ">3.5", status: "🔴", trend: [3.5, 3.0, 2.5, 2.1], unit: 'Score', role: "Shannon Diversity Index", action: "Significantly low diversity; major intervention needed." }, 
@@ -1800,9 +1827,9 @@ const App = () => {
             <button
                 onClick={report ? () => setViewMode('report') : startPipeline} 
                 disabled={isRunning || (!report && isRunning)} 
-                className={`py-2 px-6 rounded-lg font-semibold text-white transition-all duration-300 shadow-lg ${
+                className={`py-2 px-6 rounded-lg font-semibold text-white transition-colors shadow-lg ${
                     viewMode === 'report' ? 'bg-indigo-600 text-white shadow-indigo-500/50' : 'bg-gray-800/80 text-gray-300 border border-gray-700'
-                } ${isRunning || (!report && viewMode === 'cockpit' && !isRunning) ? 'opacity-100' : 'opacity-50 cursor-not-allowed'}`}
+                } ${isRunning ? 'opacity-50 cursor-not-allowed' : (report && viewMode !== 'report' ? 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-500/40' : (report ? 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-500/40' : 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-500/40'))}`}
             >
               {isRunning ? (
                 <>
@@ -1845,4 +1872,9 @@ const App = () => {
   );
 };
 
-export default App;
+ReactDOM.render(<App />, document.getElementById('root'));
+
+</script>
+
+</body>
+</html>
