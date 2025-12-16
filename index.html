@@ -20,6 +20,84 @@
         .glow-text { 
             text-shadow: 0 0 5px rgba(6, 182, 212, 0.5); 
         }
+
+        /* --- WOW Factor CSS Enhancements --- */
+        
+        /* 1. Pulse Animation for High Risk Button */
+        @keyframes pulse-border {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); /* Red glow start */
+            }
+            70% {
+                box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); /* Red glow end */
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+        .pulse-red {
+            animation: pulse-border 1.5s infinite;
+        }
+        
+        /* 2. Gradient Border Effect for Main Data Container */
+        @keyframes rotate {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .data-container-glow {
+            position: relative;
+            border: 1px solid #1f2937; /* Dark gray border fallback */
+            overflow: hidden;
+        }
+        .data-container-glow::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                from 0deg,
+                rgba(6, 182, 212, 0.1) 0%, /* Cyan */
+                rgba(139, 92, 246, 0.1) 40%, /* Violet */
+                rgba(255, 255, 255, 0.0) 60%,
+                rgba(6, 182, 212, 0.1) 100%
+            );
+            animation: rotate 10s linear infinite;
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .data-container-glow > * {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Tailwind Safelist: Ensures dynamic classes used with string interpolation are available */
+        /* MUST be present for JIT to generate classes from variables/props */
+        .safelist {
+            display: none;
+            /* Text colors */
+            color: #ef4444; color: #fb923c; color: #facc15; color: #10b981; color: #06b6d4; color: #4f46e5; color: #a855f7; color: #ec4899; color: #84cc16; color: #0ea5e9; color: #f59e0b;
+            /* Background colors */
+            background-color: #ef4444; background-color: #fb923c; background-color: #facc15; background-color: #10b981; background-color: #06b6d4; background-color: #4f46e5; background-color: #a855f7; background-color: #ec4899; background-color: #84cc16; background-color: #0ea5e9;
+            /* Border colors */
+            border-color: #ef4444; border-color: #fb923c; border-color: #facc15; border-color: #10b981; border-color: #06b6d4; border-color: #4f46e5; border-color: #a855f7; border-color: #ec4899; border-color: #84cc16; border-color: #0ea5e9;
+            /* Shadow colors */
+            box-shadow: 0 0 10px #ef4444; box-shadow: 0 0 10px #fb923c; box-shadow: 0 0 10px #facc15; box-shadow: 0 0 10px #10b981; box-shadow: 0 0 10px #06b6d4; box-shadow: 0 0 10px #4f46e5; box-shadow: 0 0 10px #a855f7; box-shadow: 0 0 10px #ec4899; box-shadow: 0 0 10px #84cc16; box-shadow: 0 0 10px #0ea5e9;
+
+            /* Specific classes used in dynamic strings */
+            color: text-red-400; color: text-orange-400; color: text-yellow-400; color: text-emerald-400; color: text-cyan-400;
+            border-top: border-red-500; border-top: border-yellow-500; border-top: border-cyan-500; border-top: border-emerald-500; border-top: border-indigo-500;
+            box-shadow: shadow-cyan-500/30; box-shadow: shadow-red-500/30; box-shadow: shadow-yellow-500/30; box-shadow: shadow-emerald-500/30;
+            border-color: border-red-600; border-color: border-orange-600; border-color: border-yellow-600; border-color: border-emerald-600;
+
+            /* Category Colors */
+            color: text-red-400; color: text-indigo-400; color: text-amber-400; color: text-lime-400; color: text-purple-400; color: text-cyan-400; color: text-pink-400; color: text-yellow-400; color: text-gray-400;
+            border-color: border-red-500; border-color: border-indigo-500; border-color: border-amber-500; border-color: border-lime-500; border-color: border-purple-500; border-color: border-cyan-500; border-color: border-pink-500; border-color: border-yellow-500; border-color: border-gray-500;
+            
+        }
     </style>
 </head>
 <body>
@@ -37,7 +115,7 @@ const MOCK_PATIENT_RECORDS = [
     // Patient 1: High Risk (Metabolic/Inflammation) - 27 CORE MARKERS
     { 
         id: "DFC-2024-15847", 
-        name: "Patient 1", 
+        name: "Patient 1 – High Metabolic Risk", 
         age: 45, 
         kpis: { bioAge: 48, risk: 6.8, efficiency: 0.78, riskColor: "red-400" },
         markers: {
@@ -60,19 +138,19 @@ const MOCK_PATIENT_RECORDS = [
             shannon: { value: 2.1, ref: ">3.5", status: "🔴", trend: [3.5, 3.0, 2.5, 2.1], unit: 'Score', role: "Shannon Diversity Index", action: "Significantly low diversity; major intervention needed." }, 
             zonulin: { value: 42, ref: "<30", status: "🔴", unit: 'ng/mL', role: "Zonulin", action: "Critical indication of 'leaky gut' driving systemic inflammation. (GCC Priority)." }, 
             lps: { value: 0.75, ref: "<0.5", status: "🟠", unit: 'EU/mL', role: "Lipopolysaccharide (LPS)", action: "Elevated endotoxin." }, 
-
+            
             // LIVER (3)
-            alt: { value: 65, ref: "<40", status: "🔴", unit: 'U/L', role: "ALT", action: "Requires investigation into liver fat or metabolic overload." },
-            ggt: { value: 70, ref: "<50", status: "🟠", unit: 'U/L', role: "GGT", action: "Indicates increased oxidative stress or toxin exposure." },
+            alt: { value: 65, ref: "<40", status: "🔴", trend: [45, 55, 60, 65], unit: 'U/L', role: "ALT", action: "Requires investigation into liver fat or metabolic overload." },
+            ggt: { value: 70, ref: "<50", status: "🟠", trend: [55, 60, 65, 70], unit: 'U/L', role: "GGT", action: "Indicates increased oxidative stress or toxin exposure." },
             ast: { value: 45, ref: "<35", status: "🟠", unit: 'U/L', role: "AST", action: "Mild elevation consistent with general metabolic strain." },
 
             // KIDNEY (3)
-            creatinine: { value: 1.4, ref: "<1.2", status: "🟠", unit: 'mg/dL', role: "Creatinine", action: "Slightly elevated, monitor hydration and protein intake." },
+            creatinine: { value: 1.4, ref: "<1.2", status: "🟠", trend: [1.2, 1.3, 1.35, 1.4], unit: 'mg/dL', role: "Creatinine", action: "Slightly elevated, monitor hydration and protein intake." },
             bun: { value: 25, ref: "7-20", status: "🟠", unit: 'mg/dL', role: "BUN", action: "High BUN suggests high protein breakdown or dehydration." },
             uricAcid: { value: 8.5, ref: "3.5-7.2", status: "🔴", icon: "💧", unit: 'mg/dL', role: "Uric Acid", impact: "Elevated Uric Acid, requires attention to hydration and diet." },
 
             // HORMONES (3)
-            tsh: { value: 5.5, ref: "0.5-4.5", status: "🔴", unit: 'uIU/mL', role: "TSH", action: "Indicates thyroid gland under-function—a major energy regulator." },
+            tsh: { value: 5.5, ref: "0.5-4.5", status: "🔴", trend: [4.5, 5.0, 5.2, 5.5], unit: 'uIU/mL', role: "TSH", action: "Indicates thyroid gland under-function—a major energy regulator." },
             ft3: { value: 2.5, ref: "2.8-4.4", status: "🟡", unit: 'pg/mL', role: "Free T3", action: "Borderline low active hormone conversion." },
             cortisol: { value: 22.0, ref: "6.2-19.4", status: "🟠", unit: 'ug/dL', role: "Cortisol (AM Peak)", action: "Healthy stress response." },
 
@@ -86,7 +164,7 @@ const MOCK_PATIENT_RECORDS = [
             rbc: { value: 4.8, ref: "4.5-6.0", status: "🟢", unit: '10^6/uL', role: "RBC Count", action: "Normal." },
             hgb: { value: 14.0, ref: "13.5-17.5", status: "🟢", unit: 'g/dL', role: "Hemoglobin", action: "Normal." },
 
-            // REGIONAL INDICATORS (2) - Used for specific display tiles
+            // REGIONAL INDICATORS (2)
             bmi: { value: 31.2, ref: "<25", status: "High Risk", icon: "⚖️", impact: "Indicates significant central obesity, a key regional challenge." },
             irScore: { value: 3.2, ref: "<2.0", status: "Elevated", icon: "💉", impact: "Primary driver of metabolic issues; high regional prevalence." },
         }
@@ -94,24 +172,24 @@ const MOCK_PATIENT_RECORDS = [
     // Patient 2: Low Risk (Optimal) - 27 CORE MARKERS
     { 
         id: "DFC-2024-15848", 
-        name: "Patient 2", 
+        name: "Patient 2 – Optimal", 
         age: 32, 
         kpis: { bioAge: 30, risk: 2.1, efficiency: 0.95, riskColor: "emerald-400" },
         markers: {
-            glucose: { value: 4.8, ref: "3.9-5.5", status: "🟢", unit: 'mmol/L', role: "Fasting Glucose", action: "Excellent long-term stability." }, 
+            glucose: { value: 4.8, ref: "3.9-5.5", status: "🟢", trend: [4.0, 4.5, 4.8, 4.8], unit: 'mmol/L', role: "Fasting Glucose", action: "Excellent long-term stability." }, 
             a1c: { value: 5.0, ref: "4.0-5.7", status: "🟢", unit: '%', role: "Hemoglobin A1c", action: "Optimal long-term glucose control." }, 
-            homa: { value: 1.1, ref: "0-2", status: "🟢", unit: 'Score', role: "HOMA-IR Score", action: "Optimal insulin sensitivity." }, 
-            crp: { value: 1.1, ref: "<1.0", status: "🟠", unit: 'mg/L', role: "High-Sensitivity CRP", action: "Minimal inflammation detected." }, 
-            il6: { value: 3.1, ref: "0-5", status: "🟢", unit: 'pg/mL', role: "Interleukin-6", action: "Well managed." }, 
+            homa: { value: 1.1, ref: "0-2", status: "🟢", trend: [1.5, 1.2, 1.1, 1.1], unit: 'Score', role: "HOMA-IR Score", action: "Optimal insulin sensitivity." }, 
+            crp: { value: 1.1, ref: "<1.0", status: "🟠", trend: [1.8, 1.5, 1.2, 1.1], unit: 'mg/L', role: "High-Sensitivity CRP", action: "Minimal inflammation detected." }, 
+            il6: { value: 3.1, ref: "0-5", status: "🟢", trend: [4.0, 3.5, 3.2, 3.1], unit: 'pg/mL', role: "Interleukin-6", action: "Well managed." }, 
             adiponectin: { value: 12.5, ref: "8-15", status: "🟢", unit: 'μg/mL', role: "Adiponectin", action: "Optimal anti-inflammatory capacity." }, 
-            ldl: { value: 2.2, ref: "<2.6", status: "🟢", unit: 'mmol/L', role: "LDL Cholesterol", action: "Optimal levels maintained." }, 
-            tg: { value: 0.9, ref: "<1.7", status: "🟢", unit: 'mmol/L', role: "Triglycerides", action: "Excellent clearance efficiency." }, 
-            sdll: { value: 25, ref: "<35", status: "🟢", unit: '%', role: "Small Dense LDL %", action: "Low cardiovascular risk." }, 
-            shannon: { value: 4.5, ref: ">3.5", status: "🟢", unit: 'Score', role: "Shannon Diversity Index", action: "High microbial stability achieved." }, 
+            ldl: { value: 2.2, ref: "<2.6", status: "🟢", trend: [2.5, 2.3, 2.2, 2.2], unit: 'mmol/L', role: "LDL Cholesterol", action: "Optimal levels maintained." }, 
+            tg: { value: 0.9, ref: "<1.7", status: "🟢", trend: [1.2, 1.0, 0.9, 0.9], unit: 'mmol/L', role: "Triglycerides", action: "Excellent clearance efficiency." }, 
+            sdll: { value: 25, ref: "<35", status: "🟢", trend: [30, 28, 26, 25], unit: '%', role: "Small Dense LDL %", action: "Low cardiovascular risk." }, 
+            shannon: { value: 4.5, ref: ">3.5", status: "🟢", trend: [4.0, 4.2, 4.4, 4.5], unit: 'Score', role: "Shannon Diversity Index", action: "High microbial stability achieved." }, 
             zonulin: { value: 15, ref: "<30", status: "🟢", unit: 'ng/mL', role: "Zonulin", action: "Excellent gut barrier integrity." }, 
             lps: { value: 0.30, ref: "<0.5", status: "🟢", unit: 'EU/mL', role: "Lipopolysaccharide (LPS)", action: "Minimal endotoxin load." }, 
-            alt: { value: 25, ref: "<40", status: "🟢", unit: 'U/L', role: "ALT", action: "Optimal liver enzyme activity." },
-            ggt: { value: 30, ref: "<50", status: "🟢", unit: 'U/L', role: "GGT", action: "Normal detoxification pathway." },
+            alt: { value: 25, ref: "<40", status: "🟢", trend: [30, 28, 26, 25], unit: 'U/L', role: "ALT", action: "Optimal liver enzyme activity." },
+            ggt: { value: 30, ref: "<50", status: "🟢", trend: [35, 32, 31, 30], unit: 'U/L', role: "GGT", action: "Normal detoxification pathway." },
             ast: { value: 20, ref: "<35", status: "🟢", unit: 'U/L', role: "AST", action: "Optimal." },
             creatinine: { value: 0.9, ref: "<1.2", status: "🟢", unit: 'mg/dL', role: "Creatinine", action: "Excellent filtration." },
             bun: { value: 15, ref: "7-20", status: "🟢", unit: 'mg/dL', role: "BUN", action: "Normal protein metabolism." },
@@ -132,29 +210,29 @@ const MOCK_PATIENT_RECORDS = [
     // Patient 3: Critical Risk (Severe Multi-System) - 27 CORE MARKERS
     { 
         id: "DFC-2024-15849", 
-        name: "Patient 3", 
+        name: "Patient 3 – Critical Multi-system", 
         age: 58, 
         kpis: { bioAge: 62, risk: 7.9, efficiency: 0.65, riskColor: "red-500" },
         markers: {
-            glucose: { value: 7.5, ref: "3.9-5.5", status: "🔴", unit: 'mmol/L', role: "Fasting Glucose", action: "Severe hyperglycemia detected." }, 
+            glucose: { value: 7.5, ref: "3.9-5.5", status: "🔴", trend: [6.5, 7.0, 7.2, 7.5], unit: 'mmol/L', role: "Fasting Glucose", action: "Severe hyperglycemia detected." }, 
             a1c: { value: 6.8, ref: "4.0-5.7", status: "🔴", unit: '%', role: "Hemoglobin A1c", action: "Confirmed diabetic range." }, 
-            homa: { value: 4.5, ref: "0-2", status: "🔴", unit: 'Score', role: "HOMA-IR Score", action: "Critical and severe resistance." }, 
-            crp: { value: 10.5, ref: "<1.0", status: "🔴", unit: 'mg/L', role: "High-Sensitivity CRP", action: "Severe chronic systemic inflammation." }, 
-            il6: { value: 15.0, ref: "<5.0", status: "🔴", unit: 'pg/mL', role: "Interleukin-6", action: "High levels damaging tissue and signaling." }, 
+            homa: { value: 4.5, ref: "0-2", status: "🔴", trend: [3.5, 4.0, 4.2, 4.5], unit: 'Score', role: "HOMA-IR Score", action: "Critical and severe resistance." }, 
+            crp: { value: 10.5, ref: "<1.0", status: "🔴", trend: [5.0, 7.5, 9.0, 10.5], unit: 'mg/L', role: "High-Sensitivity CRP", action: "Severe chronic systemic inflammation." }, 
+            il6: { value: 15.0, ref: "<5.0", status: "🔴", trend: [8.0, 10.0, 12.0, 15.0], unit: 'pg/mL', role: "Interleukin-6", action: "High levels damaging tissue and signaling." }, 
             adiponectin: { value: 5.0, ref: "8-15", status: "🟡", unit: 'μg/mL', role: "Adiponectin", action: "Significantly low anti-inflammatory capacity." }, 
-            ldl: { value: 5.0, ref: "<2.6", status: "🔴", unit: 'mmol/L', role: "LDL Cholesterol", action: "Very high level." }, 
+            ldl: { value: 5.0, ref: "<2.6", status: "🔴", trend: [4.0, 4.5, 4.8, 5.0], unit: 'mmol/L', role: "LDL Cholesterol", action: "Very high level." }, 
             tg: { value: 3.5, ref: "<1.7", status: "🔴", unit: 'mmol/L', role: "Triglycerides", action: "Severe lipid dysregulation." }, 
-            sdll: { value: 55, ref: "<35", status: "🔴", unit: '%', role: "Small Dense LDL %", action: "Extreme cardiovascular risk. (GCC Priority)." },
-            shannon: { value: 1.5, ref: ">3.5", status: "🔴", unit: 'Score', role: "Shannon Diversity Index", action: "Extremely poor microbial stability." }, 
+            sdll: { value: 55, ref: "<35", status: "🔴", trend: [45, 50, 53, 55], unit: '%', role: "Small Dense LDL %", action: "Extreme cardiovascular risk. (GCC Priority)." },
+            shannon: { value: 1.5, ref: ">3.5", status: "🔴", trend: [2.5, 2.0, 1.8, 1.5], unit: 'Score', role: "Shannon Diversity Index", action: "Extremely poor microbial stability." }, 
             zonulin: { value: 55, ref: "<30", status: "🔴", unit: 'ng/mL', role: "Zonulin", action: "Critical indication of 'leaky gut' driving systemic inflammation. (GCC Priority)." }, 
             lps: { value: 0.75, ref: "<0.5", status: "🟠", unit: 'EU/mL', role: "Lipopolysaccharide (LPS)", action: "Elevated endotoxin." }, 
-            alt: { value: 65, ref: "<40", status: "🔴", unit: 'U/L', role: "ALT", action: "Requires investigation into liver fat or metabolic overload." },
-            ggt: { value: 70, ref: "<50", status: "🟠", unit: 'U/L', role: "GGT", action: "Indicates increased oxidative stress or toxin exposure." },
+            alt: { value: 65, ref: "<40", status: "🔴", trend: [50, 55, 60, 65], unit: 'U/L', role: "ALT", action: "Requires investigation into liver fat or metabolic overload." },
+            ggt: { value: 70, ref: "<50", status: "🟠", trend: [55, 60, 65, 70], unit: 'U/L', role: "GGT", action: "Indicates increased oxidative stress or toxin exposure." },
             ast: { value: 45, ref: "<35", status: "🟠", unit: 'U/L', role: "AST", action: "Mild elevation consistent with general metabolic strain." },
-            creatinine: { value: 1.4, ref: "<1.2", status: "🟠", unit: 'mg/dL', role: "Creatinine", action: "Slightly elevated, monitor hydration and protein intake." },
-            bun: { value: 25, ref: "7-20", status: "🟠", unit: 'mg/dL', role: "BUN", action: "High BUN suggests high protein breakdown or dehydration." },
+            creatinine: { value: 1.4, ref: "<1.2", status: "🟠", trend: [1.2, 1.3, 1.35, 1.4], unit: 'mg/dL', role: "Creatinine", action: "Slightly elevated, monitor hydration and protein intake." },
+            bun: { value: 25, ref: "7-20", status: "🟠", unit: 'mg/dL', role: "BUN", action: "High protein breakdown or dehydration." },
             uricAcid: { value: 9.2, ref: "3.5-7.2", status: "🔴", icon: "💧", unit: 'mg/dL', role: "Uric Acid", impact: "Severely elevated Uric Acid, indicates significant metabolic and kidney stress." },
-            tsh: { value: 5.5, ref: "0.5-4.5", status: "🔴", unit: 'uIU/mL', role: "TSH", action: "Indicates thyroid gland under-function—a major energy regulator." },
+            tsh: { value: 5.5, ref: "0.5-4.5", status: "🔴", trend: [4.5, 5.0, 5.2, 5.5], unit: 'uIU/mL', role: "TSH", action: "Indicates thyroid gland under-function—a major energy regulator." },
             ft3: { value: 2.5, ref: "2.8-4.4", status: "🟡", unit: 'pg/mL', role: "Free T3", action: "Borderline low active hormone conversion." },
             cortisol: { value: 22.0, ref: "6.2-19.4", status: "🟠", unit: 'ug/dL', role: "Cortisol (AM Peak)", action: "Healthy stress response." },
             vitD: { value: 25, ref: "30-100", status: "🔴", icon: "☀️", unit: 'ng/mL', role: "Vitamin D (25-OH)", impact: "Common deficiency, requires aggressive supplementation." },
@@ -167,27 +245,27 @@ const MOCK_PATIENT_RECORDS = [
             irScore: { value: 4.5, ref: "<2.0", status: "Critical Risk", icon: "💉", impact: "Severe resistance, urgent intervention required." },
         }
     },
-    // Patient 4: Severe Gut Imbalance (New Scenario) - 27 CORE MARKERS
+    // Patient 4: Severe Gut Imbalance - 27 CORE MARKERS
     { 
         id: "DFC-2024-15850", 
-        name: "Patient 4", 
+        name: "Patient 4 – Severe Gut Imbalance", 
         age: 38, 
         kpis: { bioAge: 40, risk: 4.5, efficiency: 0.85, riskColor: "yellow-400" },
         markers: {
-            glucose: { value: 5.2, ref: "3.9-5.5", status: "🟢", unit: 'mmol/L', role: "Fasting Glucose", action: "Stable." }, 
+            glucose: { value: 5.2, ref: "3.9-5.5", status: "🟢", trend: [5.0, 5.1, 5.2, 5.2], unit: 'mmol/L', role: "Fasting Glucose", action: "Stable." }, 
             a1c: { value: 5.4, ref: "4.0-5.7", status: "🟢", unit: '%', role: "Hemoglobin A1c", action: "Normal." }, 
-            homa: { value: 1.5, ref: "0-2", status: "🟢", unit: 'Score', role: "HOMA-IR Score", action: "Good sensitivity." }, 
-            crp: { value: 2.5, ref: "<1.0", status: "🟠", unit: 'mg/L', role: "High-Sensitivity CRP", action: "Mild systemic inflammation likely driven by gut." }, 
-            il6: { value: 5.5, ref: "0-5", status: "🟠", unit: 'pg/mL', role: "Interleukin-6", action: "Borderline elevated." }, 
+            homa: { value: 1.5, ref: "0-2", status: "🟢", trend: [1.6, 1.5, 1.5, 1.5], unit: 'Score', role: "HOMA-IR Score", action: "Good sensitivity." }, 
+            crp: { value: 2.5, ref: "<1.0", status: "🟠", trend: [1.0, 1.8, 2.2, 2.5], unit: 'mg/L', role: "High-Sensitivity CRP", action: "Mild systemic inflammation likely driven by gut." }, 
+            il6: { value: 5.5, ref: "0-5", status: "🟠", trend: [4.0, 4.5, 5.0, 5.5], unit: 'pg/mL', role: "Interleukin-6", action: "Borderline elevated." }, 
             adiponectin: { value: 9.0, ref: "8-15", status: "🟢", unit: 'μg/mL', role: "Adiponectin", action: "Optimal." }, 
-            ldl: { value: 2.8, ref: "<2.6", status: "🟠", unit: 'mmol/L', role: "LDL Cholesterol", action: "Slightly elevated, monitor." }, 
+            ldl: { value: 2.8, ref: "<2.6", status: "🟠", trend: [2.5, 2.7, 2.8, 2.8], unit: 'mmol/L', role: "LDL Cholesterol", action: "Slightly elevated, monitor." }, 
             tg: { value: 1.5, ref: "<1.7", status: "🟢", unit: 'mmol/L', role: "Triglycerides", action: "Normal." }, 
-            sdll: { value: 30, ref: "<35", status: "🟢", unit: '%', role: "Small Dense LDL %", action: "Low risk." },
-            shannon: { value: 1.8, ref: ">3.5", status: "🔴", unit: 'Score', role: "Shannon Diversity Index", action: "Severely low diversity, major intervention needed." }, 
+            sdll: { value: 30, ref: "<35", status: "🟢", trend: [35, 32, 30, 30], unit: '%', role: "Small Dense LDL %", action: "Low risk." },
+            shannon: { value: 1.8, ref: ">3.5", status: "🔴", trend: [2.0, 1.9, 1.8, 1.8], unit: 'Score', role: "Shannon Diversity Index", action: "Severely low diversity, major intervention needed." }, 
             zonulin: { value: 65, ref: "<30", status: "🔴", unit: 'ng/mL', role: "Zonulin", action: "Extreme leaky gut (GCC Priority)." }, 
             lps: { value: 1.1, ref: "<0.5", status: "🔴", unit: 'EU/mL', role: "Lipopolysaccharide (LPS)", action: "High endotoxin levels driving inflammation." }, 
-            alt: { value: 35, ref: "<40", status: "🟢", unit: 'U/L', role: "ALT", action: "Normal." },
-            ggt: { value: 45, ref: "<50", status: "🟢", unit: 'U/L', role: "GGT", action: "Normal." },
+            alt: { value: 35, ref: "<40", status: "🟢", trend: [40, 38, 36, 35], unit: 'U/L', role: "ALT", action: "Normal." },
+            ggt: { value: 45, ref: "<50", status: "🟢", trend: [50, 48, 46, 45], unit: 'U/L', role: "GGT", action: "Normal." },
             ast: { value: 30, ref: "<35", status: "🟢", unit: 'U/L', role: "AST", action: "Normal." },
             creatinine: { value: 1.0, ref: "<1.2", status: "🟢", unit: 'mg/dL', role: "Creatinine", action: "Normal." },
             bun: { value: 18, ref: "7-20", status: "🟢", unit: 'mg/dL', role: "BUN", action: "Normal." },
@@ -205,32 +283,32 @@ const MOCK_PATIENT_RECORDS = [
             irScore: { value: 1.5, ref: "<2.0", status: "Optimal", icon: "💉", impact: "Good insulin sensitivity." },
         }
     },
-    // Patient 5: Hormonal/Nutrient Deficiency Focus (New Scenario) - 27 CORE MARKERS
+    // Patient 5: Hormonal/Nutrient Deficiency Focus - 27 CORE MARKERS
     { 
         id: "DFC-2024-15851", 
-        name: "Patient 5", 
+        name: "Patient 5 – Hormone/Nutrient Deficit", 
         age: 51, 
         kpis: { bioAge: 50, risk: 3.5, efficiency: 0.70, riskColor: "yellow-400" },
         markers: {
-            glucose: { value: 5.8, ref: "3.9-5.5", status: "🟠", unit: 'mmol/L', role: "Fasting Glucose", action: "Borderline high glucose." }, 
+            glucose: { value: 5.8, ref: "3.9-5.5", status: "🟠", trend: [5.5, 5.6, 5.7, 5.8], unit: 'mmol/L', role: "Fasting Glucose", action: "Borderline high glucose." }, 
             a1c: { value: 5.7, ref: "4.0-5.7", status: "🟢", unit: '%', role: "Hemoglobin A1c", action: "Upper limit of normal." }, 
-            homa: { value: 2.2, ref: "0-2", status: "🟠", unit: 'Score', role: "HOMA-IR Score", action: "Mild insulin resistance." }, 
-            crp: { value: 0.9, ref: "<1.0", status: "🟢", unit: 'mg/L', role: "High-Sensitivity CRP", action: "Low inflammation." }, 
-            il6: { value: 4.0, ref: "0-5", status: "🟢", unit: 'pg/mL', role: "Interleukin-6", action: "Normal." }, 
+            homa: { value: 2.2, ref: "0-2", status: "🟠", trend: [2.0, 2.1, 2.2, 2.2], unit: 'Score', role: "HOMA-IR Score", action: "Mild insulin resistance." }, 
+            crp: { value: 0.9, ref: "<1.0", status: "🟢", trend: [1.2, 1.0, 0.9, 0.9], unit: 'mg/L', role: "High-Sensitivity CRP", action: "Low inflammation." }, 
+            il6: { value: 4.0, ref: "0-5", status: "🟢", trend: [4.5, 4.2, 4.0, 4.0], unit: 'pg/mL', role: "Interleukin-6", action: "Normal." }, 
             adiponectin: { value: 10.0, ref: "8-15", status: "🟢", unit: 'μg/mL', role: "Adiponectin", action: "Optimal." }, 
-            ldl: { value: 3.0, ref: "<2.6", status: "🟠", unit: 'mmol/L', role: "LDL Cholesterol", action: "Elevated, monitor diet." }, 
-            tg: { value: 1.2, ref: "<1.7", status: "🟢", unit: 'mmol/L', role: "Triglycerides", action: "Normal." }, 
-            sdll: { value: 35, ref: "<35", status: "🟢", unit: '%', role: "Small Dense LDL %", action: "Upper limit of normal." },
+            ldl: { value: 3.0, ref: "<2.6", status: "🟠", trend: [2.7, 2.8, 2.9, 3.0], unit: 'mmol/L', role: "LDL Cholesterol", action: "Elevated, monitor diet." }, 
+            tg: { value: 1.2, ref: "<1.7", status: "🟢", trend: [1.5, 1.7, 1.9, 2.0], unit: 'mmol/L', role: "Triglycerides", action: "Normal." }, 
+            sdll: { value: 35, ref: "<35", status: "🟢", trend: [35, 35, 35, 35], unit: '%', role: "Small Dense LDL %", action: "Upper limit of normal." },
             shannon: { value: 3.0, ref: ">3.5", status: "🟡", unit: 'Score', role: "Shannon Diversity Index", action: "Suboptimal diversity." }, 
             zonulin: { value: 25, ref: "<30", status: "🟢", unit: 'ng/mL', role: "Zonulin", action: "Normal." }, 
             lps: { value: 0.40, ref: "<0.5", status: "🟢", unit: 'EU/mL', role: "Lipopolysaccharide (LPS)", action: "Normal." }, 
-            alt: { value: 30, ref: "<40", status: "🟢", unit: 'U/L', role: "ALT", action: "Normal." },
-            ggt: { value: 40, ref: "<50", status: "🟢", unit: 'U/L', role: "GGT", action: "Normal." },
+            alt: { value: 30, ref: "<40", status: "🟢", trend: [35, 32, 31, 30], unit: 'U/L', role: "ALT", action: "Normal." },
+            ggt: { value: 40, ref: "<50", status: "🟢", trend: [45, 42, 41, 40], unit: 'U/L', role: "GGT", action: "Normal." },
             ast: { value: 32, ref: "<35", status: "🟢", unit: 'U/L', role: "AST", action: "Normal." },
             creatinine: { value: 1.1, ref: "<1.2", status: "🟢", unit: 'mg/dL', role: "Creatinine", action: "Normal." },
             bun: { value: 15, ref: "7-20", status: "🟢", unit: 'mg/dL', role: "BUN", action: "Normal." },
             uricAcid: { value: 7.0, ref: "3.5-7.2", status: "🟢", icon: "💧", unit: 'mg/dL', role: "Uric Acid", impact: "Upper range." },
-            tsh: { value: 7.5, ref: "0.5-4.5", status: "🔴", unit: 'uIU/mL', role: "TSH", action: "Severe hypothyroidism indicated." },
+            tsh: { value: 7.5, ref: "0.5-4.5", status: "🔴", trend: [6.5, 7.0, 7.2, 7.5], unit: 'uIU/mL', role: "TSH", action: "Severe hypothyroidism indicated." },
             ft3: { value: 2.0, ref: "2.8-4.4", status: "🟡", unit: 'pg/mL', role: "Free T3", action: "Low active hormone." },
             cortisol: { value: 10.0, ref: "6.2-19.4", status: "🟢", unit: 'ug/dL', role: "Cortisol (AM Peak)", action: "Normal stress response." },
             vitD: { value: 12, ref: "30-100", status: "🔴", icon: "☀️", unit: 'ng/mL', role: "Vitamin D (25-OH)", impact: "Severe deficiency." },
@@ -243,32 +321,32 @@ const MOCK_PATIENT_RECORDS = [
             irScore: { value: 2.2, ref: "<2.0", status: "Elevated", icon: "💉", impact: "Slight insulin resistance." },
         }
     },
-    // Patient 6: Moderate Liver/Kidney Strain (New Scenario) - 27 CORE MARKERS
+    // Patient 6: Moderate Liver/Kidney Strain - 27 CORE MARKERS
     { 
         id: "DFC-2024-15852", 
-        name: "Patient 6", 
+        name: "Patient 6 – Liver/Kidney Strain", 
         age: 65, 
         kpis: { bioAge: 68, risk: 5.5, efficiency: 0.75, riskColor: "orange-400" },
         markers: {
-            glucose: { value: 6.0, ref: "3.9-5.5", status: "🟠", unit: 'mmol/L', role: "Fasting Glucose", action: "Pre-diabetic." }, 
+            glucose: { value: 6.0, ref: "3.9-5.5", status: "🟠", trend: [5.5, 5.8, 6.0, 6.0], unit: 'mmol/L', role: "Fasting Glucose", action: "Pre-diabetic." }, 
             a1c: { value: 6.0, ref: "4.0-5.7", status: "🔴", unit: '%', role: "Hemoglobin A1c", action: "Confirmed hyperglycemia." }, 
-            homa: { value: 2.8, ref: "0-2", status: "🟠", unit: 'Score', role: "HOMA-IR Score", action: "Moderate insulin resistance." }, 
-            crp: { value: 3.5, ref: "<1.0", status: "🔴", unit: 'mg/L', role: "High-Sensitivity CRP", action: "Elevated systemic inflammation." }, 
-            il6: { value: 8.0, ref: "0-5", status: "🔴", unit: 'pg/mL', role: "Interleukin-6", action: "High." }, 
+            homa: { value: 2.8, ref: "0-2", status: "🟠", trend: [2.5, 2.7, 2.8, 2.8], unit: 'Score', role: "HOMA-IR Score", action: "Moderate insulin resistance." }, 
+            crp: { value: 3.5, ref: "<1.0", status: "🔴", trend: [3.0, 3.2, 3.4, 3.5], unit: 'mg/L', role: "High-Sensitivity CRP", action: "Elevated systemic inflammation." }, 
+            il6: { value: 8.0, ref: "0-5", status: "🔴", trend: [7.0, 7.5, 7.8, 8.0], unit: 'pg/mL', role: "Interleukin-6", action: "High." }, 
             adiponectin: { value: 7.0, ref: "8-15", status: "🟡", unit: 'μg/mL', role: "Adiponectin", action: "Suboptimal anti-inflammatory capacity." }, 
-            ldl: { value: 3.5, ref: "<2.6", status: "🔴", unit: 'mmol/L', role: "LDL Cholesterol", action: "High LDL." }, 
-            tg: { value: 2.0, ref: "<1.7", status: "🟠", unit: 'mmol/L', role: "Triglycerides", action: "Elevated triglycerides." }, 
-            sdll: { value: 40, ref: "<35", status: "🟠", unit: '%', role: "Small Dense LDL %", action: "Elevated small dense LDL." },
+            ldl: { value: 3.5, ref: "<2.6", status: "🔴", trend: [3.0, 3.2, 3.4, 3.5], unit: 'mmol/L', role: "LDL Cholesterol", action: "High LDL." }, 
+            tg: { value: 2.0, ref: "<1.7", status: "🟠", trend: [1.5, 1.7, 1.9, 2.0], unit: 'mmol/L', role: "Triglycerides", action: "Elevated triglycerides." }, 
+            sdll: { value: 40, ref: "<35", status: "🟠", trend: [38, 39, 40, 40], unit: '%', role: "Small Dense LDL %", action: "Elevated small dense LDL." },
             shannon: { value: 3.2, ref: ">3.5", status: "🟡", unit: 'Score', role: "Shannon Diversity Index", action: "Suboptimal diversity." }, 
             zonulin: { value: 35, ref: "<30", status: "🟠", unit: 'ng/mL', role: "Zonulin", action: "Mild leaky gut." }, 
             lps: { value: 0.60, ref: "<0.5", status: "🟠", unit: 'EU/mL', role: "Lipopolysaccharide (LPS)", action: "Elevated endotoxin." }, 
-            alt: { value: 80, ref: "<40", status: "🔴", unit: 'U/L', role: "ALT", action: "Significant liver fat/strain." },
-            ggt: { value: 100, ref: "<50", status: "🔴", unit: 'U/L', role: "GGT", action: "High oxidative stress/toxin load." },
+            alt: { value: 80, ref: "<40", status: "🔴", trend: [50, 60, 70, 80], unit: 'U/L', role: "ALT", action: "Significant liver fat/strain." },
+            ggt: { value: 100, ref: "<50", status: "🔴", trend: [60, 75, 90, 100], unit: 'U/L', role: "GGT", action: "High oxidative stress/toxin load." },
             ast: { value: 50, ref: "<35", status: "🟠", unit: 'U/L', role: "AST", action: "Elevated." },
-            creatinine: { value: 1.5, ref: "<1.2", status: "🔴", unit: 'mg/dL', role: "Creatinine", action: "Kidney function compromised." },
+            creatinine: { value: 1.5, ref: "<1.2", status: "🔴", trend: [1.3, 1.4, 1.45, 1.5], unit: 'mg/dL', role: "Creatinine", action: "Kidney function compromised." },
             bun: { value: 30, ref: "7-20", status: "🔴", unit: 'mg/dL', role: "BUN", action: "High protein breakdown/dehydration." },
             uricAcid: { value: 8.0, ref: "3.5-7.2", status: "🟠", icon: "💧", unit: 'mg/dL', role: "Uric Acid", impact: "Elevated Uric Acid." },
-            tsh: { value: 4.8, ref: "0.5-4.5", status: "🟠", unit: 'uIU/mL', role: "TSH", action: "Borderline hypothyroidism." },
+            tsh: { value: 4.8, ref: "0.5-4.5", status: "🟠", trend: [4.0, 4.2, 4.5, 4.8], unit: 'uIU/mL', role: "TSH", action: "Borderline hypothyroidism." },
             ft3: { value: 2.8, ref: "2.8-4.4", status: "🟢", unit: 'pg/mL', role: "Free T3", action: "Normal." },
             cortisol: { value: 16.0, ref: "6.2-19.4", status: "🟢", unit: 'ug/dL', role: "Cortisol (AM Peak)", action: "Healthy stress response." },
             vitD: { value: 20, ref: "30-100", status: "🔴", icon: "☀️", unit: 'ng/mL', role: "Vitamin D (25-OH)", impact: "Deficient." },
@@ -282,6 +360,50 @@ const MOCK_PATIENT_RECORDS = [
         }
     }
 ];
+
+// --- Create 4 extra demo scenarios to reach 10 patients ---
+const getAllDemoPatients = () => {
+    const base = MOCK_PATIENT_RECORDS;
+    const extra = [];
+
+    if (base.length >= 4) {
+        // Scenario 7 – Recovering metabolic risk (slightly better than Patient 1)
+        const s7 = JSON.parse(JSON.stringify(base[0]));
+        s7.id = "DFC-2024-90001";
+        s7.name = "Scenario 7 – Recovering Metabolic";
+        s7.kpis.risk = Math.max(0, s7.kpis.risk - 1.5);
+        s7.kpis.efficiency = Math.min(1, s7.kpis.efficiency + 0.05);
+        extra.push(s7);
+
+        // Scenario 8 – Athlete / High Performance (even better than Patient 2)
+        const s8 = JSON.parse(JSON.stringify(base[1]));
+        s8.id = "DFC-2024-90002";
+        s8.name = "Scenario 8 – High Performance";
+        s8.kpis.bioAge = s8.kpis.bioAge - 3;
+        s8.kpis.risk = Math.max(0, s8.kpis.risk - 0.8);
+        s8.kpis.efficiency = Math.min(1, s8.kpis.efficiency + 0.03);
+        extra.push(s8);
+
+        // Scenario 9 – Escalating Gut + Liver Risk (worse than Patient 4)
+        const s9 = JSON.parse(JSON.stringify(base[3]));
+        s9.id = "DFC-2024-90003";
+        s9.name = "Scenario 9 – Gut-Liver Escalation";
+        s9.kpis.risk = Math.min(10, s9.kpis.risk + 1.5);
+        s9.kpis.efficiency = Math.max(0, s9.kpis.efficiency - 0.08);
+        extra.push(s9);
+
+        // Scenario 10 – Aging Kidney / Cardio Combo (variant of Patient 6)
+        const s10 = JSON.parse(JSON.stringify(base[5]));
+        s10.id = "DFC-2024-90004";
+        s10.name = "Scenario 10 – Cardio-Renal Aging";
+        s10.kpis.bioAge = s10.kpis.bioAge + 2;
+        s10.kpis.risk = Math.min(10, s10.kpis.risk + 0.8);
+        s10.kpis.efficiency = Math.max(0, s10.kpis.efficiency - 0.05);
+        extra.push(s10);
+    }
+
+    return [...base, ...extra].slice(0, 10);
+};
 
 // Helper functions (Utilities)
 
@@ -301,7 +423,6 @@ const getStatusColorName = (status) => {
 };
 
 const getAllMarkersForTable = (patient) => {
-    // List of keys to extract for primary markers (27 core + 2 regional = 29 total primary keys)
     const CORE_MARKER_KEYS = [
         'glucose', 'a1c', 'homa', 
         'crp', 'il6', 'adiponectin', 
@@ -315,14 +436,10 @@ const getAllMarkersForTable = (patient) => {
         'bmi', 'irScore'
     ];
     
-    // 1. Extract and sanitize core markers
     const coreMarkers = CORE_MARKER_KEYS.map(key => {
         const marker = patient.markers[key];
-        
-        // Defensive check: if marker object is missing, skip it (shouldn't happen with the mock data now)
         if (!marker) return null;
 
-        // Determine platform based on key (used for Data Lake view)
         let platform;
         if (['homa', 'bmi', 'irScore'].includes(key)) platform = 'Derived Metrics';
         else if (['crp', 'il6', 'adiponectin'].includes(key)) platform = 'Proteomics/Inflammation';
@@ -341,7 +458,6 @@ const getAllMarkersForTable = (patient) => {
             code: key,
             platform: platform,
             isPrimary: true,
-            // Ensure essential display properties are never empty/null strings
             role: marker.role || key.toUpperCase(),
             unit: marker.unit || '-',
             ref: marker.ref || 'N/A',
@@ -349,7 +465,6 @@ const getAllMarkersForTable = (patient) => {
         };
     }).filter(Boolean); 
 
-    // 2. Generate secondary markers (253 Total Markers - 29 Primary Markers = 224 Secondary)
     const TOTAL_DATA_LAKE_MARKERS = 253;
     const PRIMARY_MARKER_COUNT = coreMarkers.length; 
     const SECONDARY_MARKER_COUNT = TOTAL_DATA_LAKE_MARKERS - PRIMARY_MARKER_COUNT;
@@ -373,15 +488,13 @@ const getAllMarkersForTable = (patient) => {
         };
     });
 
-    // 3. Combine and return the full list
     return [...coreMarkers, ...secondaryMarkers];
 };
 
 
-// --- DATA GENERATORS (Refactored to pull data dynamically and calculate category summaries) ---
+// --- DATA GENERATORS (Logical Container) ---
 
 const getBiomarkerData = (patient) => {
-    // Defensive check for patient.markers
     if (!patient || !patient.markers) {
         console.error("Patient markers object is undefined or missing.");
         return {
@@ -392,30 +505,81 @@ const getBiomarkerData = (patient) => {
             kpis: [],
             categories: [],
             regionalIndicators: [],
+            NDIScore: 0,
+            NDIStatus: "Optimal",
+            METScore: 0,
+            METStatus: "Neutral",
         };
     }
+    
+    const m = patient.markers;
 
-    // Determine the status symbols that count as 'abnormal' for pattern detection
+    // --- LIGHT ALGO 1: Metabolic Trajectory Score (MET) ---
+    const keyTrendMarkers = ['glucose', 'crp', 'ldl', 'homa'];
+    let worseningCount = 0;
+    let improvingCount = 0;
+    
+    keyTrendMarkers.forEach(key => {
+        const trends = m[key]?.trend;
+        if (trends && trends.length >= 2) {
+            const initial = trends[0];
+            const latest = trends[trends.length - 1];
+            if (latest > initial) {
+                worseningCount++;
+            } else if (latest < initial) {
+                improvingCount++;
+            }
+        }
+    });
+
+    const netChange = improvingCount - worseningCount; 
+    let METScore = netChange / keyTrendMarkers.length; 
+    METScore = parseFloat(METScore.toFixed(2));
+    
+    let METStatus = "Stable";
+    if (METScore > 0) {
+        METStatus = "Improving Trend";
+    } else if (METScore < 0) {
+        METStatus = "Worsening Trend";
+    }
+
+    // --- LIGHT ALGO 2: Nutrient Depletion Index (NDI) ---
+    let NDIScore = 0;
+    if (m.vitD.status !== 'Optimal' && m.vitD.status !== '🟢') NDIScore += 1;
+    if (m.vitB12.status === '🔴') NDIScore += 2;
+    else if (m.vitB12.status === '🟡') NDIScore += 1;
+    if (m.ferritin.value < 15) NDIScore += 1;
+    if (m.homa.value > 2.0) NDIScore += 1; 
+    if (m.crp.value > 5.0) NDIScore += 1; 
+    
+    let NDIStatus = "Optimal"; 
+    if (NDIScore >= 4) NDIStatus = "Critical Depletion";
+    else if (NDIScore >= 2) NDIStatus = "High Depletion";
+    else if (NDIScore >= 1) NDIStatus = "Suboptimal Reserves";
+
     const abnormalStatuses = ['🔴', '🟠', '🟡', 'Critical', 'High Risk', 'Elevated', 'Deficient', 'Insufficient', 'Critical Risk'];
     
-    // --- DEFINING ALL 9 CATEGORIES (27 Markers Total) ---
     const categories = [
-        // 3 Markers per category = 27 Core Functional Markers
-        { name: "Metabolic Health", icon: "🩸", color: "red", markers: [patient.markers.glucose, patient.markers.a1c, patient.markers.homa] }, 
-        { name: "Lipid Panel & Cardiovascular", icon: "💔", color: "indigo", markers: [patient.markers.ldl, patient.markers.tg, patient.markers.sdll] },
-        { name: "Inflammation & Immunity", icon: "🛡️", color: "amber", markers: [patient.markers.crp, patient.markers.il6, patient.markers.adiponectin] }, 
-        { name: "Gut Microbiome & Permeability", icon: "🦠", color: "lime", markers: [patient.markers.shannon, patient.markers.zonulin, patient.markers.lps] }, 
-        { name: "Liver Function", icon: "🧪", color: "purple", markers: [patient.markers.alt, patient.markers.ggt, patient.markers.ast] },
-        { name: "Kidney & Hydration", icon: "💧", color: "cyan", markers: [patient.markers.creatinine, patient.markers.bun, patient.markers.uricAcid] },
-        { name: "Hormonal Balance", icon: "🧬", color: "pink", markers: [patient.markers.tsh, patient.markers.ft3, patient.markers.cortisol] },
-        { name: "Vitamins & Minerals", icon: "✨", color: "yellow", markers: [patient.markers.vitD, patient.markers.vitB12, patient.markers.ferritin] },
-        { name: "General/Clinical Health", icon: "🩺", color: "gray", markers: [patient.markers.wbc, patient.markers.rbc, patient.markers.hgb] },
+        { name: "Metabolic Health", icon: "🩸", color: "red", markers: [m.glucose, m.a1c, m.homa] }, 
+        { name: "Lipid Panel & Cardiovascular", icon: "💔", color: "indigo", markers: [m.ldl, m.tg, m.sdll] },
+        { name: "Inflammation & Immunity", icon: "🛡️", color: "amber", markers: [m.crp, m.il6, m.adiponectin] }, 
+        { name: "Gut Microbiome & Permeability", icon: "🦠", color: "lime", markers: [m.shannon, m.zonulin, m.lps] }, 
+        { name: "Liver Function", icon: "🧪", color: "purple", markers: [m.alt, m.ggt, m.ast] },
+        { name: "Kidney & Hydration", icon: "💧", color: "cyan", markers: [m.creatinine, m.bun, m.uricAcid] },
+        { name: "Hormonal Balance", icon: "🧬", color: "pink", markers: [m.tsh, m.ft3, m.cortisol] },
+        { name: "Vitamins & Minerals", icon: "✨", color: "yellow", markers: [m.vitD, m.vitB12, m.ferritin] },
+        { name: "General/Clinical Health", icon: "🩺", color: "gray", markers: [m.wbc, m.rbc, m.hgb] },
     ];
 
+    function getCategoryStatus(abnormalCount, totalCount) {
+        if (abnormalCount >= 2) return "CRITICAL";
+        if (abnormalCount >= 1) return "ELEVATED";
+        return "OPTIMAL";
+    }
+
     const processedCategories = categories.map(cat => {
-        // We must filter out undefined entries that result from incomplete mock data structure for other patients
         const validMarkers = cat.markers.filter(Boolean);
-        const abnormalCount = validMarkers.filter(m => abnormalStatuses.includes(m.status)).length;
+        const abnormalCount = validMarkers.filter(mm => abnormalStatuses.includes(mm.status)).length;
         const totalCount = validMarkers.length;
         
         let summaryText = "";
@@ -428,61 +592,48 @@ const getBiomarkerData = (patient) => {
             summaryText = `Optimal Status: All markers are stable. The Logical Mashery confirms high resilience and minimal risk in this category.`;
             summaryPriority = "OPTIMAL";
         } else {
-             // --- High-Level Predictive Outcomes (New Logic - Simplified Language) ---
-             let predictiveStatement = "";
-             if (cat.name === "Metabolic Health" && abnormalCount >= 2) { 
-                 predictiveStatement = "SEVERE METABOLIC STRESS: Your body is struggling to manage blood sugar and insulin. This cluster indicates a strong, urgent risk of developing Type 2 Diabetes.";
-             } else if (cat.name === "Lipid Panel & Cardiovascular" && abnormalCount >= 2) {
-                 predictiveStatement = "HIGH HEART RISK: Your blood fats are creating a dangerous environment. High levels of 'bad' cholesterol particles mean your arteries vulnerable and need immediate protection.";
-             } else if (cat.name === "Inflammation & Immunity" && abnormalCount >= 2) {
-                 predictiveStatement = "CHRONIC BODY-WIDE INFLAMMATION: Your immune system is constantly 'on high alert.' This chronic state is actively damaging your metabolism and driving up your overall risk.";
-             } else if (cat.name === "Gut Microbiome & Permeability" && abnormalCount >= 2) {
-                 predictiveStatement = "LEAKY GUT CONFIRMED: Your gut barrier is compromised. Low diversity and high Zonulin mean toxins are escaping into your bloodstream, which is the source of your body-wide inflammation.";
-             } else if (cat.name === "Liver Function" && abnormalCount >= 2) {
-                 predictiveStatement = "LIVER STRAIN DETECTED: Elevated ALT and GGT suggest the liver is under significant metabolic and oxidative stress, impacting its clearance efficiency.";
-             } else if (cat.name === "Hormonal Balance" && abnormalCount >= 1 && validMarkers.filter(m => m.role === 'TSH')[0]?.status === '🔴') {
-                 predictiveStatement = "THYROID ALERT: Critical TSH level indicates potential hypothyroidism, severely disrupting energy and metabolic rate.";
-             } else {
-                 predictiveStatement = `DEVELOPING PATTERN: ${ratioText} are abnormal. This requires monitoring to prevent escalation into a major systemic pattern.`;
-             }
+            let predictiveStatement = "";
+            if (cat.name === "Metabolic Health" && abnormalCount >= 2) { 
+                predictiveStatement = "SEVERE METABOLIC STRESS: Your body is struggling to manage blood sugar and insulin. This cluster indicates a strong, urgent risk of developing Type 2 Diabetes.";
+            } else if (cat.name === "Lipid Panel & Cardiovascular" && abnormalCount >= 2) {
+                predictiveStatement = "HIGH HEART RISK: Your blood fats are creating a dangerous environment. High levels of 'bad' cholesterol particles mean your arteries vulnerable and need immediate protection.";
+            } else if (cat.name === "Inflammation & Immunity" && abnormalCount >= 2) {
+                predictiveStatement = "CHRONIC BODY-WIDE INFLAMMATION: Your immune system is constantly 'on high alert.' This chronic state is actively damaging your metabolism and driving up your overall risk.";
+            } else if (cat.name === "Gut Microbiome & Permeability" && abnormalCount >= 2) {
+                predictiveStatement = "LEAKY GUT CONFIRMED: Your gut barrier is compromised. Low diversity and high Zonulin mean toxins are escaping into your bloodstream, which is the source of your body-wide inflammation.";
+            } else if (cat.name === "Liver Function" && abnormalCount >= 2) {
+                predictiveStatement = "LIVER STRAIN DETECTED: Elevated ALT and GGT suggest the liver is under significant metabolic and oxidative stress, impacting its clearance efficiency.";
+            } else if (cat.name === "Hormonal Balance" && abnormalCount >= 1 && validMarkers.filter(mm => mm.role === 'TSH')[0]?.status === '🔴') {
+                predictiveStatement = "THYROID ALERT: Critical TSH level indicates potential hypothyroidism, severely disrupting energy and metabolic rate.";
+            } else {
+                predictiveStatement = `DEVELOPING PATTERN: ${ratioText} are abnormal. This requires monitoring to prevent escalation into a major systemic pattern.`;
+            }
 
-             if (abnormalCount >= 2) {
-                 summaryPriority = "CRITICAL";
-             } else if (abnormalCount >= 1) {
-                 summaryPriority = "HIGH";
-             }
+            if (abnormalCount >= 2) {
+                summaryPriority = "CRITICAL";
+            } else if (abnormalCount >= 1) {
+                summaryPriority = "ELEVATED";
+            }
 
-             // Combine the predictive statement with the marker confirmation
-             summaryText = `${predictiveStatement} ${abnormalCount > 0 ? `(Telemetry confirms ${ratioText} are outside the optimal range).` : ''}`;
+            summaryText = `${predictiveStatement} ${abnormalCount > 0 ? `(Telemetry confirms ${ratioText} are outside the optimal range).` : ''}`;
         }
         
         return {
             ...cat,
             abnormalCount,
             totalCount,
-            categorySummary: summaryText, // Now holds the high-level predictive outcome
-            categoryPriority: getCategoryStatus(abnormalCount, totalCount), // Use the new status function
-            fullMarkers: validMarkers // Store valid markers separately for the modal
+            categorySummary: summaryText,
+            categoryPriority: getCategoryStatus(abnormalCount, totalCount),
+            fullMarkers: validMarkers
         };
     });
 
-    // New function to map abnormal count to a simple status
-    function getCategoryStatus(abnormalCount, totalCount) {
-        // Define status based on abnormal count
-        if (abnormalCount >= 2) return "CRITICAL";
-        if (abnormalCount >= 1) return "ELEVATED";
-        return "OPTIMAL";
-    }
-
-    // Extract regional indicators for their own component
     const regionalIndicators = [
-        // Note: These are primary markers but displayed separately due to high regional relevance
-        { name: "BMI/Obesity", value: patient.markers.bmi.value, unit: 'BMI', ref: patient.markers.bmi.ref, status: patient.markers.bmi.status, icon: patient.markers.bmi.icon, impact: patient.markers.bmi.impact },
-        { name: "IR Score (HOMA)", value: patient.markers.irScore.value, unit: 'Score', ref: patient.markers.irScore.ref, status: patient.markers.irScore.status, icon: patient.markers.irScore.icon, impact: patient.markers.irScore.impact },
-        { name: "Vitamin D Level", value: patient.markers.vitD.value, unit: 'ng/mL', ref: patient.markers.vitD.ref, status: patient.markers.vitD.status, icon: patient.markers.vitD.icon, impact: patient.markers.vitD.impact },
-        { name: "Uric Acid", value: patient.markers.uricAcid.value, unit: 'mg/dL', ref: patient.markers.uricAcid.ref, status: patient.markers.uricAcid.status, icon: patient.markers.uricAcid.icon, impact: patient.markers.uricAcid.impact },
+        { name: "BMI/Obesity", value: m.bmi.value, unit: 'BMI', ref: m.bmi.ref, status: m.bmi.status, icon: m.bmi.icon, impact: m.bmi.impact },
+        { name: "IR Score (HOMA)", value: m.irScore.value, unit: 'Score', ref: m.irScore.ref, status: m.irScore.status, icon: m.irScore.icon, impact: m.irScore.impact },
+        { name: "Vitamin D Level", value: m.vitD.value, unit: 'ng/mL', ref: m.vitD.ref, status: m.vitD.status, icon: m.vitD.icon, impact: m.vitD.impact },
+        { name: "Uric Acid", value: m.uricAcid.value, unit: 'mg/dL', ref: m.uricAcid.ref, status: m.uricAcid.status, icon: m.uricAcid.icon, impact: m.uricAcid.impact },
     ];
-
 
     return {
         participantId: patient.id,
@@ -491,33 +642,40 @@ const getBiomarkerData = (patient) => {
         totalMarkersAnalyzed: 253,
         platformsIntegrated: 11,
         dataQualityScore: 95,
-        overallStatus: { ok: 165, elevated: 52, below: 28, critical: 8, },
+        overallStatus: { 
+            ok: Math.round(253 * (patient.kpis.efficiency > 0.9 ? 0.7 : 0.65)), 
+            elevated: Math.round(253 * (patient.kpis.risk < 4 ? 0.1 : 0.2)), 
+            below: Math.round(253 * (patient.kpis.efficiency < 0.8 ? 0.1 : 0.05)), 
+            critical: Math.round(253 * (patient.kpis.risk > 7 ? 0.05 : 0.00)), 
+        },
         kpis: [
-            // Simplified KPI Descriptions - Biological Age and Risk Score updated
             { name: "Biological Age", value: patient.kpis.bioAge, units: "Years", actualAge: patient.age, status: patient.kpis.bioAge < patient.age ? "Optimal" : "Suboptimal", color: patient.kpis.bioAge < patient.age ? "emerald" : "red", description: `Actual Age is ${patient.age}. Based on cellular data, your age is ${patient.kpis.bioAge}.` },
             { name: "Systemic Risk Score", value: patient.kpis.risk, units: "/ 10", threshold: 6.0, status: patient.kpis.risk < 4 ? "Low" : (patient.kpis.risk < 7 ? "Moderate" : "High"), color: patient.kpis.risk < 4 ? "cyan" : (patient.kpis.risk < 7 ? "yellow" : "red"), description: "Weighted risk score based on Metabolic & Inflammatory markers (High is bad)." },
             { name: "Future Readiness Index", value: patient.kpis.efficiency, units: "Score", optimalRange: ">0.85", status: patient.kpis.efficiency > 0.85 ? "Optimal" : "Suboptimal", color: patient.kpis.efficiency > 0.85 ? "emerald" : "yellow", description: "Measures overall resilience and long-term health efficiency (Optimal is best)." },
+            { name: "Nutrient Depletion Index (NDI)", value: NDIScore, units: "/ 6", status: NDIStatus, color: NDIScore >= 4 ? "red" : (NDIScore >= 2 ? "orange" : "emerald"), description: `Weighted analysis of Vit D, B12, and Ferritin combined with Metabolic/Inflammatory load (${NDIScore}/6).` },
+            { name: "Metabolic Trajectory (MET)", value: METScore, units: "/ 1", status: METStatus, color: METStatus === "Worsening Trend" ? "red" : (METStatus === "Improving Trend" ? "emerald" : "cyan"), description: `Net change velocity of core risk markers (Glucose, CRP, LDL, HOMA) over time. Positive score = improving trend.` }
         ],
         categories: processedCategories,
-        regionalIndicators: regionalIndicators,
+        regionalIndicators,
+        NDIScore,
+        METScore,
+        NDIStatus,
+        METStatus
     };
 };
 
 const getGeminiReport = (patient) => {
     const data = getBiomarkerData(patient);
-    
-    // Defensive Check: If data processing failed in getBiomarkerData, return a safe structure
     if (!data || !patient.markers || !data.categories) { 
         return {
-             header: "Error: Data Processing Failed",
-             keyPatterns: [],
-             summaryText: [{ area: "Error", details: "Could not retrieve core biomarker data for report generation." }],
-             detailedPlatforms: [],
-             additionalPlatforms: [],
+            header: "Error: Data Processing Failed",
+            keyPatterns: [],
+            summaryText: [{ area: "Error", details: "Could not retrieve core biomarker data for report generation." }],
+            detailedPlatforms: [],
+            additionalPlatforms: [],
         };
     }
     
-    // --- FULL 27 PRIMARY MARKER BREAKDOWN FOR AI REPORT ---
     const primaryMarkersForReport = {
         Metabolic: [patient.markers.glucose, patient.markers.a1c, patient.markers.homa],
         Inflammation: [patient.markers.crp, patient.markers.il6, patient.markers.adiponectin],
@@ -530,53 +688,113 @@ const getGeminiReport = (patient) => {
         Clinical: [patient.markers.wbc, patient.markers.rbc, patient.markers.hgb],
     };
     
-    // Flatten and combine all primary markers into a single array for easier iteration in the report
-    const allPrimaryMarkers = [].concat(...Object.values(primaryMarkersForReport));
-    const CORE_MARKER_COUNT = 27; // Fixed count for display consistency
+    const m = patient.markers;
+    const CORE_MARKER_COUNT = 29; 
 
+    const keyPatterns = (() => {
+        const patterns = [];
+        
+        if (m.homa.status === '🔴') {
+            patterns.push({ 
+                title: "CRITICAL: Severe Insulin Resistance & Metabolic Decoupling", 
+                priority: "Critical", 
+                details: `The HOMA-IR score (${m.homa.value} ${m.homa.unit}) confirms severe insulin resistance, a primary driver of chronic disease. This metabolic decoupling, compounded by Fasting Glucose (${m.glucose.value} ${m.glucose.unit}) and HbA1c (${m.a1c.value}%), necessitates immediate, aggressive intervention.` 
+            });
+        } else if (m.homa.status === '🟠') {
+            patterns.push({ 
+                title: "HIGH PRIORITY: Emerging Pre-Diabetic Pattern", 
+                priority: "High Priority", 
+                details: `Elevated HOMA-IR (${m.homa.value} ${m.homa.unit}) signals significant pre-diabetic risk. This is an early-warning signal that metabolic systems are struggling to maintain glucose homeostasis.` 
+            });
+        }
 
-    // --- SECONDARY MARKER HIGH-LEVEL SUMMARY ---
-    const secondaryMarkerSummary = {
-        total: 253,
-        primaryCount: CORE_MARKER_COUNT,
-        secondaryCount: 253 - CORE_MARKER_COUNT,
-        elevatedCount: data.overallStatus.elevated + data.overallStatus.critical,
-        lowCount: data.overallStatus.below,
-        normalCount: data.overallStatus.ok,
-    };
+        if (m.crp.status === '🔴' && m.il6.status === '🔴') {
+            patterns.push({ 
+                title: "CRITICAL: Systemic Inflammatory Overload (Hyper-Immunity)", 
+                priority: "Critical", 
+                details: `Both CRP (${m.crp.value} ${m.crp.unit}) and IL-6 (${m.il6.value} ${m.il6.unit}) are critically high, indicating a severe, chronic immune system activation. This systemic overload is actively damaging cellular and vascular integrity.` 
+            });
+        } else if (m.crp.status === '🔴' || m.il6.status === '🔴' || m.wbc?.status === '🟠') {
+            patterns.push({ 
+                title: "HIGH PRIORITY: Chronic Low-Grade Inflammatory State", 
+                priority: "High Priority", 
+                details: `Persistent elevation in core markers like CRP/IL-6 confirms a destructive chronic inflammatory state, requiring rapid root cause identification and suppression strategy.` 
+            });
+        }
+
+        if (m.zonulin.status === '🔴' && m.shannon.status === '🔴') {
+            patterns.push({ 
+                title: "CRITICAL: Intestinal Barrier Collapse & Dysbiosis (Leaky Gut)", 
+                priority: "Critical", 
+                details: `High Zonulin (${m.zonulin.value} ${m.zonulin.unit}) confirms catastrophic breakdown of the intestinal barrier, leading to massive endotoxin escape (LPS: ${m.lps.value} EU/mL). Low Shannon index confirms severe dysbiosis. This is the source of body-wide inflammation.` 
+            });
+        } else if (m.zonulin.status === '🟠' || m.shannon.status === '🟡') {
+            patterns.push({ 
+                title: "HIGH PRIORITY: Gut-Immune Axon Compromise", 
+                priority: "High Priority", 
+                details: `Impaired diversity (Shannon: ${m.shannon.value} Score) coupled with elevated Zonulin/LPS indicates a compromised gut-immune axis, demanding targeted nutritional and barrier repair protocols.` 
+            });
+        }
+
+        if (m.sdll.status === '🔴' || m.ldl.status === '🔴' || m.tg.status === '🔴') {
+            patterns.push({ 
+                title: "CRITICAL: Atherogenic Profile & Endothelial Compromise", 
+                priority: "Critical", 
+                details: `Extreme elevation in atherogenic Small Dense LDL (${m.sdll.value}%) coupled with high overall LDL (${m.ldl.value} ${m.ldl.unit}) and Triglycerides (${m.tg.value} ${m.tg.unit}) indicates rapid cardiovascular risk accumulation. Immediate lipid management is mandatory.` 
+            });
+        } else if (m.sdll.status === '🟠' || m.ldl.status === '🟠') {
+            patterns.push({ 
+                title: "HIGH PRIORITY: Elevated Lipid Dysregulation", 
+                priority: "High Priority", 
+                details: `Elevated triglycerides (${m.tg.value} ${m.tg.unit}) and large LDL particles signal a clear dyslipidemia risk. Lifestyle and dietary recalibration are prioritized to prevent oxidation and plaque formation.` 
+            });
+        }
+        
+        if (m.alt.status === '🔴' || m.ggt.status === '🔴' || m.creatinine.status === '🔴') {
+             patterns.push({ 
+                title: "CRITICAL: Hepato-Renal Strain & Toxicity", 
+                priority: "Critical", 
+                details: `Significant liver enzyme (ALT: ${m.alt.value} U/L) and detoxification marker (GGT: ${m.ggt.value} U/L) elevation confirms severe hepatic stress, likely metabolic or toxic in origin. Creatinine (${m.creatinine.value} mg/dL) and Uric Acid (${m.uricAcid.value} mg/dL) require closer monitoring for chronic kidney stress.` 
+            });
+        } else if (m.alt.status === '🟠' || m.ggt.status === '🟠' || m.uricAcid.status === '🟠') {
+             patterns.push({ 
+                title: "HIGH PRIORITY: Liver Detoxification Overload", 
+                priority: "High Priority", 
+                details: `Borderline elevations in ALT/GGT and Uric Acid point to increased metabolic load and oxidative stress. Focusing on liver support and detoxification pathways is essential to prevent long-term damage.` 
+            });
+        }
+
+        return patterns.length > 0 ? patterns : [{
+            title: "Optimal Health Trajectory",
+            priority: "Low Priority",
+            details: "No major cross-systemic risk patterns detected. Cellular and metabolic resilience is robust, suggesting a low long-term risk profile. Focus on maintenance and future longevity protocols."
+        }];
+    })();
+
 
     return ({
-        header: "Your Comprehensive Health Analysis",
-        name: data.name,
+        header: `Comprehensive Health Analysis for ${patient.name}`,
+        name: patient.name,
         id: data.participantId,
         date: data.date,
-        riskLevel: data.kpis[1].value, // Pass raw risk score
+        riskLevel: data.kpis[1].value,
         riskDescription: data.kpis[1].description,
-        keyPatterns: [
-            { title: "Metabolic Syndrome Pattern", priority: "High Priority", details: `High glucose (${patient.markers.glucose.value}) and severe insulin resistance (HOMA-IR: ${patient.markers.homa.value}) confirm a critical metabolic pattern that warrants urgent intervention.` },
-            { title: "Chronic Inflammation", priority: "High Priority", details: `Key inflammatory markers (CRP: ${patient.markers.crp.value}, IL-6: ${patient.markers.il6.value}) are significantly elevated, actively damaging tissues and accelerating metabolic risk.` },
-            { title: "Gut Microbiome Dysbiosis", priority: "Monitor", details: `Shannon diversity index indicates low microbial diversity. This is compounded by elevated Zonulin (${patient.markers.zonulin.value}), suggesting increased intestinal permeability (leaky gut).` },
-            { title: "Cardiovascular Risk Acceleration", priority: "Critical", details: `Elevated LDL cholesterol (${patient.markers.ldl.value}) combined with high Small Dense LDL particles (${patient.markers.sdll.value}%) indicates an accelerated atherogenic risk profile, requiring close monitoring.` },
-        ],
+        keyPatterns,
         summaryText: [
-            { area: 'AI Personalized Insight', details: `**Based on your corporate wellness profile, your current risk score (${data.kpis[1].value.toFixed(1)}/10) requires prioritized intervention.** The core focus remains metabolic resilience and stabilizing the inflammatory sources originating in the gut/liver systems.`},
-            { area: 'Metabolic Resilience', details: `Your glucose regulation shows clear patterns of pre-diabetes (Fasting Glucose: ${patient.markers.glucose.value} mmol/L, HbA1c: ${patient.markers.a1c.value}%) compounded by high insulin resistance (HOMA-IR: ${patient.markers.homa.value}). This is a critical finding for long-term health.` },
-            { area: 'Cardiovascular Profile', details: `A high-risk pattern is confirmed by poor clearance of blood fats (Triglycerides: ${patient.markers.tg.value} mmol/L) and elevated atherogenic particles. These markers are superior predictors of risk than standard cholesterol tests.` },
-            { area: 'Regional Pillars', details: `Key regional challenges are highlighted: Vitamin D deficiency (${patient.markers.vitD.value} ng/mL) and elevated Uric Acid (${patient.markers.uricAcid.value} mg/dL). Addressing these pillars provides immediate high-impact opportunities for wellness improvement.` },
+            { area: 'AI Personalized Insight', details: `Based on your profile, your current risk score (${data.kpis[1].value.toFixed(1)}/10) requires prioritized intervention. The model predicts a ${data.METStatus} systemic velocity. The core focus remains metabolic resilience and stabilizing the inflammatory sources originating in the gut/liver systems. Your biological age is tracked at ${patient.kpis.bioAge} years.`},
+            { area: 'Metabolic Resilience', details: `Your glucose regulation shows clear patterns: Fasting Glucose: ${m.glucose.value} ${m.glucose.unit}, HbA1c: ${m.a1c.value}%. Insulin resistance (HOMA-IR: ${m.homa.value}) is a critical finding for long-term health. Targeted nutritional strategies are highly recommended.` },
+            { area: 'Nutrient/Co-factor Status', details: `The Nutrient Depletion Index is ${data.NDIScore}/6 (${data.NDIStatus}), confirming deficiencies (Vit D: ${m.vitD.value} ${m.vitD.unit}, Vit B12: ${m.vitB12.value} ${m.vitB12.unit}) are compounding metabolic dysfunctions. Aggressive supplementation is required to support mitochondrial function.` },
+            { area: 'Cardiovascular Profile', details: `A high-risk pattern is confirmed by poor clearance of blood fats (Triglycerides: ${m.tg.value} ${m.tg.unit}) and atherogenic particles (sdLDL: ${m.sdll.value}%). This demands aggressive lipid management and vascular support protocols.` },
+            { area: 'Regional Pillars', details: `Key regional challenges are highlighted: Vitamin D deficiency (${m.vitD.value} ${m.vitD.unit}) and elevated Uric Acid (${m.uricAcid.value} ${m.uricAcid.unit}). Both are linked to increased metabolic risk in the GCC region.` },
         ],
-        // Updated data structure for detailed platforms
         detailedPlatforms: [
             { name: "Metabolic Health", markers: primaryMarkersForReport.Metabolic, totalMarkers: 71, description: "Includes core energy and glucose markers analyzed against GCC thresholds." },
             { name: "Cardio/Lipidomics", markers: primaryMarkersForReport.Cardio, totalMarkers: 88, description: "Focuses on particle size and count for accurate cardiovascular risk prediction." },
             { name: "Inflammation & Immunity", markers: primaryMarkersForReport.Inflammation, totalMarkers: 52, description: "Key cytokines (IL-6) and systemic inflammation markers (CRP)." },
             { name: "Gut Health & Detox", markers: primaryMarkersForReport.Gut, totalMarkers: 67, description: "Diversity, and intestinal barrier integrity markers (Zonulin, LPS)." },
             { name: "Regulatory & Systemic", markers: [...primaryMarkersForReport.Liver, ...primaryMarkersForReport.Kidney, ...primaryMarkersForReport.Hormones, ...primaryMarkersForReport.Vitamins, ...primaryMarkersForReport.Clinical].filter(Boolean), totalMarkers: 200, description: "A composite view covering liver stress, kidney clearance, hormones, and micronutrient checks." },
-            
-            // High-Level Secondary Markers Summary (The 226 markers not shown individually)
             { name: "Secondary Markers Overview", markers: [], totalMarkers: 253 - CORE_MARKER_COUNT, description: `The remaining ${253 - CORE_MARKER_COUNT} markers (Genomics, Epigenomics, Clinical) were processed for integrity and contribution to overall risk. Individual data points are omitted for brevity.` }
         ],
-        
-        // This is primarily for the status bar view in the report and remains high level
         additionalPlatforms: [
             { name: "Genomics", markers: 41 }, { name: "Epigenomics", markers: 45 }, { name: "Hormones", markers: 47 }, 
             { name: "Wearables", markers: 62 }, { name: "Clinical", markers: 35 }, { name: "Immunology", markers: 33 }, 
@@ -586,104 +804,180 @@ const getGeminiReport = (patient) => {
 };
 
 
-// --- Pipeline Stages Configuration (Used for background generation) ---
+// --- Pipeline Stages Configuration ---
 const PIPELINE_STAGES = [
-  { id: 1, name: 'Data Ingestion (253 Raw Markers)', time: 0, statusKey: 'ingestion' },
-  { id: 2, name: 'Database Persistence (Data Lake)', time: 500, statusKey: 'persistence' },
-  { id: 3, name: 'Logical Mashery: Primary Marker Extraction (27 Markers)', time: 1000, statusKey: 'qualityCheck' },
-  { id: 4, name: 'Logical Mashery: KPI Calculation & Pattern Detection', time: 1500, statusKey: 'patternDetection' },
-  { id: 5, name: 'Gemini AI: Strategic Summary Generation', time: 2500, statusKey: 'aiGeneration' },
-  { id: 6, name: 'Report & Delivery (HTML/PDF)', time: 500, statusKey: 'complete' },
+ { id: 1, name: 'Data Ingestion (253 Raw Markers)', time: 0, statusKey: 'ingestion' },
+ { id: 2, name: 'Database Persistence (Data Lake)', time: 500, statusKey: 'persistence' },
+ { id: 3, name: 'Logical Mashery: Primary Marker Extraction (27 Markers)', time: 1000, statusKey: 'qualityCheck' },
+ { id: 4, name: 'Logical Mashery: KPI Calculation & Pattern Detection', time: 1500, statusKey: 'patternDetection' },
+ { id: 5, name: 'Gemini AI: Strategic Summary Generation', time: 2500, statusKey: 'aiGeneration' },
+ { id: 6, name: 'Report & Delivery (HTML/PDF)', time: 500, statusKey: 'complete' },
 ];
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const usePipeline = (onComplete, onLogUpdate, currentPatient) => {
-  const [pipelineStatus, setPipelineStatus] = useState(
-      PIPELINE_STAGES.reduce((acc, stage) => ({ ...acc, [stage.statusKey]: 'pending' }), {})
-  );
-  const [isRunning, setIsRunning] = useState(false);
-  const [logMessages, setLogMessages] = useState([]);
+ const [pipelineStatus, setPipelineStatus] = useState(
+     PIPELINE_STAGES.reduce((acc, stage) => ({ ...acc, [stage.statusKey]: 'pending' }), {})
+ );
+ const [isRunning, setIsRunning] = useState(false);
+ const [logMessages, setLogMessages] = useState([]);
     
-  // Reset pipeline status whenever a new patient is selected
-  useEffect(() => {
-    setPipelineStatus(PIPELINE_STAGES.reduce((acc, stage) => ({ ...acc, [stage.statusKey]: 'pending' }), {}));
-    setLogMessages([]);
-  }, [currentPatient.id]);
+ useEffect(() => {
+   setPipelineStatus(PIPELINE_STAGES.reduce((acc, stage) => ({ ...acc, [stage.statusKey]: 'pending' }), {}));
+   setLogMessages([]);
+ }, [currentPatient.id]);
 
+ const updateLog = (message, type = 'info') => {
+   const timestamp = new Date().toTimeString().split(' ')[0];
+   setLogMessages(prev => [...prev, { timestamp, message, type }]);
+   onLogUpdate({ timestamp, message, type });
+ };
 
-  const updateLog = (message, type = 'info') => {
-    // This is a minimal log function for the background pipeline (not displayed in UI)
-    const timestamp = new Date().toTimeString().split(' ')[0];
-    setLogMessages(prev => [...prev, { timestamp, message, type }]);
-    onLogUpdate({ timestamp, message, type });
-  };
+ const startPipeline = useCallback(async () => {
+   if (isRunning) return;
 
-  const startPipeline = useCallback(async () => {
-    if (isRunning) return;
+   setIsRunning(true);
+   setLogMessages([]);
+   setPipelineStatus(
+     PIPELINE_STAGES.reduce((acc, stage) => ({ ...acc, [stage.statusKey]: 'pending' }), {})
+   )
+   const data = getBiomarkerData(currentPatient);
 
-    setIsRunning(true);
-    setLogMessages([]);
-    setPipelineStatus(
-      PIPELINE_STAGES.reduce((acc, stage) => ({ ...acc, [stage.statusKey]: 'pending' }), {})
-    )
-    const data = getBiomarkerData(currentPatient);
+   const startTime = performance.now();
 
-    const startTime = performance.now();
+   try {
+     updateLog(`Processing Start: Analyzing ${data.totalMarkersAnalyzed} biomarkers for ${currentPatient.name}.`);
+     
+     setPipelineStatus(prev => ({ ...prev, ingestion: 'running' }));
+     updateLog(`Data Lake Ingested: 253 markers stored for ${currentPatient.id}`, 'success');
+     await sleep(500); 
+     setPipelineStatus(prev => ({ ...prev, ingestion: 'success', persistence: 'success', qualityCheck: 'running' }));
+     updateLog('Logical Mashery running: Extracting 27 Primary Markers and applying GCC rules...');
+     await sleep(1500);
 
-    try {
-      updateLog(`Processing Start: Analyzing ${data.totalMarkersAnalyzed} biomarkers for ${currentPatient.name}.`);
-      
-      // Stage 1-3: Data Ingestion & Logical Mashery
-      setPipelineStatus(prev => ({ ...prev, ingestion: 'running' }));
-      updateLog(`Data Lake Ingested: 253 markers stored for ${currentPatient.id}`, 'success');
-      await sleep(500); 
-      setPipelineStatus(prev => ({ ...prev, ingestion: 'success', persistence: 'success', qualityCheck: 'running' }));
-      updateLog('Logical Mashery running: Extracting 27 Primary Markers and applying GCC rules...');
-      await sleep(1500);
+     setPipelineStatus(prev => ({ ...prev, qualityCheck: 'success', patternDetection: 'running' }));
+     
+     updateLog(`Pattern Detection Complete: Systemic Risk Score ${data.kpis[1].value} out of 10`, 'ai');
+     updateLog(`Final Core Findings (27 Markers) Categorized: ${data.overallStatus.critical} critical, ${data.overallStatus.elevated} elevated`, 'success');
+     await sleep(1000); 
 
-      // Stage 4: Pattern Detection & KPI Calculation (Simulating proprietary Logical Container work)
-      setPipelineStatus(prev => ({ ...prev, qualityCheck: 'success', patternDetection: 'running' }));
-      
-      updateLog(`Pattern Detection Complete: Systemic Risk Score ${data.kpis[1].value} out of 10`, 'ai');
-      // NOTE: Using 27 here for display clarity
-      updateLog(`Final Core Findings (27 Markers) Categorized: ${data.overallStatus.critical} critical, ${data.overallStatus.elevated} elevated`, 'success');
-      await sleep(1000); 
+     setPipelineStatus(prev => ({ ...prev, patternDetection: 'success', aiGeneration: 'running' }));
+     updateLog('Sending 253-marker status context to Gemini API for narrative synthesis...', 'ai');
+     await sleep(PIPELINE_STAGES[4].time); 
+     updateLog('Narrative synthesis complete. Summary generated (Arabic/English).', 'success');
+     
+     setPipelineStatus(prev => ({ ...prev, aiGeneration: 'success', complete: 'running' }));
+     updateLog('Report compilation complete! Packaging HTML and PDF for delivery.', 'success');
+     await sleep(500);
 
-      // Stage 5: Gemini AI: Insight Generation (Simulating the final narrative step)
-      setPipelineStatus(prev => ({ ...prev, patternDetection: 'success', aiGeneration: 'running' }));
-      updateLog('Sending 253-marker status context to Gemini API for narrative synthesis...', 'ai');
-      await sleep(PIPELINE_STAGES[4].time); 
-      updateLog('Narrative synthesis complete. Summary generated (Arabic/English).', 'success');
-      
-      // Stage 6: Report & Delivery
-      setPipelineStatus(prev => ({ ...prev, aiGeneration: 'success', complete: 'running' }));
-      updateLog('Report compilation complete! Packaging HTML and PDF for delivery.', 'success');
-      await sleep(500);
+     const totalTime = ((performance.now() - startTime) / 1000).toFixed(1);
+     updateLog(`Processing sequence completed in ${totalTime} seconds`, 'success');
 
-      const totalTime = ((performance.now() - startTime) / 1000).toFixed(1);
-      updateLog(`Processing sequence completed in ${totalTime} seconds`, 'success');
+     setPipelineStatus(prev => ({ ...prev, complete: 'success' }));
+     onComplete(getGeminiReport(currentPatient));
 
-      setPipelineStatus(prev => ({ ...prev, complete: 'success' }));
-      onComplete(getGeminiReport(currentPatient));
+   } catch (error) {
+     console.error('Pipeline failed:', error);
+     updateLog('Processing failed due to system error. Check Logical Container.', 'error');
+     setPipelineStatus(prev => 
+       Object.fromEntries(
+         Object.entries(prev).map(([key, value]) => [key, value === 'running' ? 'failed' : value])
+       )
+     );
+   } finally {
+     setIsRunning(false);
+   }
+ }, [isRunning, onComplete, currentPatient]);
 
-    } catch (error) {
-      console.error('Pipeline failed:', error);
-      updateLog('Processing failed due to system error. Check Logical Container.', 'error');
-      setPipelineStatus(prev => 
-        Object.fromEntries(
-          Object.entries(prev).map(([key, value]) => [key, value === 'running' ? 'failed' : value])
-        )
-      );
-    } finally {
-      setIsRunning(false);
-    }
-  }, [isRunning, onComplete, currentPatient]);
-
-  return { pipelineStatus, isRunning, startPipeline, logMessages };
+ return { pipelineStatus, isRunning, startPipeline, logMessages };
 };
 
-// --- START: ALL COMPONENT DEFINITIONS (Ensuring correct hoisting) ---
+// --- Access Gate Modal ---
+const AccessGateModal = ({ setIsGated }) => {
+    const [email, setEmail] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [message, setMessage] = useState('');
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setMessage('');
+
+        if (!email.includes('@') || email.length < 5) {
+            setMessage('Please enter a valid email address.');
+            setIsLoading(false);
+            return;
+        }
+
+        try {
+            const response = await fetch(EXTERNAL_LOGGING_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, product: 'Burak Data Co-Pilot POC', access_request: new Date().toISOString() })
+            });
+
+            if (response.ok) {
+                localStorage.setItem('burak_access', 'granted');
+                setMessage('Access granted! Redirecting to Co-Pilot...');
+                setTimeout(() => setIsGated(false), 1000);
+            } else {
+                setMessage('Access logging failed. Granting temporary access.');
+                localStorage.setItem('burak_access', 'granted');
+                setTimeout(() => setIsGated(false), 1000);
+            }
+
+        } catch (error) {
+            console.error("Form submission error:", error);
+            setMessage('Error connecting to logging service. Granting temporary access.');
+            localStorage.setItem('burak_access', 'granted');
+            setTimeout(() => setIsGated(false), 1000);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex justify-center items-center backdrop-blur-md">
+            <div className="bg-gray-900 border-2 border-sky-600 p-8 rounded-xl w-full max-w-lg shadow-[0_0_50px_rgba(6,182,212,0.8)] transform transition-all duration-300">
+                <div className="text-center">
+                    <span className="text-6xl mb-4 block glow-text">🔒</span>
+                    <h3 className="text-3xl font-extrabold text-white mb-2">Access Required: Production POC</h3>
+                    <p className="text-gray-400 mb-6">
+                        This is a restricted research artifact. Please enter your email to access the Burak Co-Pilot dashboard and log your interest.
+                    </p>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <input
+                        type="email"
+                        placeholder="Your Professional Email Address"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className="w-full p-3 rounded-lg bg-gray-800 border border-sky-600/50 text-white placeholder-gray-500 focus:ring-sky-500 focus:border-sky-500"
+                        disabled={isLoading}
+                    />
+                    <button
+                        type="submit"
+                        disabled={isLoading}
+                        className="w-full flex items-center justify-center px-6 py-3 border border-indigo-600 rounded-lg text-white font-semibold bg-indigo-700 hover:bg-indigo-600 transition-colors shadow-lg shadow-indigo-700/50 disabled:bg-gray-600 disabled:shadow-none"
+                    >
+                        {isLoading ? (
+                            <svg className="animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        ) : 'Grant Access'}
+                    </button>
+                </form>
+
+                {message && (
+                    <p className={`mt-4 text-center text-sm font-semibold ${message.includes('Error') || message.includes('failed') ? 'text-red-400' : 'text-emerald-400'}`}>
+                        {message}
+                    </p>
+                )}
+            </div>
+        </div>
+    );
+};
 
 // --- Utility Components ---
 
@@ -694,19 +988,24 @@ const StatusBadge = ({ status }) => {
         case 'High Risk':
         case '🔴':
         case 'Critical Risk':
+        case 'Critical Depletion':
             classes += 'bg-red-900 text-red-300 border border-red-700';
             break;
         case 'Monitor':
         case 'Elevated':
         case '🟠':
+        case 'Worsening Trend':
+        case 'High Depletion':
             classes += 'bg-orange-900 text-orange-300 border border-orange-700';
             break;
         case 'Deficient':
         case '🟡':
+        case 'Suboptimal Reserves':
             classes += 'bg-yellow-900 text-yellow-300 border border-yellow-700';
             break;
         case 'Optimal':
         case '🟢':
+        case 'Improving Trend':
             classes += 'bg-emerald-900 text-emerald-300 border border-emerald-700';
             break;
         case 'High Priority':
@@ -715,13 +1014,16 @@ const StatusBadge = ({ status }) => {
         case 'Low Priority':
             classes += 'bg-emerald-900 text-emerald-300 border border-emerald-700';
             break;
+        case 'Stable':
+        case 'Neutral':
+            classes += 'bg-cyan-900 text-cyan-300 border border-cyan-700';
+            break;
         default:
             classes += 'bg-gray-700 text-gray-300 border border-gray-600';
     }
     return <span className={classes}>{status}</span>;
 };
 
-// --- PatternCard Component ---
 const PatternCard = ({ pattern }) => {
     let priorityClass = 'text-gray-400 border-gray-600';
     let icon = 'fas fa-angle-right';
@@ -743,10 +1045,14 @@ const PatternCard = ({ pattern }) => {
             priorityClass = 'text-emerald-400 border-emerald-600';
             icon = 'fas fa-check';
             break;
+        default:
+            priorityClass = 'text-gray-400 border-gray-600';
+            icon = 'fas fa-angle-right';
+            break;
     }
 
     return (
-        <div className={`p-4 rounded-lg bg-gray-900/50 border-l-4 ${priorityClass} shadow-inner`}>
+        <div className={`p-4 rounded-xl bg-gray-900/50 border-l-4 ${priorityClass} shadow-inner`}>
             <div className="flex justify-between items-start">
                 <h4 className={`text-lg font-bold ${priorityClass} flex items-center`}>
                     <i className={`${icon} mr-3 text-xl`}></i>
@@ -760,28 +1066,19 @@ const PatternCard = ({ pattern }) => {
         </div>
     );
 };
-// --- End PatternCard Component ---
-
 
 // --- Deep Dive Modal ---
 const AnalysisDeepDiveModal = ({ analysisItem, onClose }) => {
     if (!analysisItem) return null;
 
-    // Check if it's a full Category object (if it has categorySummary)
     const isCategory = !!analysisItem.categorySummary;
-    
-    // --- Data Extraction ---
-    // Derives color based on status for the main marker/category header color
     const title = isCategory ? analysisItem.name : (analysisItem.role && (analysisItem.role.split('(')[0] || analysisItem.role).trim()) || analysisItem.name || 'Marker';
     const status = isCategory ? analysisItem.categoryPriority : analysisItem.status;
-    const color = isCategory ? analysisItem.color : getStatusColorName(status); // Use status helper here
-    
-    const priorityColor = isCategory ? `text-${color}-400` : `text-${color}-400`;
+    const color = isCategory ? analysisItem.color : getStatusColorName(status);
+    const priorityColor = `text-${color}-400`;
 
-    // Determine if this is a GCC Priority marker (only for single markers)
     const isGCCPriority = !isCategory && ['HOMA', 'sdll', 'zonulin', 'vitD', 'uricAcid', 'bmi', 'irScore'].some(code => (analysisItem.role || '').toUpperCase().includes(code.toUpperCase()));
 
-    // Added style helper to make the value glow strongly, reinforcing the color.
     const getGlowStyle = (colorName) => {
         let shadow = '';
         switch (colorName) {
@@ -794,18 +1091,17 @@ const AnalysisDeepDiveModal = ({ analysisItem, onClose }) => {
         return { textShadow: `0 0 10px ${shadow}` };
     };
 
-
     return (
         <div 
             className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center backdrop-blur-sm"
             onClick={onClose}
         >
             <div 
-                className="bg-gray-900 border-2 border-sky-600/50 p-8 rounded-xl w-full max-w-3xl shadow-[0_0_40px_rgba(6,182,212,0.3)] transform transition-all duration-300"
+                className="bg-gray-900 border-2 border-sky-600/50 p-6 sm:p-8 rounded-xl w-full max-w-lg sm:max-w-3xl shadow-[0_0_40px_rgba(6,182,212,0.3)] transform transition-all duration-300"
                 onClick={e => e.stopPropagation()}
             >
                 <div className="flex justify-between items-center border-b border-gray-700 pb-3 mb-4">
-                    <h3 className="text-3xl font-extrabold text-white">
+                    <h3 className="text-2xl sm:text-3xl font-extrabold text-white">
                         <span className={`text-sky-400 mr-2 ${priorityColor}`} style={{ textShadow: '0 0 10px #06b6d4' }}>
                             {isCategory ? analysisItem.icon : (isGCCPriority ? '⚡' : '🔬')}
                         </span>
@@ -817,16 +1113,14 @@ const AnalysisDeepDiveModal = ({ analysisItem, onClose }) => {
                 </div>
 
                 <div className="space-y-4">
-                    
-                    {/* --- CATEGORY STATUS (Simplified) --- */}
                     {isCategory && (
-                        <div className={`p-4 rounded-lg border-2 border-${color}-600 bg-gray-800 shadow-xl`}>
+                        <div className={`p-4 rounded-xl border-2 border-${color}-600 bg-gray-800 shadow-xl`}>
                             <p className="text-sm text-gray-400 mb-1 font-semibold">Category Health Status</p>
-                            <span className={`text-4xl font-extrabold text-${color}-400 block mb-2`}>
+                            <span className={`text-3xl sm:text-4xl font-extrabold text-${color}-400 block mb-2`}>
                                 {analysisItem.categoryPriority}
                             </span>
                             <p className="text-sm text-gray-500 italic mt-2">
-                                {analysisItem.categorySummary.split('(Telemetry')[0].trim()} {/* Show only the predictive statement */}
+                                {analysisItem.categorySummary.split('(Telemetry')[0].trim()}
                             </p>
                             <p className="text-xs text-gray-500 italic mt-1">
                                 {analysisItem.categorySummary.split('(Telemetry')[1] ? analysisItem.categorySummary.split('(Telemetry')[1].replace(').', '').trim() : '0 markers require attention.'}
@@ -834,58 +1128,48 @@ const AnalysisDeepDiveModal = ({ analysisItem, onClose }) => {
                         </div>
                     )}
                     
-                    {/* --- MARKER SPECIFIC DETAIL (Simplified & Consolidated) --- */}
                     {!isCategory && (
                         <>
-                            {/* CONSOLIDATED VALUE / STATUS / RANGE SECTION (The right-on-eye info) */}
-                            <div className="bg-gray-800 p-4 rounded-lg border border-gray-700 grid grid-cols-3 gap-4 items-center">
-                                
-                                {/* Current Value (APPLIED GLOW/COLOR) */}
+                            <div className="bg-gray-800 p-4 rounded-xl border border-gray-700 grid grid-cols-2 sm:grid-cols-3 gap-4 items-center">
                                 <div className="col-span-1 border-r border-gray-700 pr-4">
-                                    <p className="text-sm text-gray-400 mb-1">Current Value</p>
+                                    <p className="text-xs sm:text-sm text-gray-400 mb-1">Current Value</p>
                                     <span 
-                                        className={`text-4xl font-extrabold text-${color}-400`}
-                                        style={getGlowStyle(color)} // WoW Factor Glow Applied
+                                        className={`text-3xl sm:text-4xl font-extrabold text-${color}-400`}
+                                        style={getGlowStyle(color)}
                                     >
                                         {analysisItem.value}
                                     </span>
-                                    <span className="text-lg text-gray-400 ml-2">{analysisItem.unit}</span>
+                                    <span className="text-base sm:text-lg text-gray-400 ml-2">{analysisItem.unit}</span>
                                 </div>
-                                
-                                {/* Status & Priority */}
-                                <div className="col-span-2 space-y-1">
-                                    <p className="text-sm text-gray-400">Status & Priority</p>
+                                <div className="col-span-1 sm:col-span-2 space-y-1">
+                                    <p className="text-xs sm:text-sm text-gray-400">Status & Priority</p>
                                     <div className="flex items-center space-x-2">
                                         <StatusBadge status={analysisItem.status} />
                                         {isGCCPriority && <span className={`text-xs font-bold text-amber-400`}>GCC Strategic Pillar</span>}
                                     </div>
-                                    {/* Range (Color matched to status) */}
-                                    <p className={`text-sm font-semibold text-${color}-400 mt-1`}>Range: {analysisItem.ref}</p>
+                                    <p className={`text-xs sm:text-sm font-semibold text-${color}-400 mt-1`}>Range: {analysisItem.ref}</p>
                                 </div>
                             </div>
                             
-                            {/* What It Measures */}
-                            <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                            <div className="bg-gray-800 p-4 rounded-xl border border-gray-700">
                                 <p className="text-sm font-semibold text-gray-300 mb-2 border-b border-gray-700 pb-1">What This Marker Measures</p>
-                                <p className="text-base text-gray-400">{analysisItem.role}</p>
+                                <p className="text-sm text-gray-400">{analysisItem.role}</p>
                             </div>
                             
-                            {/* Key Takeaway */}
-                            <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                            <div className="bg-gray-800 p-4 rounded-xl border border-gray-700">
                                 <p className="text-sm font-semibold text-gray-300 mb-2 border-b border-gray-700 pb-1">Key Takeaway / Next Step</p>
-                                <p className="text-base font-semibold text-cyan-400">{analysisItem.action}</p>
+                                <p className="text-sm font-semibold text-cyan-400">{analysisItem.action}</p>
                             </div>
                         </>
                     )}
 
-                    {/* --- CATEGORY MARKER LIST (For Category Click) --- */}
                     {isCategory && (
-                        <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                        <div className="bg-gray-800 p-4 rounded-xl border border-gray-700">
                             <p className="text-sm font-semibold text-gray-300 mb-2 border-b border-gray-700 pb-1">Ground Truth Telemetry Breakdown</p>
                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
                                 {(analysisItem.fullMarkers || []).filter(Boolean).map((marker, index) => {
                                     const markerRole = marker.role || 'N/A';
-                                    const rangeColor = getStatusColorName(marker.status); // Get color name for range text
+                                    const rangeColor = getStatusColorName(marker.status);
                                     return (
                                         <div key={index} className="py-1 border-b border-gray-700 last:border-b-0">
                                             <div className="flex justify-between items-center">
@@ -898,7 +1182,6 @@ const AnalysisDeepDiveModal = ({ analysisItem, onClose }) => {
                                                 <span className="text-xs font-bold text-gray-100 block">
                                                     {marker.value} {marker.unit}
                                                 </span>
-                                                {/* MODIFIED: Use dynamic color for range text */}
                                                 <span className={`text-xs text-${rangeColor}-400`}>Range: {marker.ref}</span>
                                             </div>
                                         </div>
@@ -912,56 +1195,57 @@ const AnalysisDeepDiveModal = ({ analysisItem, onClose }) => {
         </div>
     );
 };
-// --- End Deep Dive Modal ---
 
 // --- High Level KPIs ---
 const HighLevelKPIs = ({ data, onMarkerClick }) => (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
         {(data.kpis || []).map((kpi, index) => {
             let kpiColorClass = `text-${kpi.color}-400`;
             if (kpi.name === "Systemic Risk Score" && kpi.value >= 7.0) kpiColorClass = 'text-red-400';
             else if (kpi.name === "Systemic Risk Score" && kpi.value >= 4.0) kpiColorClass = 'text-yellow-400';
+            
+            const isNDI = kpi.name.includes("Nutrient Depletion");
+            const isMET = kpi.name.includes("Metabolic Trajectory");
+            
+            const valueDisplay = isNDI 
+                ? `${kpi.value.toFixed(0)}` 
+                : isMET 
+                    ? `${kpi.value > 0 ? '+' : ''}${kpi.value.toFixed(2)}` 
+                    : (kpi.name === "Systemic Risk Score" ? kpi.value.toFixed(1) : kpi.value.toFixed(0));
 
             return (
                 <div 
                     key={index} 
-                    className={`bg-gray-800/70 p-6 rounded-xl shadow-2xl border-t-4 border-${kpi.color}-500 backdrop-blur-md transform transition-all duration-300 hover:scale-[1.03] hover:shadow-cyan-500/30 cursor-pointer`}
+                    className={`bg-gray-800/70 p-4 sm:p-6 rounded-xl shadow-2xl border-t-4 border-${kpi.color}-500 backdrop-blur-md transform transition-all duration-300 hover:scale-[1.03] hover:shadow-cyan-500/30 cursor-pointer`}
                     onClick={() => onMarkerClick({ name: kpi.name, value: kpi.value, unit: kpi.units, ref: kpi.optimalRange || kpi.threshold, status: kpi.status, role: kpi.description, action: kpi.description, color: kpi.color })}
                 >
-                    <p className={`text-lg font-bold text-gray-200 mb-1`}>
+                    <p className={`text-sm sm:text-lg font-bold text-gray-200 mb-1`}>
                         {kpi.name}
                     </p>
                     <div className="mt-2 flex items-baseline justify-between">
                         <div className="flex items-baseline">
-                            {/* KPI 1: Biological Age - Show Chronological Age first */}
                             {kpi.name === "Biological Age" ? (
                                 <div className="flex flex-col items-start">
-                                    <p className="text-sm font-medium text-gray-400">Actual Age: {kpi.actualAge}</p>
-                                    <h4 className={`text-4xl font-extrabold ${kpiColorClass} mt-1`} style={{ textShadow: kpi.color === 'emerald' ? '0 0 10px #10b981' : kpi.color === 'red' ? '0 0 10px #ef4444' : '0 0 10px #06b6d4' }}>
-                                        {kpi.value}
+                                    <p className="text-xs font-medium text-gray-400">Actual Age: {kpi.actualAge}</p>
+                                    <h4 className={`text-3xl sm:text-4xl font-extrabold ${kpiColorClass} mt-1`} style={{ textShadow: kpi.color === 'emerald' ? '0 0 10px #10b981' : kpi.color === 'red' ? '0 0 10px #ef4444' : '0 0 10px #06b6d4' }}>
+                                        {valueDisplay}
                                     </h4>
                                 </div>
                             ) : (
-                                // KPI 2 & 3: Risk and Readiness Score (Standard Display)
-                                <h4 className={`text-5xl font-extrabold ${kpiColorClass}`} style={{ textShadow: kpi.color === 'emerald' ? '0 0 10px #10b981' : kpi.color === 'red' ? '0 0 10px #ef4444' : '0 0 10px #06b6d4' }}>
-                                    {kpi.name === "Systemic Risk Score" ? kpi.value.toFixed(1) : kpi.value.toFixed(2)}
+                                <h4 className={`text-3xl sm:text-5xl font-extrabold ${kpiColorClass}`} style={{ textShadow: kpi.color === 'emerald' ? '0 0 10px #10b981' : kpi.color === 'red' ? '0 0 10px #ef4444' : '0 0 10px #06b6d4' }}>
+                                    {valueDisplay}
                                 </h4>
                             )}
                             
-                            {/* Show / 10 for Risk Score */}
-                            {kpi.name === "Systemic Risk Score" && (
-                                <span className="ml-1 text-base font-medium text-gray-400">/ 10</span>
-                            )}
-                            {/* Show units for other scores */}
-                            {kpi.name !== "Systemic Risk Score" && kpi.name !== "Biological Age" && (
+                            {kpi.name === "Systemic Risk Score" && (<span className="ml-1 text-base font-medium text-gray-400">/ 10</span>)}
+                            {isNDI && (<span className="ml-1 text-base font-medium text-gray-400">/ 6</span>)}
+                            {!isNDI && !isMET && kpi.name !== "Systemic Risk Score" && kpi.name !== "Biological Age" && (
                                 <span className="ml-2 text-base font-medium text-gray-400">{kpi.units}</span>
                             )}
-
                         </div>
                         <StatusBadge status={kpi.status} />
                     </div>
-                    
-                    <p className="text-xs text-gray-400 mt-3 border-t border-gray-700 pt-2">
+                    <p className="text-[10px] sm:text-xs text-gray-400 mt-3 border-t border-gray-700 pt-2">
                         {kpi.description}
                     </p>
                 </div>
@@ -969,41 +1253,39 @@ const HighLevelKPIs = ({ data, onMarkerClick }) => (
         })}
     </div>
 );
-// --- End High Level KPIs Component ---
 
-
-// --- MarkerCard Component ---
+// --- MarkerCard ---
 const MarkerCard = ({ category, onMarkerClick, onCategoryClick }) => (
     <div 
         key={category.name} 
-        // Added 3D lift shadow and hover effect for "WOW" factor
-        className={`p-4 bg-gray-800/70 rounded-xl shadow-2xl shadow-gray-900/50 border border-gray-700 backdrop-blur-md transform transition-all duration-300 hover:scale-[1.01] hover:border-sky-500 hover:shadow-sky-500/30`}
+        className="p-4 sm:p-6 bg-gray-800/70 rounded-xl shadow-2xl shadow-gray-900/50 border border-gray-700 backdrop-blur-md transform transition-all duration-300 hover:scale-[1.01] hover:border-sky-500 hover:shadow-sky-500/30"
     >
         <div 
             className="flex items-center mb-3 border-b border-gray-700 pb-2 cursor-pointer hover:text-white transition-colors"
             onClick={() => onCategoryClick(category)}
         >
-            <span className={`text-2xl mr-2 text-${category.color}-400`}>{category.icon}</span>
-            <h3 className={`text-lg font-extrabold text-${category.color}-400`}>{category.name}</h3>
+            <span className={`text-xl sm:text-2xl mr-2 text-${category.color}-400`}>{category.icon}</span>
+            <h3 className={`text-base sm:text-lg font-extrabold text-${category.color}-400`}>{category.name}</h3>
             <span className="ml-auto text-xs font-semibold text-gray-400">
                 ({category.abnormalCount}/{category.totalCount} Abnormal)
             </span>
         </div>
         
-        {/* Simplified Category Status Display - Show Pattern status immediately */}
         <div 
-            className="text-center py-2 px-1 rounded-lg"
-            // Use background opacity based on status intensity
-            style={{ backgroundColor: category.categoryPriority !== 'OPTIMAL' ? 'rgba(30, 41, 59, 0.7)' : 'rgba(34, 197, 94, 0.1)' }}
+            className="text-center py-2 px-1 rounded-xl"
+            style={{ 
+                backgroundColor: category.categoryPriority === 'CRITICAL' ? 'rgba(185, 28, 28, 0.2)' : 
+                                category.categoryPriority === 'ELEVATED' ? 'rgba(245, 158, 11, 0.2)' : 
+                                'rgba(34, 197, 94, 0.1)' 
+            }}
         >
             <p className="text-xs text-gray-400 uppercase font-bold">Pattern Status</p>
             <span 
-                className={`text-xl font-extrabold block mt-1`}
+                className="text-lg sm:text-xl font-extrabold block mt-1"
                 style={{ 
                     color: category.categoryPriority === 'CRITICAL' ? '#f87171' : 
-                                category.categoryPriority === 'ELEVATED' ? '#fbbf24' : 
-                                category.categoryPriority === 'SUBOPTIMAL' ? '#fb923c' : 
-                                '#34d399',
+                            category.categoryPriority === 'ELEVATED' ? '#fbbf24' : 
+                            '#34d399',
                     textShadow: `0 0 5px rgba(255, 255, 255, 0.2)` 
                 }}
             >
@@ -1011,28 +1293,25 @@ const MarkerCard = ({ category, onMarkerClick, onCategoryClick }) => (
             </span>
         </div>
 
-        {/* Condensed Marker Telemetry - Removed detailed listing per user request */}
         <div className="mt-4">
             <p className="text-xs font-semibold text-gray-300 border-b border-gray-700 pb-1 mb-2">
                 System Telemetry
             </p>
-            <p className="text-sm text-gray-400">
+            <p className="text-xs text-gray-400">
                 {category.abnormalCount} markers require immediate attention.
                 <span className="block text-cyan-400 text-xs italic mt-1">Click for Actionable Deep Dive & Rationale.</span>
             </p>
         </div>
     </div>
 );
-// --- End MarkerCard Component ---
 
-
-// --- PatientNavigation Component ---
+// --- PatientNavigation ---
 const PatientNavigation = ({ currentIndex, totalRecords, onNavigate, currentPatientName, isRunning }) => {
     const isFirst = currentIndex === 0;
     const isLast = currentIndex === totalRecords - 1;
 
     return (
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 sm:space-x-4">
             <button
                 onClick={() => onNavigate(-1)}
                 disabled={isFirst || isRunning}
@@ -1045,8 +1324,8 @@ const PatientNavigation = ({ currentIndex, totalRecords, onNavigate, currentPati
             </button>
             
             <div className="text-center">
-                <p className="text-xs font-semibold text-gray-400">Record {currentIndex + 1} of {totalRecords}</p>
-                <h3 className="text-lg font-bold text-sky-400">{currentPatientName}</h3>
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400">Record {currentIndex + 1} of {totalRecords}</p>
+                <h3 className="text-sm sm:text-lg font-bold text-sky-400">{currentPatientName}</h3>
             </div>
 
             <button
@@ -1062,55 +1341,68 @@ const PatientNavigation = ({ currentIndex, totalRecords, onNavigate, currentPati
         </div>
     );
 };
-// --- End PatientNavigation Component ---
 
-
-// --- CrossCategoryConvergence Component ---
+// --- CrossCategoryConvergence ---
 const CrossCategoryConvergence = ({ data }) => {
-    // Logic to determine the Convergence Narrative based on aggregated data
-    const isMetabolicCritical = data.categories.find(c => c.name === "Metabolic Health")?.abnormalCount >= 2;
-    const isInflammationCritical = data.categories.find(c => c.name === "Inflammation & Immunity")?.abnormalCount >= 2;
-    const isGutCompromised = data.categories.find(c => c.name === "Gut Microbiome & Permeability")?.abnormalCount >= 2;
+    const isMetabolicCritical = data.categories.find(c => c.name === "Metabolic Health")?.categoryPriority === 'CRITICAL';
+    const isInflammationCritical = data.categories.find(c => c.name === "Inflammation & Immunity")?.categoryPriority === 'CRITICAL';
+    const isGutCritical = data.categories.find(c => c.name === "Gut Microbiome & Permeability")?.categoryPriority === 'CRITICAL';
+    const isCardioCritical = data.categories.find(c => c.name === "Lipid Panel & Cardiovascular")?.categoryPriority === 'CRITICAL';
+    const isLiverCritical = data.categories.find(c => c.name === "Liver Function")?.categoryPriority === 'CRITICAL';
 
     let convergenceTitle = "Optimal System Integrity";
     let convergenceRisk = "LOW: No high-risk correlation detected.";
     let icon = 'fas fa-check-circle text-emerald-400';
     let colorClass = 'border-emerald-500';
     let markersInvolved = "N/A";
-
-    if (isMetabolicCritical && isInflammationCritical) {
-        convergenceTitle = "CRITICAL: CARDIO-METABOLIC FAILURE";
-        convergenceRisk = "RISK: Metabolic & Inflammatory systems failing synchronously.";
+    
+    if (isMetabolicCritical && isInflammationCritical && isCardioCritical) {
+        convergenceTitle = "CATASTROPHIC: METABOLIC-INFLAMMATORY-CARDIO TRIAD FAILURE";
+        convergenceRisk = "RISK: All major metabolic control systems are failing synchronously. Extreme intervention required to prevent acute event.";
+        icon = 'fas fa-skull-crossbones text-red-500';
+        colorClass = 'border-red-500';
+        markersInvolved = "HOMA-IR, Glucose, CRP, IL-6, sdLDL, Triglycerides";
+    } else if (isInflammationCritical && isGutCritical) {
+        convergenceTitle = "CRITICAL: GUT-IMMUNE AXIS BREAKDOWN (Root Cause Inflammation)";
+        convergenceRisk = "RISK: Gut barrier compromise (Zonulin, LPS) is directly fueling severe systemic inflammation (CRP, IL-6). Focus must be gut repair.";
+        icon = 'fas fa-viruses text-red-500';
+        colorClass = 'border-red-500';
+        markersInvolved = "Zonulin, LPS, CRP, IL-6";
+    } else if (isMetabolicCritical && isLiverCritical) {
+        convergenceTitle = "CRITICAL: METABOLIC & HEPATIC STRESS SYNDROME";
+        convergenceRisk = "RISK: Severe resistance coupled with liver strain suggests NASH/Metabolic Syndrome X. Detoxification capacity is severely compromised.";
         icon = 'fas fa-radiation text-red-500';
         colorClass = 'border-red-500';
-        markersInvolved = "Glucose, HOMA-IR, CRP, IL-6"; // Updated markers to reflect 27 total
-    } else if (isInflammationCritical && isGutCompromised) {
-        convergenceTitle = "HIGH: GUT-IMMUNE AXIS FAILURE";
-        convergenceRisk = "RISK: Gut barrier breakdown actively reinforcing systemic inflammation.";
-        icon = 'fas fa-viruses text-orange-500';
+        markersInvolved = "HOMA-IR, Glucose, ALT, GGT";
+    } else if (isMetabolicCritical || isCardioCritical || isLiverCritical) {
+        convergenceTitle = "HIGH: PRIMARY SYSTEMIC RISK ACCUMULATION";
+        convergenceRisk = "RISK: Significant pathology detected in a core regulatory system. Aggressive risk management is mandatory to prevent convergence into a triad failure.";
+        icon = 'fas fa-burn text-orange-500';
         colorClass = 'border-orange-500';
-        markersInvolved = "Zonulin, LPS, CRP, IL-6";
-    } else if (isMetabolicCritical) {
-        convergenceTitle = "ELEVATED: PRIMARY METABOLIC STRESS";
-        convergenceRisk = "RISK: Syndrome X detected; requires priority action.";
-        icon = 'fas fa-burn text-yellow-500';
-        colorClass = 'border-yellow-500';
-        markersInvolved = "Glucose, A1c, HOMA-IR";
-    } else if (isGutCompromised) {
-         convergenceTitle = "ELEVATED: PRIMARY GUT PERMEABILITY";
-         convergenceRisk = "RISK: Gut barrier integrity compromised; core intervention focus.";
-         icon = 'fas fa-shield-slash text-yellow-500';
-         colorClass = 'border-yellow-500';
-         markersInvolved = "Zonulin, Shannon Index, LPS";
+        markersInvolved = "Check Critical category markers.";
+    } else if (isGutCritical) {
+        convergenceTitle = "HIGH: GUT BARRIER COMPROMISE";
+        convergenceRisk = "RISK: Gut barrier integrity severely compromised; immediate focus on restoring microbial diversity and healing intestinal lining.";
+        icon = 'fas fa-shield-slash text-orange-500';
+        colorClass = 'border-orange-500';
+        markersInvolved = "Zonulin, Shannon Index, LPS";
     }
 
+    const isAnyElevated = data.categories.some(c => c.categoryPriority === 'ELEVATED');
+    if (convergenceTitle === "Optimal System Integrity" && isAnyElevated) {
+        convergenceTitle = "MODERATE: EARLY WARNING INDICATORS";
+        convergenceRisk = "RISK: Low-level deviations across multiple systems suggest environmental or lifestyle adjustments are required before patterns escalate.";
+        icon = 'fas fa-exclamation-circle text-yellow-500';
+        colorClass = 'border-yellow-500';
+        markersInvolved = "Check 1-2 Elevated categories.";
+    }
 
     return (
         <div 
             className={`mt-4 p-4 rounded-xl shadow-2xl border-2 ${colorClass} backdrop-blur-md text-center`}
             style={{ backgroundColor: 'rgba(17, 24, 39, 0.9)' }}
         >
-            <h3 className="text-xl font-bold text-white mb-2 flex items-center justify-center">
+            <h3 className="text-base sm:text-xl font-bold text-white mb-2 flex items-center justify-center">
                 <i className={`${icon} mr-3 glow-text text-2xl`}></i>
                 System Convergence
             </h3>
@@ -1127,10 +1419,8 @@ const CrossCategoryConvergence = ({ data }) => {
         </div>
     );
 };
-// --- End CrossCategoryConvergence Component ---
 
-
-// --- RegionalRiskIndicators Component ---
+// --- RegionalRiskIndicators ---
 const RegionalRiskIndicators = ({ indicators, onMarkerClick }) => {
     if (!indicators || !Array.isArray(indicators)) return null; 
     
@@ -1152,8 +1442,7 @@ const RegionalRiskIndicators = ({ indicators, onMarkerClick }) => {
             <h3 className="text-xl font-bold text-sky-400 mb-3 border-b border-gray-700 pb-2 flex items-center">
                 <span className="text-2xl mr-2" style={{ textShadow: '0 0 8px #06b6d4' }}>✨</span> GCC Health Index
             </h3>
-            {/* FIX: Using gap-4 for consistent and clean grid spacing */}
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {indicators.map((ind, index) => {
                     const statusColor = getStatusColorName(ind.status);
                     const indicatorColorClass = getColorClass(ind.status);
@@ -1166,7 +1455,7 @@ const RegionalRiskIndicators = ({ indicators, onMarkerClick }) => {
                             onClick={() => onMarkerClick({ name: ind.name, value: ind.value, unit: ind.unit, ref: ind.ref, status: ind.status, role: ind.impact, action: ind.impact, color: statusColor })}
                         >
                             <div className="flex justify-between items-start mb-1">
-                                <span className="text-sm font-semibold text-gray-200 flex items-center leading-tight">
+                                <span className="text-xs sm:text-sm font-semibold text-gray-200 flex items-center leading-tight">
                                     <span className={`text-lg mr-1 ${getIconClass(ind.status)}`}>{ind.icon}</span> 
                                     {ind.name}
                                 </span>
@@ -1174,14 +1463,13 @@ const RegionalRiskIndicators = ({ indicators, onMarkerClick }) => {
                             </div>
                             
                             <div className="flex justify-between items-baseline">
-                                {/* Value color matching status */}
-                                <p className="text-xl font-extrabold" style={{ color: indicatorColorClass.split(' ')[1] }}>
-                                    {ind.value} <span className="text-sm font-normal text-gray-400">{ind.unit}</span>
+                                <p className="text-lg sm:text-xl font-extrabold">
+                                    {ind.value} <span className="text-xs sm:text-sm font-normal text-gray-400">{ind.unit}</span>
                                 </p>
-                                <p className="text-xs text-gray-500">Ref: {ind.ref}</p>
+                                <p className="text-[10px] text-gray-500">Ref: {ind.ref}</p>
                             </div>
-                            <p className="text-[10px] text-gray-500 mt-1 italic border-t border-gray-700 pt-1">
-                                {ind.impact.split(';')[0]}
+                            <p className="text-[9px] sm:text-[10px] text-gray-500 mt-1 italic border-t border-gray-700 pt-1">
+                                {ind.impact?.split(';')[0]}
                             </p>
                         </div>
                     );
@@ -1190,11 +1478,9 @@ const RegionalRiskIndicators = ({ indicators, onMarkerClick }) => {
         </div>
     );
 };
-// --- End RegionalRiskIndicators Component ---
 
-
-// --- Data Lake View Component (Optimized for clarity) ---
-const DataLakeView = ({ markers }) => {
+// --- DataLakeView ---
+function DataLakeView({ markers }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState('isPrimary');
     const [sortDirection, setSortDirection] = useState('desc');
@@ -1207,20 +1493,17 @@ const DataLakeView = ({ markers }) => {
             return acc;
         }, {});
 
-        // Sort the markers within each category
         for (const platform in platforms) {
             platforms[platform].sort((a, b) => {
                 let comparison = 0;
                 if (a[sortBy] > b[sortBy]) comparison = 1;
                 else if (a[sortBy] < b[sortBy]) comparison = -1;
-                
                 return sortDirection === 'desc' ? comparison * -1 : comparison;
             });
         }
 
         return platforms;
     }, [markers, sortBy, sortDirection]);
-
 
     const filteredMarkers = useMemo(() => {
         if (!searchTerm) return markers;
@@ -1248,7 +1531,6 @@ const DataLakeView = ({ markers }) => {
             : <i className="fas fa-sort-down text-sky-400 ml-1"></i>;
     };
 
-    // Use categorizedMarkers for display if not searching
     const markersToDisplay = searchTerm ? filteredMarkers : Object.values(categorizedMarkers).flat();
 
     const getRowColorClass = (status) => {
@@ -1262,8 +1544,6 @@ const DataLakeView = ({ markers }) => {
             case '🟡':
             case 'Deficient':
                 return 'bg-yellow-900/10 hover:bg-yellow-900/20';
-            case '🟢':
-            case 'Optimal':
             default:
                 return 'hover:bg-gray-800/70';
         }
@@ -1289,8 +1569,8 @@ const DataLakeView = ({ markers }) => {
     };
 
     return (
-        <div className="p-6 bg-gray-900 rounded-xl shadow-2xl border border-gray-700 space-y-6">
-            <h2 className="text-3xl font-extrabold text-white border-b border-gray-700 pb-3 flex items-center">
+        <div className="p-4 sm:p-6 bg-gray-900 rounded-xl shadow-2xl border border-gray-700 space-y-6">
+            <h2 className="text-xl sm:text-3xl font-extrabold text-white border-b border-gray-700 pb-3 flex items-center">
                 <i className="fas fa-database text-sky-400 mr-3"></i> Full Data Lake Telemetry (253 Markers)
             </h2>
              <p className="text-sm text-gray-400">
@@ -1303,51 +1583,50 @@ const DataLakeView = ({ markers }) => {
                     placeholder="Search by name, code, or platform..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full p-2 rounded-lg bg-gray-800 border border-sky-600/50 text-white placeholder-gray-500 focus:ring-sky-500 focus:border-sky-500"
+                    className="w-full p-2 rounded-xl bg-gray-800 border border-sky-600/50 text-white placeholder-gray-500 focus:ring-sky-500 focus:border-sky-500"
                 />
-                <p className="text-sm text-gray-400 font-semibold">
+                <p className="text-xs sm:text-sm text-gray-400 font-semibold">
                     Showing {filteredMarkers.length} of {markers.length} total markers.
                 </p>
             </div>
             
-            {/* Displaying filtered markers in a single scrollable table */}
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto rounded-lg border border-gray-700">
                 <table className="min-w-full divide-y divide-gray-700">
                     <thead>
-                        <tr className="text-xs font-medium uppercase tracking-wider text-gray-400 bg-gray-800">
+                        <tr className="text-xs font-medium uppercase tracking-wider text-gray-400 bg-gray-800/70">
                             <th 
                                 onClick={() => handleSort('role')}
-                                className="px-4 py-3 cursor-pointer text-left w-2/6"
+                                className="px-4 py-3 cursor-pointer text-left min-w-[200px]"
                             >
                                 Marker Name {getSortIcon('role')}
                             </th>
                             <th 
                                 onClick={() => handleSort('platform')}
-                                className="px-4 py-3 cursor-pointer text-left w-1/6"
+                                className="px-4 py-3 cursor-pointer text-left min-w-[150px]"
                             >
                                 Platform {getSortIcon('platform')}
                             </th>
                             <th 
                                 onClick={() => handleSort('value')}
-                                className="px-4 py-3 cursor-pointer text-right w-[100px]"
+                                className="px-4 py-3 cursor-pointer text-right min-w-[100px]"
                             >
                                 Value
                             </th>
                             <th 
                                 onClick={() => handleSort('ref')}
-                                className="px-4 py-3 cursor-pointer text-center w-1/6"
+                                className="px-4 py-3 cursor-pointer text-center min-w-[150px]"
                             >
                                 Reference Range
                             </th>
                             <th 
                                 onClick={() => handleSort('status')}
-                                className="px-4 py-3 cursor-pointer text-center w-[90px]"
+                                className="px-4 py-3 cursor-pointer text-center min-w-[90px]"
                             >
                                 Status
                             </th>
                             <th 
                                 onClick={() => handleSort('isPrimary')}
-                                className="px-4 py-3 cursor-pointer text-center w-[90px]"
+                                className="px-4 py-3 cursor-pointer text-center min-w-[80px]"
                             >
                                 Type
                             </th>
@@ -1406,52 +1685,40 @@ const DataLakeView = ({ markers }) => {
             </div>
         </div>
     );
-};
-// --- End Data Lake View Component ---
+}
 
-
-// --- Risk Gauge Component (WOW Factor for AI Report) ---
+// --- Risk Gauge ---
 const RiskGauge = ({ score }) => {
-    // Score is 0 to 10
     const scoreVal = Math.max(0, Math.min(10, score));
     const percentage = scoreVal * 10;
-    
-    // Determine color based on score
     let colorClass = 'text-emerald-400';
     if (scoreVal >= 7.0) colorClass = 'text-red-400';
     else if (scoreVal >= 4.0) colorClass = 'text-yellow-400';
 
-    // Calculate rotation: 0% maps to -135deg, 100% maps to +135deg. Total sweep is 270 deg.
     const rotation = (percentage / 100) * 270 - 135; 
 
     return (
         <div className="flex flex-col items-center p-6 bg-gray-800/80 rounded-xl border border-gray-700 shadow-xl h-full">
             <h4 className="text-xl font-bold text-white mb-4">Systemic Risk Score</h4>
             <div className="relative w-48 h-24 overflow-hidden">
-                {/* Background Arc */}
                 <div className="absolute inset-0 border-[10px] border-b-0 border-gray-700 rounded-t-full"></div>
 
-                {/* Color Arcs (representing zones: Green, Yellow, Red) */}
                 <div className="absolute inset-0 border-[10px] border-b-0 rounded-t-full"
                     style={{
                         clipPath: 'polygon(0% 0%, 100% 0%, 100% 50%, 0% 50%)',
                     }}
                 >
-                    {/* Emerald (0-4) */}
                     <div className="absolute inset-0 border-[10px] border-b-0 border-emerald-500 rounded-t-full" 
                         style={{ clipPath: 'polygon(0% 0%, 40% 0%, 40% 100%, 0% 100%)' }}
                     ></div>
-                    {/* Yellow (4-7) */}
                     <div className="absolute inset-0 border-[10px] border-b-0 border-yellow-500 rounded-t-full" 
                         style={{ clipPath: 'polygon(40% 0%, 70% 0%, 70% 100%, 40% 100%)' }}
                     ></div>
-                    {/* Red (7-10) */}
                     <div className="absolute inset-0 border-[10px] border-b-0 border-red-500 rounded-t-full" 
                         style={{ clipPath: 'polygon(70% 0%, 100% 0%, 100% 100%, 70% 100%)' }}
                     ></div>
                 </div>
 
-                {/* Needle */}
                 <div className="absolute bottom-0 left-1/2 w-2 h-2 rounded-full bg-white z-10 -translate-x-1/2">
                     <div 
                         className="absolute bottom-0 left-1/2 w-1 h-20 origin-bottom transform -translate-x-1/2 transition-transform duration-1000 ease-out"
@@ -1460,14 +1727,14 @@ const RiskGauge = ({ score }) => {
                             transitionDelay: '0.5s'
                         }}
                     >
-                        <div className={`w-1 h-full bg-white shadow-xl ${colorClass.replace('text-', 'shadow-')}`}></div>
+                        <div className={`w-1 h-full bg-white`}></div>
                     </div>
                 </div>
 
             </div>
             
             <div className="relative bottom-4 mt-2">
-                <span className={`text-4xl font-extrabold ${colorClass}`} style={{ textShadow: `0 0 10px ${colorClass.replace('text-', '')}` }}>
+                <span className={`text-4xl font-extrabold ${colorClass}`}>
                     {scoreVal.toFixed(1)} <span className="text-xl text-gray-400">/ 10</span>
                 </span>
             </div>
@@ -1475,21 +1742,17 @@ const RiskGauge = ({ score }) => {
         </div>
     );
 };
-// --- End Risk Gauge Component ---
 
-
-// --- Full Report View Component ---
-const FullReportView = ({ report, onBackToCockpit, data }) => {
+// --- FullReportView ---
+function FullReportView({ report, onBackToCockpit, data }) {
     
     const [isDownloading, setIsDownloading] = useState(false);
 
-    // Function to render the detailed biomarker sections
     const renderDetailedPlatform = (platform) => {
-        // Only render individual markers if markers array is not empty
         const showIndividualMarkers = platform.markers && platform.markers.length > 0;
         
         return (
-            <div key={platform.name} className="mt-4 p-4 bg-gray-800 rounded-lg border border-gray-700">
+            <div key={platform.name} className="mt-4 p-4 bg-gray-800 rounded-xl border border-gray-700">
                 <div className="flex justify-between items-center mb-3 border-b border-gray-700 pb-2">
                     <h5 className="font-bold text-lg text-sky-400 flex items-center">
                         <span className="mr-2 text-2xl">
@@ -1512,13 +1775,11 @@ const FullReportView = ({ report, onBackToCockpit, data }) => {
                                 </>
                             )}
                         </p>
-                        <p className="text-xs text-gray-500 italic mt-1">{platform.description}</p>
                 </div>
                 
                 {showIndividualMarkers && (
                     <div className="grid md:grid-cols-2 gap-4">
                         {(platform.markers || []).filter(Boolean).map((marker, idx) => {
-                            // Defensive check for marker.role before calling split
                             const markerRole = marker.role || 'N/A';
                             const statusColor = getStatusColorName(marker.status);
 
@@ -1528,8 +1789,8 @@ const FullReportView = ({ report, onBackToCockpit, data }) => {
                                         {markerRole.split('(')[0].trim()}
                                     </p>
                                     <div className="text-right">
-                                        <p className="text-sm font-semibold text-gray-100">
-                                            {marker.value} {marker.unit}
+                                        <p className="text-sm font-semibold text-gray-100 flex items-center justify-end gap-2">
+                                            <span>{marker.value} {marker.unit}</span>
                                             <StatusBadge status={marker.status} />
                                         </p>
                                         <p className={`text-xs text-${statusColor}-400`}>Range: {marker.ref}</p>
@@ -1539,9 +1800,9 @@ const FullReportView = ({ report, onBackToCockpit, data }) => {
                         })}
                     </div>
                 )}
-                 {platform.name === "Secondary Markers Overview" && (
+                {platform.name === "Secondary Markers Overview" && (
                     <p className="text-sm text-gray-400 pt-3">
-                        Total {platform.totalMarkers} markers processed. **{data.overallStatus.critical + data.overallStatus.elevated} markers** showed abnormal deviations.
+                        Total {platform.totalMarkers} markers processed. {data.overallStatus.critical + data.overallStatus.elevated} markers showed abnormal deviations.
                     </p>
                 )}
             </div>
@@ -1551,16 +1812,14 @@ const FullReportView = ({ report, onBackToCockpit, data }) => {
 
     const handleDownload = (type) => {
         setIsDownloading(true);
-        // Simulate API call delay
         setTimeout(() => {
-            // Replaced alert() with console log/custom feedback
             console.log(`Simulating download of ${type} report for ${data.name}.`); 
             setIsDownloading(false);
         }, 1500);
     };
 
     return (
-        <div className="p-8 bg-gray-900 rounded-xl shadow-2xl border border-gray-700">
+        <div className="p-4 sm:p-8 bg-gray-900 rounded-xl shadow-2xl border border-gray-700">
             <button 
                 onClick={onBackToCockpit} 
                 className="mb-6 text-sky-400 hover:text-sky-300 flex items-center font-medium transition-colors"
@@ -1569,36 +1828,33 @@ const FullReportView = ({ report, onBackToCockpit, data }) => {
                 Return to Co-Pilot
             </button>
 
-            {/* --- HEADER: NAME, DATE, RISK LEVEL --- */}
             <h2 className="text-3xl font-extrabold text-white mb-6 border-b border-gray-700 pb-3">
                 {report.header}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                 <div className="flex items-center text-gray-300">
-                    <span className="text-2xl mr-3 text-sky-400">👤</span>
-                    <span className="font-semibold">{report.name} ({report.id})</span>
+                    <span className="text-xl sm:text-2xl mr-3 text-sky-400">👤</span>
+                    <span className="font-semibold text-sm sm:text-base">{report.name} ({report.id})</span>
                 </div>
                 <div className="flex items-center text-gray-300">
-                    <span className="text-2xl mr-3 text-sky-400">📅</span>
-                    <span className="font-semibold">{report.date}</span>
+                    <span className="text-xl sm:text-2xl mr-3 text-sky-400">📅</span>
+                    <span className="font-semibold text-sm sm:text-base">{report.date}</span>
                 </div>
                 <div className="flex items-center text-gray-300">
-                    <span className="text-2xl mr-3 text-emerald-400">✅</span>
-                    <span className="font-semibold">{data.totalMarkersAnalyzed} Biomarkers Analyzed</span>
+                    <span className="text-xl sm:text-2xl mr-3 text-emerald-400">✅</span>
+                    <span className="font-semibold text-sm sm:text-base">{data.totalMarkersAnalyzed} Biomarkers Analyzed</span>
                 </div>
             </div>
 
-            {/* --- NOTICE --- */}
-            <div className="mb-8 p-4 bg-yellow-900/40 border-l-4 border-yellow-500 rounded-lg text-gray-300">
+            <div className="mb-8 p-4 bg-yellow-900/40 border-l-4 border-yellow-500 rounded-xl text-gray-300">
                 <h4 className="font-bold text-yellow-300 flex items-center mb-1">
                     <span className="mr-2">⚠️</span> Research Context & Important Notice
                 </h4>
-                <p className="text-sm">
-                    This report summarizes your biomarker data collected as part of the **OMIC-Assist research study**. This information is for **educational and research purposes only** and should NOT be used for diagnosis, treatment decisions, or clinical care. For medical interpretation and personalized health guidance, please consult with the OMIC-Assist medical team or your personal physician.
+                <p className="text-xs sm:text-sm">
+                    This report summarizes your biomarker data collected as part of the OMIC-Assist research study. This information is for educational and research purposes only and should NOT be used for diagnosis, treatment decisions, or clinical care. For medical interpretation and personalized health guidance, please consult with the OMIC-Assist medical team or your personal physician.
                 </p>
             </div>
 
-            {/* --- RISK SCORES AND QUALITY (WOW FACTOR) --- */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                 <RiskGauge score={report.riskLevel} />
                 <div className="lg:col-span-2 p-4 bg-gray-800 rounded-xl shadow-lg border border-gray-700 flex flex-col justify-center">
@@ -1609,38 +1865,35 @@ const FullReportView = ({ report, onBackToCockpit, data }) => {
                         The calculated Systemic Risk Score ({report.riskLevel.toFixed(1)}/10) is derived from the convergence of key metabolic and inflammatory pathways. This score indicates the complexity and urgency of required intervention.
                     </p>
                     <div className="mt-3">
-                         <h4 className="text-xl font-bold text-emerald-400 flex items-center mb-1 mt-3">
+                        <h4 className="text-xl font-bold text-emerald-400 flex items-center mb-1 mt-3">
                             ✓ Data Quality Check
-                         </h4>
-                         <div className="flex justify-between items-center">
-                            <span className="text-4xl font-extrabold text-emerald-400">{data.dataQualityScore}/100</span>
+                        </h4>
+                        <div className="flex justify-between items-center">
+                            <span className="text-3xl sm:text-4xl font-extrabold text-emerald-400">{data.dataQualityScore}/100</span>
                             <p className="text-sm text-gray-400 max-w-[70%]">All {data.totalMarkersAnalyzed} biomarkers successfully measured with high precision, ensuring reliable AI analysis.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* --- KEY PATTERNS DETECTED (DESIGN UPLIFT) --- */}
             <div className="relative mb-8 p-4 bg-gray-800 rounded-xl shadow-lg border border-gray-700 overflow-hidden">
                 <div className="absolute inset-0 bg-pink-900/10 opacity-30 blur-sm"></div>
-                <h3 className="relative z-10 text-2xl font-extrabold text-white flex items-center mb-4 pb-2 border-b border-pink-500/50">
-                    <span className="text-3xl mr-3 text-pink-400 glow-text">🔍</span> Key Patterns Detected
+                <h3 className="relative z-10 text-xl sm:text-2xl font-extrabold text-white flex items-center mb-4 pb-2 border-b border-pink-500/50">
+                    <span className="text-2xl sm:text-3xl mr-3 text-pink-400 glow-text">🔍</span> Key Patterns Detected
                 </h3>
                 <div className="relative z-10 space-y-4">
                     {report.keyPatterns.map((p, i) => <PatternCard key={i} pattern={p} />)}
                 </div>
             </div>
 
-            {/* --- RESEARCH FINDINGS SUMMARY (WOW FACTOR UPLIFT) --- */}
             <div className="relative mb-8 p-4 bg-gray-800 rounded-xl shadow-lg border border-gray-700 overflow-hidden">
                 <div className="absolute inset-0 bg-cyan-900/10 opacity-30 blur-sm"></div>
-                <h3 className="relative z-10 text-2xl font-extrabold text-white flex items-center mb-4 pb-2 border-b border-cyan-500/50">
-                    <span className="text-3xl mr-3 text-cyan-400 glow-text">📝</span> Gemini AI Research Findings
+                <h3 className="relative z-10 text-xl sm:text-2xl font-extrabold text-white flex items-center mb-4 pb-2 border-b border-cyan-500/50">
+                    <span className="text-2xl sm:text-3xl mr-3 text-cyan-400 glow-text">📝</span> Gemini AI Research Findings
                 </h3>
-                {/* Applied styling improvements for better readability and visual appeal */}
                 <div className="relative z-10 space-y-6 mb-8 text-gray-300">
                     {report.summaryText.map((s, i) => (
-                        <p key={i} className="p-3 rounded-lg bg-gray-900/50 border border-gray-700">
+                        <p key={i} className="p-3 rounded-xl bg-gray-900/50 border border-gray-700 text-sm">
                             <span className="font-semibold text-sky-400 capitalize flex items-center mb-1">
                                 <span className="mr-2 text-xl">
                                     {s.area.includes('AI') ? '🧠' : s.area.includes('Metabolic') ? '🩺' : s.area.includes('Cardiovascular') ? '❤️' : '💡'}
@@ -1653,480 +1906,441 @@ const FullReportView = ({ report, onBackToCockpit, data }) => {
                 </div>
             </div>
 
-            {/* --- OVERALL BIOMARKER STATUS --- */}
-            <h3 className="text-2xl font-bold text-gray-200 mb-4 flex items-center border-b border-gray-700 pb-2">
-                <span className="text-xl mr-2 text-purple-400">📊</span> Overall Biomarker Status Summary (All 253 Markers)
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-200 mb-4 flex items-center border-b border-gray-700 pb-2">
+                <span className="xl mr-2 text-purple-400">📊</span> Overall Biomarker Status Summary (All 253 Markers)
             </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 text-center">
-                <div className="p-4 bg-emerald-900/50 rounded-lg border border-emerald-700">
-                    <span className="text-4xl block mb-1">🟢</span>
-                    <p className="text-3xl font-bold text-emerald-300">{data.overallStatus.ok}</p>
-                    <p className="text-sm text-gray-400">Within Normal Range (GOOD)</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8 text-center">
+                <div className="p-4 bg-emerald-900/50 rounded-xl border border-emerald-700">
+                    <span className="text-3xl sm:text-4xl block mb-1">🟢</span>
+                    <p className="text-2xl sm:text-3xl font-bold text-emerald-300">{data.overallStatus.ok}</p>
+                    <p className="text-xs sm:text-sm text-gray-400">Within Normal Range (GOOD)</p>
                 </div>
-                <div className="p-4 bg-orange-900/50 rounded-lg border border-orange-700">
-                    <span className="text-4xl block mb-1">🟠</span>
-                    <p className="text-3xl font-bold text-orange-300">{data.overallStatus.elevated}</p>
-                    <p className="text-sm text-gray-400">Elevated (BAD)</p>
+                <div className="p-4 bg-orange-900/50 rounded-xl border border-orange-700">
+                    <span className="text-3xl sm:text-4xl block mb-1">🟠</span>
+                    <p className="text-2xl sm:text-3xl font-bold text-orange-300">{data.overallStatus.elevated}</p>
+                    <p className="text-xs sm:text-sm text-gray-400">Elevated (BAD)</p>
                 </div>
-                <div className="p-4 bg-yellow-900/50 rounded-lg border border-yellow-700">
-                    <span className="text-4xl block mb-1">🟡</span>
-                    <p className="text-3xl font-bold text-yellow-300">{data.overallStatus.below}</p>
-                    <p className="text-sm text-gray-400">Below Range (UGLY)</p>
+                <div className="p-4 bg-yellow-900/50 rounded-xl border border-yellow-700">
+                    <span className="text-3xl sm:text-4xl block mb-1">🟡</span>
+                    <p className="text-2xl sm:text-3xl font-bold text-yellow-300">{data.overallStatus.below}</p>
+                    <p className="text-xs sm:text-sm text-gray-400">Below Range (UGLY)</p>
                 </div>
-                <div className="p-4 bg-red-900/50 rounded-lg border border-red-700">
-                    <span className="text-4xl block mb-1">🔴</span>
-                    <p className="text-3xl font-bold text-red-300">{data.overallStatus.critical}</p>
-                    <p className="text-sm text-gray-400">Critical Attention (UGLY)</p>
+                <div className="p-4 bg-red-900/50 rounded-xl border border-red-700">
+                    <span className="text-3xl sm:text-4xl block mb-1">🔴</span>
+                    <p className="text-2xl sm:text-3xl font-bold text-red-300">{data.overallStatus.critical}</p>
+                    <p className="text-xs sm:text-sm text-gray-400">Critical Attention (UGLY)</p>
                 </div>
             </div>
 
-            {/* --- DETAILED PLATFORM BREAKDOWN --- */}
-            <h3 className="text-2xl font-bold text-gray-200 mb-4 flex items-center border-b border-gray-700 pb-2">
-                <span className="text-xl mr-2 text-indigo-400">🔬</span> Deep Dive Breakdown (27 Primary Markers)
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-200 mb-4 flex items-center border-b border-gray-700 pb-2">
+                <span className="xl mr-2 text-indigo-400">🔬</span> Deep Dive Breakdown (27 Primary Markers)
             </h3>
             <div className="space-y-6">
                 {(report.detailedPlatforms || []).map(platform => renderDetailedPlatform(platform))}
             </div>
 
-            {/* --- ADDITIONAL PLATFORMS --- */}
-            <h3 className="text-xl font-bold text-gray-200 mt-8 mb-4 flex items-center border-b border-gray-700 pb-2">
+            <h3 className="text-lg sm:text-xl font-bold text-gray-200 mt-8 mb-4 flex items-center border-b border-gray-700 pb-2">
                 All Platforms Integrated (The 253 Marker Data Lake)
             </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
+            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4 mb-8">
                 {(report.additionalPlatforms || []).map((platform, i) => (
-                    <div key={i} className="text-center p-3 bg-gray-800 rounded-lg border border-gray-700">
-                        <p className="text-sm font-semibold text-gray-200">{platform.name}</p>
-                        <p className="text-xs text-gray-400">{platform.markers} markers</p>
+                    <div key={i} className="text-center p-3 bg-gray-800 rounded-xl border border-gray-700">
+                        <p className="text-xs sm:text-sm font-semibold text-gray-200">{platform.name}</p>
+                        <p className="text-[10px] text-gray-400">{platform.markers} markers</p>
                     </div>
                 ))}
             </div>
 
-            {/* --- DOWNLOAD SECTION --- */}
             <h3 className="text-xl font-bold text-gray-200 mb-4 flex items-center border-b border-gray-700 pb-2">
-                <span className="text-xl mr-2 text-green-400">📥</span> Download & Share Your Report
+                <span className="xl mr-2 text-green-400">📥</span> Download & Share Your Report
             </h3>
-            <p className="text-gray-400 mb-4">
+            <p className="text-sm text-gray-400 mb-4">
                 Access your complete research report with all {data.totalMarkersAnalyzed} biomarker details and personalized insights.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
                 <button 
                     onClick={() => handleDownload('PDF')}
                     disabled={isDownloading} 
-                    className="flex items-center justify-center px-6 py-3 border border-emerald-600 rounded-lg text-white font-semibold bg-emerald-700 hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-700/30 disabled:bg-gray-600 disabled:shadow-none"
+                    className="flex items-center justify-center px-4 sm:px-6 py-3 border border-emerald-600 rounded-xl text-white font-semibold bg-emerald-700 hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-700/30 disabled:bg-gray-600 disabled:shadow-none text-sm"
                 >
                     {isDownloading ? 'Processing...' : '📄 Download PDF Report'}
                 </button>
                 <button 
                     onClick={() => handleDownload('Raw Data')}
                     disabled={isDownloading} 
-                    className="flex items-center justify-center px-6 py-3 border border-indigo-600 rounded-lg text-white font-semibold bg-indigo-700 hover:bg-indigo-600 transition-colors shadow-lg shadow-indigo-700/30 disabled:bg-gray-600 disabled:shadow-none"
+                    className="flex items-center justify-center px-4 sm:px-6 py-3 border border-indigo-600 rounded-xl text-white font-semibold bg-indigo-700 hover:bg-indigo-600 transition-colors shadow-lg shadow-indigo-700/30 disabled:bg-gray-600 disabled:shadow-none text-sm"
                 >
                     {isDownloading ? 'Processing...' : '📊 Download Raw Data (CSV)'}
                 </button>
                 <button 
                     onClick={() => handleDownload('Share Link')}
                     disabled={isDownloading} 
-                    className="flex items-center justify-center px-6 py-3 border border-sky-600 rounded-lg text-white font-semibold bg-sky-700 hover:bg-sky-600 transition-colors shadow-lg shadow-sky-700/30 disabled:bg-gray-600 disabled:shadow-none"
+                    className="flex items-center justify-center px-4 sm:px-6 py-3 border border-sky-600 rounded-xl text-white font-semibold bg-sky-700 hover:bg-sky-600 transition-colors shadow-lg shadow-sky-700/30 disabled:bg-gray-600 disabled:shadow-none text-sm"
                 >
                     {isDownloading ? 'Processing...' : '🔗 Generate Share Link'}
                 </button>
             </div>
         </div>
     );
-};
-// --- End FullReportView Component ---
+}
 
-// --- Biomarker Cockpit Component (Main Dashboard View) ---
-const BiomarkerCockpit = ({ data, onGenerateReport, isRunning, navigationProps, onMarkerClick, onViewChange }) => {
-    const needsGeneration = navigationProps.pipelineStatus.complete !== 'success';
+// --- BiomarkerCockpit ---
+function BiomarkerCockpit({ data, isRunning, navigationProps, onGenerateReport, onMarkerClick, onViewChange }) {
+    
+    const isHighRiskPatient = data.kpis.find(k => k.name === "Systemic Risk Score")?.value >= 7.0;
+    
+    const pulseClass = (isHighRiskPatient && !navigationProps.report && !isRunning) ? 'pulse-red' : '';
+    const buttonBaseClass = `py-2 px-4 sm:px-6 rounded-xl font-semibold text-white transition-all duration-300 shadow-lg text-sm sm:text-base`;
+    const dynamicButtonClass = isRunning 
+        ? 'opacity-50 cursor-not-allowed bg-gray-600 shadow-none' 
+        : (navigationProps.report 
+            ? 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-500/40' 
+            : `bg-red-600 hover:bg-red-500 shadow-red-500/40 ${pulseClass}`);
+
 
     return (
-        <div className="space-y-6">
-            <AnalysisDeepDiveModal analysisItem={navigationProps.selectedMarker} onClose={() => navigationProps.setSelectedMarker(null)} />
-            
-            {/* --- Primary Control Header --- */}
-            <div className="bg-gray-800/70 p-4 rounded-xl shadow-md border-t-4 border-sky-500 backdrop-blur-md">
-                <div className="flex justify-between items-center flex-wrap gap-4">
-                    
-                    {/* Patient Navigation (New) */}
-                    <PatientNavigation
-                        currentIndex={navigationProps.currentPatientIndex}
-                        totalRecords={MOCK_PATIENT_RECORDS.length} // Use MOCK_PATIENT_RECORDS.length here
-                        onNavigate={navigationProps.onNavigate}
-                        currentPatientName={data.name}
-                        isRunning={isRunning}
-                    />
-                    
-                    <div className="text-right">
-                        <h2 className="text-2xl font-bold text-gray-200 flex items-center justify-end">
-                            Burak Data Co-Pilot
-                        </h2>
-                        <p className="text-xs text-gray-400">
-                            Turning raw multi-omics into meaningful, actionable insights.
-                        </p>
-                        <p className="text-xs text-gray-400">
-                            Proprietary math models drive cross-system convergence detection.
-                        </p>
-                    </div>
+        <main className="space-y-6 sm:space-y-10">
+            <div className="flex flex-col sm:flex-row justify-between items-center bg-gray-900/50 p-4 rounded-xl shadow-xl border border-gray-700 space-y-4 sm:space-y-0">
+                <PatientNavigation 
+                    currentIndex={navigationProps.currentPatientIndex}
+                    totalRecords={navigationProps.totalRecords}
+                    onNavigate={navigationProps.onNavigate}
+                    currentPatientName={data.name}
+                    isRunning={isRunning}
+                />
 
-                    {/* AI Report Button */}
-                    <button
-                         // Fixed the logic here to use the parent's handler which changes viewMode
-                        onClick={navigationProps.report ? () => onViewChange('report') : onGenerateReport} 
-                        disabled={isRunning || (!navigationProps.report && isRunning)} 
-                        className={`py-2 px-4 rounded-lg font-semibold text-white transition-all duration-300 shadow-xl text-sm ${
-                            isRunning
-                              ? 'bg-gray-600 cursor-not-allowed flex items-center shadow-none'
-                              : navigationProps.report ? 'bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] shadow-indigo-500/40' : 'bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] shadow-emerald-500/40'
-                          }`}
+                <div className="flex items-center space-x-3">
+                    {isRunning && (
+                        <div className="text-sm text-sky-400 font-semibold flex items-center">
+                            <svg className="animate-spin h-4 w-4 mr-2 text-sky-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            Processing Report...
+                        </div>
+                    )}
+                    
+                    {navigationProps.report ? (
+                        <button
+                            onClick={() => onViewChange('report')}
+                            className={`${buttonBaseClass} bg-indigo-600 hover:bg-indigo-500 shadow-indigo-500/40`}
                         >
-                          {isRunning ? (
-                            <>
-                                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                Running Logical Container...
-                            </>
-                        ) : navigationProps.report ? 'View Full Report' : 'Initiate AI Report Sequence'}
-                    </button>
+                            <i className="fas fa-file-alt mr-2"></i> View Report
+                        </button>
+                    ) : (
+                        <button
+                            onClick={onGenerateReport}
+                            disabled={isRunning}
+                            className={`${buttonBaseClass} ${dynamicButtonClass}`}
+                        >
+                            <i className="fas fa-bolt mr-2"></i> Generate AI Report
+                        </button>
+                    )}
                 </div>
-                
             </div>
 
-            {/* --- Dashboard KPIs Section --- */}
-            <HighLevelKPIs data={data} onMarkerClick={navigationProps.setSelectedMarker} />
-            
-            {/* --- NEW: Cross-Category Convergence Panel (Simplified) --- */}
+            <HighLevelKPIs data={data} onMarkerClick={onMarkerClick} />
+            <RegionalRiskIndicators indicators={data.regionalIndicators} onMarkerClick={onMarkerClick} />
             <CrossCategoryConvergence data={data} />
             
-            {/* --- NEW: Regional Risk Indicators (Simplified Heading) --- */}
-            <RegionalRiskIndicators indicators={data.regionalIndicators} onMarkerClick={navigationProps.setSelectedMarker} />
-
-            {/* --- Biomarker Detail Cards (Updated to 3x3 Grid) --- */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-                {(data.categories || []).map((category, index) => (
-                    <MarkerCard 
-                        key={index} 
-                        category={category} 
-                        onMarkerClick={navigationProps.setSelectedMarker} 
-                        onCategoryClick={navigationProps.setSelectedMarker} // Pass the category object for modal display
-                    />
-                ))}
+            <div className="p-4 sm:p-6 bg-gray-900 rounded-xl shadow-2xl data-container-glow">
+                <h2 className="text-xl sm:text-3xl font-extrabold text-white mb-6 border-b border-sky-600/50 pb-3">
+                    <span className="text-2xl sm:text-3xl mr-2 text-sky-400">🔬</span> Functional System Breakdown
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    {(data.categories || []).map((category, index) => (
+                        <MarkerCard 
+                            key={index}
+                            category={category} 
+                            onMarkerClick={onMarkerClick} 
+                            onCategoryClick={onMarkerClick}
+                        />
+                    ))}
+                </div>
             </div>
             
-            {/* --- FOOTER: Audit & Status Bar --- */}
-            <div className="mt-6 p-3 bg-gray-900/70 rounded-xl shadow-2xl border border-gray-700 text-xs text-gray-500 flex flex-col md:flex-row justify-between items-start md:items-center backdrop-blur-md">
-                 <p className="text-gray-400">
-                     <span className="font-semibold text-sky-400">STATUS:</span> Telemetry ONLINE | Data Quality: {data.dataQualityScore}/100 
-                 </p>
-                 <div className="flex flex-col md:flex-row md:items-center space-y-1 md:space-x-4 md:space-y-0">
-                    <p className="text-xs font-semibold text-yellow-400">
-                         <i className="fas fa-heart text-red-500 mr-1"></i> Developed by Waseem Ahmad Ahanger | Hosted on Google Cloud
-                    </p>
-                 </div>
-            </div>
-
-        </div>
+        </main>
     );
-};
-// --- End BiomarkerCockpit Component ---
+}
 
+// --- App: ties everything together ---
+function App() {
+  const [isGated, setIsGated] = useState(!localStorage.getItem('burak_access'));
 
-// --- AccessGateModal Component ---
-const AccessGateModal = ({ setIsGated }) => {
-    const [email, setEmail] = useState('');
-    const [designation, setDesignation] = useState('Researcher');
-    const [error, setError] = useState(''); 
-    const [isLoading, setIsLoading] = useState(false);
-    
-    // Check if access was already granted in this session
-    useEffect(() => {
-        if (localStorage.getItem('burak_access') === 'granted') {
-            setIsGated(false);
-        }
-    }, [setIsGated]);
+  const allPatients = useMemo(() => getAllDemoPatients(), []);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
-        setIsLoading(true);
+  const [uploadedPatient, setUploadedPatient] = useState(null);
+  const [uploadStatus, setUploadStatus] = useState(null);
 
-        if (!email || !designation) {
-            setError("Please fill out all fields.");
-            setIsLoading(false);
-            return;
-        }
+  const [currentView, setCurrentView] = useState('cockpit');
+  const [report, setReport] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
 
-        // SIMULATED DATABASE LOGGING FOR GITHUB PAGES DEMO
-        const sessionLog = {
-            _subject: `Burak Co-Pilot Access Log: ${designation} - ${email}`, // For Formspree email subject
-            TIME: new Date().toISOString(),
-            EMAIL: email,
-            DESIGNATION: designation,
-            SESSION_ID: Math.random().toString(36).substring(2, 9),
-            // Redirect URL for Formspree (prevents Formspree default success page)
-            _next: window.location.href 
-        };
-        
-        // **EXTERNAL API CALL (Silent Tracking) to Formspree**
-        try {
-            await fetch(EXTERNAL_LOGGING_ENDPOINT, { // WASEEM'S LIVE ENDPOINT
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify(sessionLog),
-            });
-            console.log("SUCCESS: Data sent to external tracking API.");
-        } catch (apiError) {
-            console.error("API TRACKING ERROR: Could not reach external logging endpoint.", apiError);
-            // Non-critical error: do not block user access, but log the failure.
-        }
+  const activePatient = uploadedPatient || allPatients[currentIndex];
 
-        console.log("===============================================");
-        console.log("--- BURAK ACCESS LOG SUBMISSION (FOR AUDIT) ---");
-        console.log(JSON.stringify(sessionLog, null, 2));
-        console.log("===============================================");
-        
-        // Simulate local processing delay
-        await sleep(500); 
+  const biomarkerData = useMemo(() => getBiomarkerData(activePatient), [activePatient]);
+  const allMarkersForTable = useMemo(() => getAllMarkersForTable(activePatient), [activePatient]);
 
-        // Grant access and save to local storage for session persistence
-        localStorage.setItem('burak_access', 'granted');
-        setIsGated(false); 
-        setIsLoading(false);
-    };
+  const handleLogUpdate = useCallback((log) => {
+    console.log(`[Pipeline] ${log.timestamp} - ${log.message}`);
+  }, []);
 
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex justify-center items-center p-4">
-            <div className="bg-gray-800 border-2 border-sky-600/70 p-8 rounded-xl w-full max-w-md shadow-[0_0_40px_rgba(6,182,212,0.5)]">
-                <h2 className="text-3xl font-extrabold text-sky-400 mb-3 text-center">
-                    Burak Co-Pilot Access
-                </h2>
-                <p className="text-sm text-gray-400 mb-6 text-center">
-                    Please provide your details to unlock the full Biomarker Processing Dashboard. (Logged via Console)
-                </p>
+  const { pipelineStatus, isRunning, startPipeline } = usePipeline(
+    (generatedReport) => {
+      setReport(generatedReport);
+      setCurrentView('report');
+    },
+    handleLogUpdate,
+    activePatient
+  );
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <input
-                        type="email"
-                        placeholder="Email Address (Required)"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-500 focus:border-sky-500"
-                        required
-                    />
-                    
-                    <select
-                        value={designation}
-                        onChange={(e) => setDesignation(e.target.value)}
-                        className="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:border-sky-500"
-                        required
-                    >
-                        <option value="Researcher">Researcher (Academic)</option>
-                        <option value="Doctor">Doctor (Clinical)</option>
-                        <option value="Scientist">Scientist (Lab/R&D)</option>
-                        <option value="Executive">Executive (Strategy/BizDev)</option>
-                        <option value="Other">Other</option>
-                    </select>
-
-                    {error && <p className="text-red-400 text-sm">{error}</p>}
-
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="w-full py-3 rounded-lg font-semibold text-white transition-colors shadow-xl text-lg bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center"
-                    >
-                        {isLoading ? (
-                            <>
-                                <i className="fas fa-spinner fa-spin mr-2"></i> Unlocking Access...
-                            </>
-                        ) : 'Access Dashboard'}
-                    </button>
-                </form>
-            </div>
-        </div>
-    );
-};
-// --- End AccessGateModal Component ---
-
-
-// --- Main App Component (App must be defined last) ---
-
-const App = () => {
-    // --- Auth Setup ---
-    const [isAuthReady, setIsAuthReady] = useState(false);
-    const [isGated, setIsGated] = useState(true); // Gating state
-    // --- END Auth Setup ---
-
-
-    // State for Demo
-    const [currentPatientIndex, setCurrentPatientIndex] = useState(0);
-    
-    const safeCurrentPatient = MOCK_PATIENT_RECORDS[currentPatientIndex] || MOCK_PATIENT_RECORDS[0];
-    
-    // Dynamic data generation based on current patient
-    const patientData = useMemo(() => getBiomarkerData(safeCurrentPatient), [safeCurrentPatient]);
-    const allMarkers = useMemo(() => getAllMarkersForTable(safeCurrentPatient), [safeCurrentPatient]); 
-
-    // Initialize report state based on the current patient's generated report
-    const [report, setReport] = useState(null);
-    const [viewMode, setViewMode] = useState('cockpit'); // 'cockpit', 'report', or 'data_lake'
-
-    const [selectedMarker, setSelectedMarker] = useState(null); 
-
-    const handleReportGenerationComplete = useCallback((generatedReport) => {
-        setReport(generatedReport);
-        setViewMode('report'); // Automatically switch to report view after generation
-    }, []);
-    
-    const handleLogUpdate = useCallback(() => {
-        // Placeholder for log updates
-    }, []);
-
-    // --- Core Initialization (Simulated Auth Check) ---
-    useEffect(() => {
-        // Simulate auth readiness and check local storage gate
-        if (localStorage.getItem('burak_access') === 'granted') {
-            setIsGated(false);
-        }
-        setIsAuthReady(true);
-    }, []); 
-
-    // Instantiate pipeline hook
-    const { pipelineStatus, isRunning, startPipeline } = usePipeline(handleReportGenerationComplete, handleLogUpdate, safeCurrentPatient);
-
-    // Navigation Logic
-    const handleNavigate = useCallback((direction) => {
-        const newIndex = currentPatientIndex + direction;
-        if (newIndex >= 0 && newIndex < MOCK_PATIENT_RECORDS.length) {
-            setCurrentPatientIndex(newIndex);
-            setReport(null); 
-            setViewMode('cockpit'); // Always reset to cockpit view on patient change
-        }
-    }, [currentPatientIndex]);
-
-
-    if (!isAuthReady) {
-        return (
-            <div className="flex justify-center items-center min-h-screen bg-slate-950">
-                <div className="text-lg text-sky-400 p-8 rounded-lg shadow-2xl bg-gray-800 border border-sky-600/50">
-                    Initializing Authentication Protocols...
-                </div>
-            </div>
-        );
+  const handleNavigate = (direction) => {
+    if (uploadedPatient) {
+      return;
     }
+    const newIndex = currentIndex + direction;
+    if (newIndex >= 0 && newIndex < allPatients.length) {
+      setCurrentIndex(newIndex);
+      setReport(null);
+      setCurrentView('cockpit');
+    }
+  };
 
-    // Navigation props package for Cockpit
-    const navigationProps = {
-        currentPatientIndex,
-        totalRecords: MOCK_PATIENT_RECORDS.length,
-        onNavigate: handleNavigate,
-        pipelineStatus,
-        selectedMarker,
-        setSelectedMarker,
-        report // Pass report state for button logic
+  const handleGenerateReport = () => {
+    if (!isRunning) {
+      startPipeline();
+    }
+  };
+
+  const REQUIRED_MARKER_KEYS = [
+    'glucose', 'a1c', 'homa',
+    'crp', 'il6', 'adiponectin',
+    'ldl', 'tg', 'sdll',
+    'shannon', 'zonulin', 'lps',
+    'alt', 'ggt', 'ast',
+    'creatinine', 'bun', 'uricAcid',
+    'tsh', 'ft3', 'cortisol',
+    'vitD', 'vitB12', 'ferritin',
+    'wbc', 'rbc', 'hgb',
+    'bmi', 'irScore'
+  ];
+
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setUploadStatus('Reading file...');
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const json = JSON.parse(e.target.result);
+
+        if (!json.markers || typeof json.markers !== 'object') {
+          setUploadStatus('Invalid JSON: missing "markers" object.');
+          return;
+        }
+
+        const missing = REQUIRED_MARKER_KEYS.filter(k => !json.markers[k]);
+        if (missing.length > 0) {
+          setUploadStatus(`Invalid demo file: missing ${missing.length} of 27 required markers: ${missing.join(', ')}`);
+          return;
+        }
+
+        if (!json.kpis) {
+          json.kpis = {
+            bioAge: json.age || 50,
+            risk: 5.0,
+            efficiency: 0.80,
+            riskColor: "yellow-400"
+          };
+        }
+
+        const normalized = {
+          id: json.id || 'UPLOADED-001',
+          name: json.name || 'Uploaded Patient',
+          age: json.age || 50,
+          kpis: json.kpis,
+          markers: json.markers
+        };
+
+        setUploadedPatient(normalized);
+        setUploadStatus('Upload OK: 27 / 27 core markers validated.');
+        setReport(null);
+        setCurrentView('cockpit');
+      } catch (err) {
+        console.error(err);
+        setUploadStatus('Error: could not parse JSON file.');
+      }
     };
+    reader.readAsText(file);
+  };
 
-    const handleViewChange = (newView) => {
-        setViewMode(newView);
-    };
+  const clearUploadedPatient = () => {
+    setUploadedPatient(null);
+    setUploadStatus(null);
+    setReport(null);
+    setCurrentView('cockpit');
+  };
 
+  if (isGated) {
+    return <AccessGateModal setIsGated={setIsGated} />;
+  }
 
-    return (
-        <div 
-            className="min-h-screen p-6 sm:p-10 font-sans"
-            style={{
-                backgroundColor: '#0f172a',
-                backgroundImage: 'radial-gradient(circle at 10% 10%, rgba(6, 182, 212, 0.1), transparent 50%)',
-                backgroundAttachment: 'fixed'
-            }}
-        >
-            <div className="max-w-7xl mx-auto">
-                <header className="text-center mb-8">
-                    <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight flex items-center justify-center space-x-2">
-                        <span className="text-amber-300" style={{ textShadow: '0 0 15px #f59e0b', transform: 'scaleX(-1)' }}>⚡</span>
-                        <span style={{ textShadow: '0 0 15px #06b6d4' }}>Burak Precision Health Platform</span>
-                        <span className="text-amber-300" style={{ textShadow: '0 0 15px #f59e0b' }}>⚡</span>
-                    </h1>
-                    <p className="mt-2 text-xl text-sky-400 font-medium" style={{ textShadow: '0 0 5px #0ea5e9' }}>
-                        {viewMode === 'cockpit' ? 'Biomarker Co-Pilot' : 
-                         viewMode === 'data_lake' ? 'Audit View: Full 253 Marker Telemetry' :
-                         'Gemini AI Report: Strategic Insights & Actions'}
-                    </p>
-                </header>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4 sm:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto">
+        <header className="mb-6 sm:mb-8 text-center">
+          <h1 className="text-3xl sm:text-5xl font-extrabold text-white mb-2 glow-text">
+            🧬 Burak Data Co-Pilot
+          </h1>
+          <p className="text-sm sm:text-lg text-gray-400">
+            Precision Medicine POC – 27 Biomarkers → Logical Container → Gemini Narrative
+          </p>
+        </header>
 
-                {/* --- VIEW SWITCHER --- */}
-                <div className="mb-8 flex justify-center space-x-4">
-                    <button
-                        onClick={() => setViewMode('cockpit')}
-                        className={`py-2 px-6 rounded-lg font-semibold transition-colors shadow-lg ${
-                            viewMode === 'cockpit' ? 'bg-indigo-600 text-white shadow-indigo-500/50' : 'bg-gray-800/80 text-gray-300 border border-gray-700 hover:bg-gray-700/90'
-                        }`}
-                    >
-                        Data Co-Pilot (27 Core Markers)
-                    </button>
-                    <button
-                        onClick={() => setViewMode('data_lake')}
-                        className={`py-2 px-6 rounded-lg font-semibold transition-colors shadow-lg ${
-                            viewMode === 'data_lake' ? 'bg-indigo-600 text-white shadow-indigo-500/50' : 'bg-gray-800/80 text-gray-300 border border-gray-700 hover:bg-gray-700/90'
-                        }`}
-                    >
-                        Full Data Lake (253 Markers)
-                    </button>
-                    <button
-                        onClick={report ? () => setViewMode('report') : startPipeline} 
-                        disabled={isRunning || (!report && isRunning)} 
-                        className={`py-2 px-6 rounded-lg font-semibold text-white transition-all duration-300 shadow-lg ${
-                            viewMode === 'report' ? 'bg-indigo-600 text-white shadow-indigo-500/50' : 'bg-gray-800/80 text-gray-300 border border-gray-700'
-                        } ${isRunning ? 'opacity-50 cursor-not-allowed' : (report ? 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-500/40' : 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-500/40')}`}
-                    >
-                        {isRunning ? (
-                            <>
-                                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                Running Logical Container...
-                            </>
-                        ) : report ? 'View Full Report' : 'Initiate AI Report Sequence'}
-                    </button>
-                </div>
-
-                {/* --- MAIN CONTENT AREA --- */}
-                {isGated ? (
-                    <AccessGateModal setIsGated={setIsGated} />
-                ) : viewMode === 'cockpit' ? (
-                    <BiomarkerCockpit 
-                        data={patientData} 
-                        onGenerateReport={startPipeline} 
-                        isRunning={isRunning}
-                        navigationProps={navigationProps}
-                        onMarkerClick={setSelectedMarker}
-                        onViewChange={handleViewChange}
-                    />
-                ) : viewMode === 'data_lake' ? (
-                    <DataLakeView markers={allMarkers} />
-                ) : (
-                    report && (
-                        <FullReportView 
-                            report={report} 
-                            onBackToCockpit={() => setViewMode('cockpit')} 
-                            data={patientData} // Use the currently viewed patient's data structure
-                        />
-                    )
-                )}
-                
+        <div className="mb-6 sm:mb-8 bg-gray-900/60 border border-gray-700 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <p className="text-xs sm:text-sm text-gray-300 font-semibold mb-2">
+              1) Choose a demo scenario or upload a JSON report
+            </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="text-xs sm:text-sm text-gray-400">
+                Active: <span className="text-sky-400 font-semibold">
+                  {uploadedPatient ? `${activePatient.name} (Uploaded)` : `${activePatient.name} – Record ${currentIndex + 1} of ${allPatients.length}`}
+                </span>
+              </span>
+              {uploadedPatient && (
+                <button
+                  onClick={clearUploadedPatient}
+                  className="text-xs px-3 py-1 rounded-lg bg-gray-700 text-gray-200 hover:bg-gray-600"
+                >
+                  Clear Uploaded
+                </button>
+              )}
             </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleNavigate(-1)}
+                disabled={currentIndex === 0 || !!uploadedPatient}
+                className={`p-2 rounded-full ${
+                  currentIndex === 0 || uploadedPatient
+                    ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                    : 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-md shadow-indigo-500/40'
+                }`}
+                title="Previous Demo Patient"
+              >
+                <i className="fas fa-chevron-left text-xs" />
+              </button>
+              <button
+                onClick={() => handleNavigate(1)}
+                disabled={currentIndex === allPatients.length - 1 || !!uploadedPatient}
+                className={`p-2 rounded-full ${
+                  currentIndex === allPatients.length - 1 || uploadedPatient
+                    ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                    : 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-md shadow-indigo-500/40'
+                }`}
+                title="Next Demo Patient"
+              >
+                <i className="fas fa-chevron-right text-xs" />
+              </button>
+            </div>
+
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">
+                Upload Logical Container JSON (27 markers)
+              </label>
+              <input
+                type="file"
+                accept=".json,application/json"
+                onChange={handleFileUpload}
+                className="text-xs text-gray-300 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-sky-700 file:text-white hover:file:bg-sky-600"
+              />
+              {uploadStatus && (
+                <p className="mt-1 text-[10px] text-gray-400">
+                  {uploadStatus}
+                </p>
+              )}
+            </div>
+          </div>
         </div>
-    );
-};
 
-// Initiate the application rendering
+        <div className="flex justify-center space-x-2 sm:space-x-4 mb-6">
+          <button
+            onClick={() => setCurrentView('cockpit')}
+            className={`px-4 py-2 rounded-lg font-semibold text-sm sm:text-base transition-colors ${
+              currentView === 'cockpit'
+                ? 'bg-sky-600 text-white shadow-lg shadow-sky-500/30'
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+            }`}
+          >
+            <i className="fas fa-tachometer-alt mr-2" /> Cockpit
+          </button>
+          <button
+            onClick={() => setCurrentView('datalake')}
+            className={`px-4 py-2 rounded-lg font-semibold text-sm sm:text-base transition-colors ${
+              currentView === 'datalake'
+                ? 'bg-sky-600 text-white shadow-lg shadow-sky-500/30'
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+            }`}
+          >
+            <i className="fas fa-database mr-2" /> Data Lake (253 markers)
+          </button>
+          {report && (
+            <button
+              onClick={() => setCurrentView('report')}
+              className={`px-4 py-2 rounded-lg font-semibold text-sm sm:text-base transition-colors ${
+                currentView === 'report'
+                  ? 'bg-sky-600 text-white shadow-lg shadow-sky-500/30'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
+            >
+              <i className="fas fa-file-alt mr-2" /> AI Report
+            </button>
+          )}
+        </div>
+
+        {currentView === 'cockpit' && (
+          <BiomarkerCockpit
+            data={biomarkerData}
+            isRunning={isRunning}
+            navigationProps={{
+              currentPatientIndex: currentIndex,
+              totalRecords: allPatients.length,
+              onNavigate: handleNavigate,
+              report
+            }}
+            onGenerateReport={handleGenerateReport}
+            onMarkerClick={setSelectedItem}
+            onViewChange={setCurrentView}
+          />
+        )}
+
+        {currentView === 'datalake' && (
+          <DataLakeView markers={allMarkersForTable} />
+        )}
+
+        {currentView === 'report' && report && (
+          <FullReportView
+            report={report}
+            data={biomarkerData}
+            onBackToCockpit={() => setCurrentView('cockpit')}
+          />
+        )}
+
+        {selectedItem && (
+          <AnalysisDeepDiveModal
+            analysisItem={selectedItem}
+            onClose={() => setSelectedItem(null)}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Mount the app
 ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-
 </script>
 
 </body>
