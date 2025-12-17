@@ -117,6 +117,15 @@
                 grid-template-columns: repeat(4, minmax(0, 1fr));
             }
         }
+        /* TABS: Allow scrolling on mobile if necessary */
+        .tab-bar {
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .tab-bar::-webkit-scrollbar {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -600,6 +609,7 @@
                             </p>
                             
                             {/* VALUE AND REFERENCE RANGE (if available from KPI/Pillar click) */}
+                            {/* NOTE: We check for data.value !== undefined explicitly to ensure a clean display */}
                             {data.value !== undefined && data.units && data.ref && (
                                 <p className="text-slate-300 text-sm font-mono">
                                     Value: <span className={valueClass}>{data.value} {data.units}</span> (Ref: {data.ref})
@@ -1162,16 +1172,16 @@
                             </select>
                         </div>
                         
-                        {/* Tab Switcher */}
-                        <div className="flex gap-4 mb-6">
+                        {/* Tab Switcher (Mobile optimized using flex and overflow) */}
+                        <div className="tab-bar gap-3 mb-6"> {/* Added gap-3 here */}
                             <button 
-                                className={`px-8 py-3 rounded-lg font-semibold shadow-md ${activeTab === 'cockpit' ? 'bg-blue-600' : 'bg-slate-700 hover:bg-slate-600'}`}
+                                className={`px-8 py-3 rounded-lg font-semibold shadow-md ${activeTab === 'cockpit' ? 'bg-blue-600' : 'bg-slate-700 hover:bg-slate-600'} flex-shrink-0`}
                                 onClick={() => setActiveTab('cockpit')}
                             >
                                 🎯 Cockpit
                             </button>
                             <button 
-                                className={`px-8 py-3 rounded-lg font-semibold shadow-md ${activeTab === 'datalake' ? 'bg-blue-600' : 'bg-slate-700 hover:bg-slate-600'}`}
+                                className={`px-8 py-3 rounded-lg font-semibold shadow-md ${activeTab === 'datalake' ? 'bg-blue-600' : 'bg-slate-700 hover:bg-slate-600'} flex-shrink-0`}
                                 onClick={() => setActiveTab('datalake')}
                             >
                                 💾 Data Lake ({Object.keys(selectedPatient.fullMarkers).length} Markers)
@@ -1181,6 +1191,12 @@
                                 onClick={handleReportClick} // Calls the trigger function
                             >
                                 📄 AI Report
+                            </button>
+                            <button 
+                                className={`px-8 py-3 rounded-lg font-semibold shadow-md ${activeTab === 'nbs' ? 'bg-blue-600' : 'bg-slate-700 hover:bg-slate-600'} flex-shrink-0`}
+                                onClick={() => setActiveTab('nbs')}
+                            >
+                                👶 NBS Screening
                             </button>
                         </div>
 
@@ -1255,8 +1271,11 @@
                                         <span className="text-3xl mr-2">👶</span> Newborn Screening (NBS) - Phase 2 Future Capability
                                     </h3>
                                     <p className="text-sm text-slate-400">
-                                        This section will integrate **Multi-Omic Predictive Health Mapping** to assess genetic risk factors for chronic diseases (like T2D, FH) in neonates. This capability facilitates proactive, preventative health planning, a core strategy for next-generation precision medicine in Qatar.
+                                        This section represents the future integration of **Multi-Omic Predictive Health Mapping** to assess genetic risk factors for chronic diseases (like T2D, FH) in neonates. This capability facilitates proactive, preventative health planning, a core strategy for next-generation precision medicine in Qatar.
                                     </p>
+                                    <div className="mt-4 text-lg font-bold text-yellow-500 text-center border-t border-slate-700 pt-3">
+                                        — FUNCTIONALITY COMING SOON —
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -1369,6 +1388,51 @@
                                             )}
                                         </tbody>
                                     </table>
+                                </div>
+                            </div>
+                        )}
+                        
+                        {/* --- NBS SCREENING VIEW --- */}
+                        {activeTab === 'nbs' && (
+                            <div className="ai-report-container p-8 border-cyan-500">
+                                <h2 className="text-4xl font-bold mb-4 text-blue-400 border-b border-slate-700 pb-3 flex items-center">
+                                    <span className="text-4xl mr-3">🧬</span> Next-Generation Newborn Screening (NBS)
+                                </h2>
+                                <p className="text-xl font-medium text-cyan-400 mb-6">
+                                    Proactive Health Mapping for Pediatric & Adult Longevity
+                                </p>
+
+                                <div className="space-y-6">
+                                    <div className="bg-slate-700 p-4 rounded-lg border-l-4 border-yellow-500">
+                                        <h4 className="font-bold text-lg text-yellow-300 flex items-center">
+                                            <span className="text-2xl mr-2">💡</span> Strategic Overview (Phase 2 Focus)
+                                        </h4>
+                                        <p className="text-sm text-slate-300 mt-2">
+                                            The next phase of the Burak Co-Pilot will integrate **Whole Genome Sequencing (WGS)** at birth. This shifts the focus from traditional reactive screening to predictive health mapping for complex, chronic diseases highly prevalent in the GCC region.
+                                        </p>
+                                    </div>
+
+                                    <h3 className="text-2xl font-bold text-white border-b border-slate-700 pb-2">Key Requirements & Analysis Layers</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="bg-slate-700/50 p-4 rounded-lg border border-slate-600">
+                                            <h4 className="font-bold text-lg text-green-400">1. Genetic Risk Identification</h4>
+                                            <p className="text-sm text-slate-300 mt-1">
+                                                Identification of genetic markers linked to high-risk conditions like Type 2 Diabetes (TCF7L2), Familial Hypercholesterolemia (Lp(a)), and other inherited metabolic disorders.
+                                            </p>
+                                        </div>
+                                        <div className="bg-slate-700/50 p-4 rounded-lg border border-slate-600">
+                                            <h4 className="font-bold text-lg text-green-400">2. Preventative Action Planning</h4>
+                                            <p className="text-sm text-slate-300 mt-1">
+                                                Translating genetic risk into **actionable pediatric protocols** (e.g., highly targeted nutritional advice, specific supplementation requirements, early pediatric monitoring schedules).
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="pt-4">
+                                        <h4 className="font-bold text-2xl text-red-400 text-center border-t border-slate-700 pt-3">
+                                            — NBS FUNCTIONALITY COMING SOON —
+                                        </h4>
+                                    </div>
                                 </div>
                             </div>
                         )}
