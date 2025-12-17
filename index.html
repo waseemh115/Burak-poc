@@ -11,16 +11,27 @@
     <style>
         /* Base Mobile-First Styles */
         body { margin: 0; font-family: 'Inter', system-ui, sans-serif; background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%); }
-        .glow { box-shadow: 0 0 30px rgba(59, 130, 246, 0.6); }
+        
+        @keyframes subtle-shadow-pulse {
+            0% { box-shadow: 0 0 50px rgba(59, 130, 246, 0.1); }
+            50% { box-shadow: 0 0 60px rgba(59, 130, 246, 0.2); }
+            100% { box-shadow: 0 0 50px rgba(59, 130, 246, 0.1); }
+        }
+        .glow-page-wrapper {
+            animation: subtle-shadow-pulse 10s ease-in-out infinite;
+        }
+
         .kpi-card { 
             background: linear-gradient(135deg, #1e293b 0%, #334155 100%); 
             border: 1px solid rgba(59, 130, 246, 0.3);
             transition: all 0.3s;
             cursor: pointer;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.5); /* Added Inner Shadow */
         }
         .kpi-card:hover { 
             border-color: rgba(59, 130, 246, 0.8);
             transform: translateY(-4px);
+            box-shadow: 0 8px 15px rgba(59, 130, 246, 0.3), inset 0 2px 8px rgba(0,0,0,0.7);
         }
         .system-card { 
             background: rgba(30, 41, 59, 0.9); 
@@ -91,6 +102,20 @@
         .insight-card .title {
             color: #4f46e5;
             font-weight: 700;
+        }
+        /* Mobile-Specific Grid Overrides (Ensuring Single Column Stack) */
+        .mobile-grid-1 {
+            grid-template-columns: 1fr;
+        }
+        @media (min-width: 640px) {
+            .mobile-grid-2-sm {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        @media (min-width: 1024px) {
+            .lg-grid-4 {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
         }
     </style>
 </head>
@@ -183,6 +208,7 @@
         };
 
         const demoPatients = [
+            // PATIENT 1 (High Risk - Metabolic)
             {
                 id: 1,
                 name: "Patient 1 (High Risk)",
@@ -225,6 +251,7 @@
                     bp_systolic: { value: 145, ref: "<120", status: "critical", category: "clinical", role: "Blood Pressure Systolic", unit: "mmHg" }
                 }
             },
+            // PATIENT 2 (Optimal)
             {
                 id: 2,
                 name: "Patient 2 (Optimal)",
@@ -267,6 +294,7 @@
                     bp_systolic: { value: 112, ref: "<120", status: "optimal", category: "clinical", role: "Blood Pressure Systolic", unit: "mmHg" }
                 }
             },
+            // PATIENT 3 (Critical - Multi-System)
             {
                 id: 3,
                 name: "Patient 3 (Critical)",
@@ -308,7 +336,93 @@
                     bmi: { value: 36.8, ref: "18.5-24.9", status: "critical", category: "clinical", role: "BMI", unit: "kg/m²" },
                     bp_systolic: { value: 168, ref: "<120", status: "critical", category: "clinical", role: "Blood Pressure Systolic", unit: "mmHg" }
                 }
-            }
+            },
+            // PATIENT 4 (Gut/Inflammation Focus)
+            {
+                id: 4,
+                name: "Patient 4 (Gut Focus)",
+                age: 38,
+                gender: "Female",
+                scenario: "Gut dysbiosis and inflammation",
+                biologicalAge: 40,
+                systemicRisk: 55,
+                futureReadiness: 65,
+                ndi: 1.5,
+                met: 3.5,
+                convergence: "HIGH: GUT-INFLAMMATION AXIS BREAKDOWN",
+                markers: {
+                    glucose: { value: 95, ref: "70-100", status: "optimal", category: "metabolic", role: "Fasting Glucose", unit: "mg/dL" },
+                    hba1c: { value: 5.5, ref: "<5.7", status: "optimal", category: "metabolic", role: "Hemoglobin A1c", unit: "%" },
+                    insulin: { value: 12, ref: "2-20", status: "optimal", category: "metabolic", role: "Fasting Insulin", unit: "μIU/mL" },
+                    homa_ir: { value: 2.8, ref: "<2.5", status: "warning", category: "metabolic", role: "HOMA-IR Score", unit: "index" },
+                    triglycerides: { value: 130, ref: "<150", status: "optimal", category: "lipid", role: "Triglycerides", unit: "mg/dL" },
+                    hdl: { value: 55, ref: ">40", status: "optimal", category: "lipid", role: "HDL Cholesterol", unit: "mg/dL" },
+                    ldl: { value: 110, ref: "<100", status: "warning", category: "lipid", role: "LDL Cholesterol", unit: "mg/dL" },
+                    total_chol: { value: 190, ref: "<200", status: "optimal", category: "lipid", role: "Total Cholesterol", unit: "mg/dL" },
+                    crp: { value: 6.5, ref: "<3.0", status: "critical", category: "inflammation", role: "C-Reactive Protein", unit: "mg/L" },
+                    il6: { value: 4.5, ref: "<3.0", status: "warning", category: "inflammation", role: "Interleukin-6", unit: "pg/mL" },
+                    tnf_alpha: { value: 9.0, ref: "<8.1", status: "warning", category: "inflammation", role: "TNF-alpha", unit: "pg/mL" },
+                    alt: { value: 40, ref: "7-56", status: "optimal", category: "liver", role: "ALT", unit: "U/L" },
+                    ast: { value: 35, ref: "10-40", status: "optimal", category: "liver", role: "AST", unit: "U/L" },
+                    ggt: { value: 45, ref: "<50", status: "optimal", category: "liver", role: "GGT", unit: "U/L" },
+                    creatinine: { value: 1.0, ref: "0.7-1.3", status: "optimal", category: "kidney", role: "Creatinine", unit: "mg/dL" },
+                    egfr: { value: 88, ref: ">90", status: "warning", category: "kidney", role: "eGFR", unit: "mL/min" },
+                    uric_acid: { value: 6.9, ref: "3.5-7.2", status: "warning", category: "kidney", role: "Uric Acid", unit: "mg/dL" },
+                    vitamin_d: { value: 35, ref: "30-100", status: "optimal", category: "vitamins", role: "Vitamin D", unit: "ng/mL" },
+                    vitamin_b12: { value: 450, ref: "200-900", status: "optimal", category: "vitamins", role: "Vitamin B12", unit: "pg/mL" },
+                    folate: { value: 8.0, ref: "3-17", status: "optimal", category: "vitamins", role: "Folate", unit: "ng/mL" },
+                    testosterone: { value: 350, ref: "300-1000", status: "optimal", category: "hormonal", role: "Testosterone", unit: "ng/dL" },
+                    cortisol: { value: 18, ref: "6-23", status: "optimal", category: "hormonal", role: "Cortisol", unit: "μg/dL" },
+                    tsh: { value: 3.5, ref: "0.4-4.0", status: "optimal", category: "hormonal", role: "TSH", unit: "mIU/L" },
+                    zonulin: { value: 65, ref: "<30", status: "critical", category: "gut", role: "Zonulin", unit: "ng/mL" },
+                    calprotectin: { value: 120, ref: "<50", status: "critical", category: "gut", role: "Calprotectin", unit: "μg/g" },
+                    bmi: { value: 24.5, ref: "18.5-24.9", status: "optimal", category: "clinical", role: "BMI", unit: "kg/m²" },
+                    bp_systolic: { value: 118, ref: "<120", status: "optimal", category: "clinical", role: "Blood Pressure Systolic", unit: "mmHg" }
+                }
+            },
+             // PATIENT 5 (Hormonal Imbalance)
+            {
+                id: 5,
+                name: "Patient 5 (Hormonal Risk)",
+                age: 48,
+                gender: "Female",
+                scenario: "Subclinical Hypothyroidism and Cortisol Imbalance",
+                biologicalAge: 50,
+                systemicRisk: 52,
+                futureReadiness: 60,
+                ndi: 4.0,
+                met: 1.5,
+                convergence: "MODERATE: REGULATORY IMBALANCE",
+                markers: {
+                    glucose: { value: 98, ref: "70-100", status: "optimal", category: "metabolic", role: "Fasting Glucose", unit: "mg/dL" },
+                    hba1c: { value: 5.4, ref: "<5.7", status: "optimal", category: "metabolic", role: "Hemoglobin A1c", unit: "%" },
+                    insulin: { value: 15, ref: "2-20", status: "optimal", category: "metabolic", role: "Fasting Insulin", unit: "μIU/mL" },
+                    homa_ir: { value: 3.1, ref: "<2.5", status: "warning", category: "metabolic", role: "HOMA-IR Score", unit: "index" },
+                    triglycerides: { value: 155, ref: "<150", status: "warning", category: "lipid", role: "Triglycerides", unit: "mg/dL" },
+                    hdl: { value: 45, ref: ">40", status: "optimal", category: "lipid", role: "HDL Cholesterol", unit: "mg/dL" },
+                    ldl: { value: 115, ref: "<100", status: "warning", category: "lipid", role: "LDL Cholesterol", unit: "mg/dL" },
+                    total_chol: { value: 195, ref: "<200", status: "optimal", category: "lipid", role: "Total Cholesterol", unit: "mg/dL" },
+                    crp: { value: 2.5, ref: "<3.0", status: "optimal", category: "inflammation", role: "C-Reactive Protein", unit: "mg/L" },
+                    il6: { value: 3.5, ref: "<3.0", status: "warning", category: "inflammation", role: "Interleukin-6", unit: "pg/mL" },
+                    tnf_alpha: { value: 7.5, ref: "<8.1", status: "optimal", category: "inflammation", role: "TNF-alpha", unit: "pg/mL" },
+                    alt: { value: 35, ref: "7-56", status: "optimal", category: "liver", role: "ALT", unit: "U/L" },
+                    ast: { value: 32, ref: "10-40", status: "optimal", category: "liver", role: "AST", unit: "U/L" },
+                    ggt: { value: 38, ref: "<50", status: "optimal", category: "liver", role: "GGT", unit: "U/L" },
+                    creatinine: { value: 0.8, ref: "0.7-1.3", status: "optimal", category: "kidney", role: "Creatinine", unit: "mg/dL" },
+                    egfr: { value: 95, ref: ">90", status: "optimal", category: "kidney", role: "eGFR", unit: "mL/min" },
+                    uric_acid: { value: 5.5, ref: "3.5-7.2", status: "optimal", category: "kidney", role: "Uric Acid", unit: "mg/dL" },
+                    vitamin_d: { value: 18, ref: "30-100", status: "critical", category: "vitamins", role: "Vitamin D", unit: "ng/mL" },
+                    vitamin_b12: { value: 190, ref: "200-900", status: "warning", category: "vitamins", role: "Vitamin B12", unit: "pg/mL" },
+                    folate: { value: 5.0, ref: "3-17", status: "optimal", category: "vitamins", role: "Folate", unit: "ng/mL" },
+                    testosterone: { value: 305, ref: "300-1000", status: "optimal", category: "hormonal", role: "Testosterone", unit: "ng/dL" },
+                    cortisol: { value: 25, ref: "6-23", status: "warning", category: "hormonal", role: "Cortisol", unit: "μg/dL" },
+                    tsh: { value: 5.1, ref: "0.4-4.0", status: "critical", category: "hormonal", role: "TSH", unit: "mIU/L" },
+                    zonulin: { value: 32, ref: "<30", status: "warning", category: "gut", role: "Zonulin", unit: "ng/mL" },
+                    calprotectin: { value: 55, ref: "<50", status: "warning", category: "gut", role: "Calprotectin", unit: "μg/g" },
+                    bmi: { value: 26.1, ref: "18.5-24.9", status: "warning", category: "clinical", role: "BMI", unit: "kg/m²" },
+                    bp_systolic: { value: 125, ref: "<120", status: "warning", category: "clinical", role: "Blood Pressure Systolic", unit: "mmHg" }
+                }
+            },
         ];
 
         // Process data to include all 253 markers
@@ -416,9 +530,10 @@
                         ]
                     },
                     { 
-                        title: "PHASE 2: RAMADAN-SPECIFIC GUIDANCE (If applicable)", 
+                        title: "PHASE 2: NEXT-GENERATION OMICS & RAMADAN GUIDANCE", 
                         points: [
                             "Endocrinology consultation mandatory. Optimize HbA1c to <6.5% before fasting.",
+                            "**Newborn Screening (Future POC Flavour):** High-level genomic screening for pediatric metabolic risk factors (e.g., specific enzyme deficiencies, familial hypercholesterolemia).", 
                             "Suhoor Strategy: Complex carbs, protein, and healthy fats (Oats, Eggs, Labneh).",
                             "Iftar Strategy: Start with 1-2 dates + water. Focus on grilled proteins, vegetable soups."
                         ]
@@ -485,14 +600,14 @@
                             </p>
                             
                             {/* VALUE AND REFERENCE RANGE (if available from KPI/Pillar click) */}
-                            {data.value && data.units && data.ref && (
+                            {/* NOTE: We check for data.value !== undefined explicitly to ensure a clean display */}
+                            {data.value !== undefined && data.units && data.ref && (
                                 <p className="text-slate-300 text-sm font-mono">
                                     Value: <span className={valueClass}>{data.value} {data.units}</span> (Ref: {data.ref})
                                 </p>
                             )}
 
-                            {/* 2. DESCRIPTION (Pillar Context / KPI Description) */}
-                            {/* THIS LINE NOW CONTAINS THE NON-VAGUE TEXT (or the detailed KPI description) */}
+                            {/* 2. DESCRIPTION (Pillar Context / KPI Description) - THE ONLY REMAINING TEXT BLOCK */}
                             <p className="text-slate-300 text-sm mt-3">{data.description}</p>
                         </div>
 
@@ -898,7 +1013,7 @@
                 return [
                     { name: "Biological Age", value: selectedPatient.biologicalAge, units: "yrs", compare: selectedPatient.age, status: selectedPatient.biologicalAge > selectedPatient.age ? 'critical' : 'optimal', description: `Actual Age: ${selectedPatient.age}.` },
                     { name: "Systemic Risk", value: selectedPatient.systemicRisk, units: "%", compare: 40, status: selectedPatient.systemicRisk >= 70 ? 'critical' : selectedPatient.systemicRisk >= 40 ? 'warning' : 'optimal', description: `High risk profile for chronic disease.` },
-                    { name: "Future Readiness", value: selectedPatient.futureReadiness, units: "%", compare: 70, status: selectedPatient.futureReadiness <= 40 ? 'critical' : selectedPatient.futureReadiness <= 70 ? 'warning' : 'optimal', description: `Measures metabolic adaptability and resilience.` },
+                    { name: "Future Readiness", value: selectedPatient.futureReadiness, units: "score", compare: 70, status: selectedPatient.futureReadiness <= 40 ? 'critical' : selectedPatient.futureReadiness <= 70 ? 'warning' : 'optimal', description: `Measures metabolic adaptability and resilience.` },
                     { name: "Nutrient Depletion (NDI)", value: selectedPatient.ndi, units: "score", compare: 2.5, status: selectedPatient.ndi >= 4 ? 'critical' : selectedPatient.ndi >= 2 ? 'warning' : 'optimal', description: `Index of micronutrient deficiency impact.` },
                     { name: "Metabolic Trajectory (MET)", value: selectedPatient.met, units: "score", compare: 2.0, status: selectedPatient.met <= 1.0 ? 'critical' : selectedPatient.met <= 3.0 ? 'warning' : 'optimal', description: `Velocity of core risk markers over time.` },
                 ].map(kpi => {
@@ -921,7 +1036,6 @@
                     const trend = kpi.value > 0 ? "an improving" : kpi.value < 0 ? "a worsening" : "a stable";
                     detailedDescription = `The Metabolic Trajectory score of ${kpi.value} indicates ${trend} trend in core risk markers (Glucose, HOMA-IR). This measures the velocity of metabolic health over time.`;
                 } else {
-                    // For GCC pillars, we use the specific context function
                     detailedDescription = `${kpi.name} is currently rated **${kpi.status.toUpperCase()}** at ${kpi.value} ${kpi.units}. ${kpi.description}`;
                 }
                 
@@ -944,7 +1058,11 @@
                 const stats = getSystemStats(categoryKey, true); 
                 
                 // Filter down to show only primary markers in the modal list for clarity (27 markers logic)
-                const primaryMarkersInSystem = stats.markers.filter(m => m.isPrimary);
+                    const primaryMarkersInSystem = stats.markers.filter(m => m.isPrimary).map(m => ({
+                    ...m,
+                    // Use a generic placeholder for the description in the modal for now
+                    description: `${m.role} value is ${m.value} ${m.unit} (Reference: ${m.ref}).`
+                }));
                 
                 setActiveModalData({
                     title: system.name,
@@ -1024,7 +1142,7 @@
             }
 
             return (
-                <div className="min-h-screen text-white p-6">
+                <div className="min-h-screen text-white p-6 glow-page-wrapper">
                     <div className="max-w-7xl mx-auto">
                         
                         {/* Header Banner */}
@@ -1068,6 +1186,12 @@
                                 onClick={handleReportClick} // Calls the trigger function
                             >
                                 📄 AI Report
+                            </button>
+                            <button 
+                                className={`px-8 py-3 rounded-lg font-semibold shadow-md ${activeTab === 'nbs' ? 'bg-blue-600' : 'bg-slate-700 hover:bg-slate-600'}`}
+                                onClick={() => setActiveTab('nbs')}
+                            >
+                                👶 NBS Screening
                             </button>
                         </div>
 
@@ -1133,6 +1257,19 @@
                                                 </div>
                                             );
                                         })}
+                                    </div>
+                                </div>
+
+                                {/* NEWBORN SCREENING SKELETON */}
+                                <div className="bg-slate-800 p-6 rounded-lg shadow-xl border border-blue-500">
+                                    <h3 className="text-2xl font-bold text-cyan-400 border-b border-slate-700 pb-2 mb-4 flex items-center">
+                                        <span className="text-3xl mr-2">👶</span> Newborn Screening (NBS) - Phase 2 Future Capability
+                                    </h3>
+                                    <p className="text-sm text-slate-400">
+                                        This section represents the future integration of **Multi-Omic Predictive Health Mapping** to assess genetic risk factors for chronic diseases (like T2D, FH) in neonates. This capability facilitates proactive, preventative health planning, a core strategy for next-generation precision medicine in Qatar.
+                                    </p>
+                                    <div className="mt-4 text-lg font-bold text-yellow-500 text-center border-t border-slate-700 pt-3">
+                                        — FUNCTIONALITY COMING SOON —
                                     </div>
                                 </div>
                             </div>
@@ -1250,128 +1387,38 @@
                             </div>
                         )}
                         
-                        {/* --- AI REPORT VIEW --- */}
-                        {activeTab === 'report' && (
-                            <div className="ai-report-container">
-                                <div className="ai-report-header">
-                                    <h2 className="text-4xl font-bold mb-1 text-cyan-400">CLINICAL INTELLIGENCE REPORT - GCC PRECISION MEDICINE</h2>
-                                    <p className="text-blue-200 text-lg">Generated: {new Date("2025-12-16").toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} | Patient: GCC-2024-00{selectedPatient.id} | Region: Qatar</p>
-                                </div>
-                                <div className="space-y-0 pt-0">
+                        {/* --- NBS SCREENING VIEW --- */}
+                        {activeTab === 'nbs' && (
+                            <div className="ai-report-container p-8 border-cyan-500">
+                                <h2 className="text-4xl font-bold mb-4 text-blue-400 border-b border-slate-700 pb-3 flex items-center">
+                                    <span className="text-4xl mr-3">🧬</span> Next-Generation Newborn Screening (NBS)
+                                </h2>
+                                <p className="text-xl font-medium text-cyan-400 mb-6">
+                                    Proactive Health Mapping for Pediatric & Adult Longevity
+                                </p>
 
-                                    {/* AI TRANSPARENCY WARNING */}
-                                    <div className="report-section bg-yellow-900/30 border-l-4 border-yellow-500">
-                                        <h3 className="report-section-title text-yellow-300">
-                                            ⚠️ POC STATUS WARNING: TEMPLATE NARRATIVE
-                                        </h3>
-                                        <p className="text-sm text-yellow-200 font-semibold">
-                                            The narrative and clinical context below are **dynamically populated with patient data** but generated from generic templates based on the patient's risk profile (Critical/Warning/Optimal).
-                                        </p>
-                                        <p className="text-xs text-yellow-300 mt-1">
-                                            In production, Gemini AI will perform true Natural Language Processing (NLP) to create a unique, highly personalized report.
+                                <div className="space-y-6">
+                                    <div className="bg-slate-700 p-4 rounded-lg border-l-4 border-yellow-500">
+                                        <h4 className="font-bold text-lg text-yellow-300 flex items-center">
+                                            <span className="text-2xl mr-2">💡</span> Strategic Overview (Phase 2 Focus)
+                                        </h4>
+                                        <p className="text-slate-300 mt-2">
+                                            The next phase of the Burak Co-Pilot will integrate **Whole Genome Sequencing (WGS)** at birth. This shifts the focus from traditional reactive screening to predictive health mapping for complex, chronic diseases highly prevalent in the GCC region.
                                         </p>
                                     </div>
-                                    
-                                    {/* EXECUTIVE SUMMARY */}
-                                    <div className="report-section">
-                                        <h3 className="report-section-title text-slate-300">EXECUTIVE SUMMARY</h3>
-                                        <p className="text-slate-300 whitespace-pre-wrap">{reportData.executiveSummary}</p>
-                                    </div>
-                                    
-                                    {/* MARKER INTEGRITY SUMMARY (NEW BLOB SECTION) */}
-                                    <div className="report-section">
-                                        <h3 className="report-section-title">BIOMARKER INTEGRITY SUMMARY ({integrityStats.total} TOTAL MARKERS)</h3>
-                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-                                            <div className="bg-green-900/40 p-4 rounded-xl border border-green-700">
-                                                <span className="text-3xl block text-green-400">{integrityStats.optimal}</span>
-                                                <p className="text-xs text-green-300 font-semibold">Optimal Range</p>
-                                            </div>
-                                            <div className="bg-yellow-900/40 p-4 rounded-xl border border-yellow-700">
-                                                <span className="text-3xl block text-yellow-400">{integrityStats.warning}</span>
-                                                <p className="text-xs text-yellow-300 font-semibold">Warning/Elevated</p>
-                                            </div>
-                                            <div className="bg-red-900/40 p-4 rounded-xl border border-red-700">
-                                                <span className="text-3xl block text-red-400">{integrityStats.critical}</span>
-                                                <p className="text-xs text-red-300 font-semibold">Critical Attention</p>
-                                            </div>
-                                            <div className="bg-blue-900/40 p-4 rounded-xl border border-blue-700">
-                                                <span className="text-3xl block text-blue-400">{integrityStats.total}</span>
-                                                <p className="text-xs text-blue-300 font-semibold">Total Analyzed</p>
-                                            </div>
+
+                                    <h3 className="text-2xl font-bold text-white border-b border-slate-700 pb-2">Key Requirements & Analysis Layers</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="bg-slate-700/50 p-4 rounded-lg border border-slate-600">
+                                            <h4 className="font-bold text-lg text-green-400">1. Genetic Risk Identification</h4>
+                                            <p className="text-sm text-slate-300 mt-1">
+                                                Identification of genetic markers linked to high-risk conditions like Type 2 Diabetes (TCF7L2), Familial Hypercholesterolemia (Lp(a)), and other inherited metabolic disorders.
+                                            </p>
+                                        </div>
+                                        <div className="bg-slate-700/50 p-4 rounded-lg border border-slate-600">
+                                            <h4 className="font-bold text-lg text-green-400">2. Preventative Action Planning</h4>
+                                            <p className="text-sm text-slate-300 mt-1">
+                                                Translating genetic risk into **actionable pediatric protocols** (e.g., highly targeted nutritional advice, specific supplementation requirements, early pediatric monitoring schedules).
+                                            </p>
                                         </div>
                                     </div>
-
-
-                                    {/* CRITICAL FINDINGS (Insight Cards) */}
-                                    <div className="report-section">
-                                        <h3 className="report-section-title text-red-400">CRITICAL FINDINGS (GCC-CONTEXTUALIZED)</h3>
-                                        <div className="space-y-4">
-                                            {reportData.criticalFindings.map((finding, index) => {
-                                                const status = finding.status;
-                                                const color = status === 'critical' ? 'border-red-500' : 'border-yellow-500';
-
-                                                return (
-                                                    <div key={index} className={`insight-card ${color} border-l-4 p-4 rounded-lg shadow-md bg-slate-900/80`}>
-                                                        <div className="flex justify-between items-start">
-                                                            <h4 className="title text-lg mb-2 flex items-center text-red-300">
-                                                                <span className="text-2xl mr-2">💡</span> {finding.title}
-                                                            </h4>
-                                                            <StatusBadge status={status} />
-                                                        </div>
-
-                                                        <div className="text-sm text-slate-300 space-y-2 pt-1">
-                                                            <p className="font-semibold text-white whitespace-pre-wrap">{finding.pattern}</p>
-                                                            <p className="text-yellow-400 whitespace-pre-wrap">{finding.risk}</p>
-                                                            <p className="text-slate-400 whitespace-pre-wrap">{finding.context}</p>
-                                                            <p className="text-cyan-400 whitespace-pre-wrap">{finding.ramadan}</p>
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                    
-                                    
-                                    {/* Primary Marker Table Snapshot */}
-                                    <AIReportPrimaryMarkerTable selectedPatient={selectedPatient} />
-
-                                    {/* INTERVENTION STRATEGY */}
-                                    <div className="report-section">
-                                        <h3 className="report-section-title text-green-400">GCC-SPECIFIC INTERVENTION STRATEGY</h3>
-                                        <div className="space-y-4">
-                                            {reportData.interventionStrategy.map((section, index) => (
-                                                <div key={index} className="bg-slate-700/50 p-4 rounded-lg border-l-4 border-green-500">
-                                                    <h4 className="font-bold text-base text-white mb-2">{section.title}</h4>
-                                                    <ul className="list-disc list-inside text-slate-300 ml-4 space-y-1">
-                                                        {section.points.map((item, i) => <li key={i} className="text-sm">{item}</li>)}
-                                                    </ul>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                    
-                                    {/* PROGNOSIS */}
-                                    <div className="report-section">
-                                        <h3 className="report-section-title text-cyan-400">PROGNOSIS</h3>
-                                        <p className="text-slate-300 whitespace-pre-wrap">{reportData.prognosis}</p>
-                                    </div>
-                                    
-                                </div>
-                            </div>
-                        )}
-                        
-                    </div>
-                    
-                    {activeModalData && <DeepDiveModal data={activeModalData} onClose={handleCloseModal} />}
-
-                    <footer className="bg-slate-900 py-6 mt-12 rounded-lg text-center border-t border-slate-700">
-                        <div className="text-slate-400">Developed by <span className="font-semibold text-yellow-400">waseem ahanger ❤️</span> on <span className="text-blue-400">Google Cloud Platform</span>.</div>
-                    </footer>
-                </div>
-            );
-        }
-
-        ReactDOM.render(<App />, document.getElementById('root'));
-    </script>
-</body>
-</html>
