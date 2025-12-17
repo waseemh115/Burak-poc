@@ -55,6 +55,42 @@
             align-items: center; 
             backdrop-filter: blur(5px);
         }
+        /* AI Report Specific Styling */
+        .ai-report-container {
+            background-color: #111827;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid #1e293b;
+        }
+        .ai-report-header {
+            background-color: #0f172a; /* Deeper header contrast */
+            padding: 24px;
+            border-radius: 8px 8px 0 0;
+            border-bottom: 2px solid #3b82f6;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .report-section {
+            padding: 20px 24px;
+            border-bottom: 1px solid #1e293b;
+        }
+        .report-section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #94a3b8; /* Slate 400 */
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+        }
+        .insight-card {
+            background-color: #1e293b;
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            border-radius: 6px;
+        }
+        .insight-card .title {
+            color: #4f46e5;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
@@ -160,14 +196,14 @@
                 convergence: "MODERATE: METABOLIC-INFLAMMATORY COUPLING",
                 markers: {
                     glucose: { value: 125, ref: "70-100", status: "critical", category: "metabolic", role: "Fasting Glucose", unit: "mg/dL" },
-                    hba1c: { value: 6.2, ref: "<5.7", status: "critical", category: "metabolic", role: "Hemoglobin A1c", unit: "%" },
-                    insulin: { value: 22, ref: "2-20", status: "critical", category: "metabolic", role: "Fasting Insulin", unit: "μIU/mL" },
-                    homa_ir: { value: 6.8, ref: "<2.5", status: "critical", category: "metabolic", role: "HOMA-IR Score", unit: "index" },
-                    triglycerides: { value: 245, ref: "<150", status: "critical", category: "lipid", role: "Triglycerides", unit: "mg/dL" },
+                    hba1c: { value: 6.8, ref: "<5.7", status: "critical", category: "metabolic", role: "Hemoglobin A1c", unit: "%" },
+                    insulin: { value: 18.5, ref: "2-20", status: "warning", category: "metabolic", role: "Fasting Insulin", unit: "μIU/mL" },
+                    homa_ir: { value: 4.9, ref: "<2.5", status: "critical", category: "metabolic", role: "HOMA-IR Score", unit: "index" },
+                    triglycerides: { value: 220, ref: "<150", status: "critical", category: "lipid", role: "Triglycerides", unit: "mg/dL" },
                     hdl: { value: 38, ref: ">40", status: "warning", category: "lipid", role: "HDL Cholesterol", unit: "mg/dL" },
-                    ldl: { value: 155, ref: "<100", status: "critical", category: "lipid", role: "LDL Cholesterol", unit: "mg/dL" },
+                    ldl: { value: 128, ref: "<100", status: "critical", category: "lipid", role: "LDL Cholesterol", unit: "mg/dL" },
                     total_chol: { value: 245, ref: "<200", status: "critical", category: "lipid", role: "Total Cholesterol", unit: "mg/dL" },
-                    crp: { value: 8.5, ref: "<3.0", status: "critical", category: "inflammation", role: "C-Reactive Protein", unit: "mg/L" },
+                    crp: { value: 4.2, ref: "<3.0", status: "critical", category: "inflammation", role: "C-Reactive Protein", unit: "mg/L" },
                     il6: { value: 6.2, ref: "<3.0", status: "critical", category: "inflammation", role: "Interleukin-6", unit: "pg/mL" },
                     tnf_alpha: { value: 15.8, ref: "<8.1", status: "critical", category: "inflammation", role: "TNF-alpha", unit: "pg/mL" },
                     alt: { value: 65, ref: "7-56", status: "warning", category: "liver", role: "ALT", unit: "U/L" },
@@ -287,39 +323,138 @@
         };
         
         // Helper to generate a simulated detailed report
-        const getAIReport = (patient, getSystemStatsFn) => { // Accept getSystemStats as an argument
-            // FIX: Now calling the function passed down from App
-            const stats = {
-                metabolic: getSystemStatsFn('metabolic', false, patient).critical,
-                inflammation: getSystemStatsFn('inflammation', false, patient).critical,
-                lipid: getSystemStatsFn('lipid', false, patient).critical,
-                gut: getSystemStatsFn('gut', false, patient).critical,
-                vitamins: getSystemStatsFn('vitamins', false, patient).critical,
-            };
+        const getAIReport = (patient, getSystemStatsFn) => { 
+            const m = patient.markers;
 
-            const riskSummary = patient.systemicRisk >= 70 ? "EXTREMELY HIGH" : patient.systemicRisk >= 40 ? "ELEVATED" : "LOW";
+            const stats = {
+                metabolic: getSystemStatsFn('metabolic', true, patient).markers,
+                totalMarkers: Object.keys(patient.fullMarkers).length
+            };
             
-            const convergenceMessage = patient.convergence.includes('CATASTROPHIC') 
-                ? "The AI model detects systemic triad failure: Metabolic, Inflammatory, and Cardiovascular systems are collapsing simultaneously. This requires immediate, aggressive intervention."
-                : patient.convergence.includes('MODERATE')
-                ? "A moderate coupling is detected, primarily driven by gut permeability and resulting chronic, low-grade systemic inflammation."
-                : "All core systems are synchronized and stable. Focus remains on anti-aging and longevity protocols.";
-                
-            const primaryConcerns = [];
-            if (stats.metabolic > 0) primaryConcerns.push(`Metabolic Stress (${stats.metabolic} critical markers, e.g., HOMA-IR, HbA1c)`);
-            if (stats.gut > 0) primaryConcerns.push(`Gut Barrier Dysfunction (${stats.gut} critical markers, e.g., Zonulin)`);
-            if (stats.lipid > 0) primaryConcerns.push(`Atherogenic Lipid Profile (${stats.lipid} critical markers, e.g., LDL)`);
+            // Analyze ALL 253 markers for the integrity summary blob
+            const allMarkers = Object.entries(patient.fullMarkers).map(([_, m]) => m.status);
+            const totalCritical = allMarkers.filter(s => s === 'critical').length;
+            const totalWarning = allMarkers.filter(s => s === 'warning').length;
+            const totalOptimal = allMarkers.filter(s => s === 'optimal').length;
+
+            const primaryConcerns = []; 
+
+            // --- Dynamic Status Check Helpers ---
+            const getStatusText = (marker) => marker.status.toUpperCase();
+            const getRamadanAdvice = (marker) => {
+                if (marker.status === 'critical') return `**URGENT:** Endocrinology consultation is mandatory before fasting. Strict medical supervision required.`;
+                if (marker.status === 'warning') return `**ADVISORY:** Monitor closely, optimize hydration and diet to mitigate risk during fasting periods.`;
+                return `**SAFE:** Maintain current optimized pre-fasting diet and hydration protocols.`;
+            };
             
-            return {
-                title: `AI Intelligence Report: ${patient.name}`,
-                summary: `The overall Systemic Risk is rated at ${riskSummary} (${patient.systemicRisk}%). The patient's predicted biological age of ${patient.biologicalAge} years indicates accelerated aging relative to chronological age (${patient.age}).`,
-                convergence: convergenceMessage,
-                primaryConcerns: primaryConcerns.length > 0 ? primaryConcerns.join(', ') : "No critical primary markers found.",
-                recommendations: [
-                    "Root Cause Analysis: Prioritize investigation into gut health (Zonulin) and chronic inflammation (CRP) to find the source of systemic stress.",
-                    `Metabolic Protocol: Immediate stabilization of blood glucose and insulin sensitivity (MET Trajectory: ${patient.met}).`,
-                    "Micronutrient Strategy: Aggressive supplementation plan required for Vitamin D and other co-factors (NDI: Critical at ${patient.ndi})."
+            // --- AI Report Content Logic (Ensures dynamic patient data) ---
+            
+            const isOptimalPatient = patient.systemicRisk < 30; // Define Optimal threshold
+            const hba1cStatus = getStatusText(m.hba1c);
+            const ldlStatus = getStatusText(m.ldl);
+            const crpStatus = getStatusText(m.crp);
+            const vdStatus = getStatusText(m.vitamin_d);
+            
+            const generalRiskLevel = isOptimalPatient ? 'an Optimal Risk' : 'a High-Risk Metabolic Storm';
+
+            const criticalFindings = [];
+
+            if (!isOptimalPatient) {
+                criticalFindings.push({
+                    title: "1. GCC Metabolic Storm Detected",
+                    status: m.homa_ir.status,
+                    pattern: `**Pattern:** ${m.hba1c.role} (${m.hba1c.value}%) + ${m.insulin.role} (${m.insulin.value} ${m.insulin.unit}) + ${m.triglycerides.role} (${m.triglycerides.value} ${m.triglycerides.unit})`,
+                    risk: `**Risk:** Pre-diabetic state with insulin resistance. **Status:** ${hba1cStatus} risk progression.`,
+                    context: `**GCC Context:** This pattern is strongly linked to prevalent factors like high dietary glycemic load, sedentary lifestyle, and common genetic risk factors in the wider Arab population.`,
+                    ramadan: `**🌙 Ramadan Guidance:** ${getRamadanAdvice(m.glucose)}`
+                });
+
+                criticalFindings.push({
+                    title: "2. Atherogenic Dyslipidemia & Cardiovascular Risk",
+                    status: m.ldl.status,
+                    pattern: `**Pattern:** ${m.triglycerides.role} (${m.triglycerides.value} ${m.triglycerides.unit}) + ${m.hdl.role} (${m.hdl.value} ${m.hdl.unit}) + ${m.ldl.role} (${m.ldl.value} ${m.ldl.unit})`,
+                    risk: `**Risk:** ${ldlStatus} risk acceleration due to poor lipid clearance and low protective HDL.`,
+                    context: `**GCC Context:** Low HDL-C is endemic in this population due to high carbohydrate/fat diets and low physical activity. Elevated atherogenic particles increase cardiovascular risk.`,
+                    ramadan: `**🌙 Ramadan Guidance:** Monitor strict fat consumption during Iftar to prevent hypertriglyceridemia flare-ups.`
+                });
+            }
+            
+            criticalFindings.push({
+                title: "3. Paradoxical Vitamin D Deficiency",
+                status: m.vitamin_d.status,
+                pattern: `**Pattern:** ${m.vitamin_d.role} (${m.vitamin_d.value} ${m.vitamin_d.unit}) (Reference: ${m.vitamin_d.ref})`,
+                risk: `**Risk:** Deficiency exacerbates insulin resistance, increases cardiovascular risk, and impairs immune function. **Status:** ${vdStatus}`,
+                context: `**GCC Context:** Deficiency is widespread in Qatar (affecting 80%) due to indoor lifestyle, clothing coverage, and genetic factors affecting synthesis.`,
+                ramadan: `**🌙 Ramadan Guidance:** Strict supplementation schedule required. Compliance is key during intermittent eating windows.`
+            });
+
+            if (!isOptimalPatient) {
+                criticalFindings.push({
+                    title: "4. Chronic Systemic Inflammation",
+                    status: m.crp.status,
+                    pattern: `**Pattern:** ${m.crp.role} (${m.crp.value} ${m.crp.unit}) + ${m.uric_acid.role} (${m.uric_acid.value} ${m.uric_acid.unit})`,
+                    risk: `**Risk:** Chronic inflammation with cardiovascular implications; suggests high oxidative stress. **Status:** ${crpStatus}`,
+                    context: `**GCC Context:** Elevated markers correlate with high red meat consumption and low omega-3 intake typical in regional diets.`,
+                    ramadan: `**🌙 Ramadan Guidance:** Focus on increasing fiber and green leafy vegetables during Suhoor to manage inflammation and oxidative stress.`
+                });
+            }
+
+            // --- Intervention Strategy (DYNAMIC) ---
+            const interventionStrategy = isOptimalPatient 
+                ? [
+                    { title: "PHASE 1: MAINTENANCE & LONGEVITY", points: ["Maintain optimal metrics through balanced nutrition and consistent activity.", "Continue quarterly review of GCC pillars (Vit D, HOMA-IR) to preempt future risks."]},
+                    { title: "PHASE 2: ENHANCEMENT PROTOCOL", points: ["Consider advanced longevity supplements (e.g., NMN, Resveratrol).", "Focus physical activity on resistance training to maximize muscle health."]}
                 ]
+                : [
+                    { 
+                        title: "PHASE 1: IMMEDIATE ACTIONS (Weeks 1-4)", 
+                        points: [
+                            "Metabolic Optimization: Metformin consideration. Adopt low-GI Mediterranean-Gulf hybrid diet (replace white rice, limit dates, increase lentils).",
+                            "Vitamin D Restoration: High-dose supplementation (e.g., 50,000 IU weekly for 8 weeks). Target level: >40 ng/mL.",
+                            "Physical Activity: Priority on indoor exercise (gym, mall walking), targeting 150 min/week."
+                        ]
+                    },
+                    { 
+                        title: "PHASE 2: RAMADAN-SPECIFIC GUIDANCE (If applicable)", 
+                        points: [
+                            "Endocrinology consultation mandatory. Optimize HbA1c to <6.5% before fasting.",
+                            "Suhoor Strategy: Complex carbs, protein, and healthy fats (Oats, Eggs, Labneh).",
+                            "Iftar Strategy: Start with 1-2 dates + water. Focus on grilled proteins, vegetable soups."
+                        ]
+                    },
+                    { 
+                        title: "PHASE 3: LONG-TERM OPTIMIZATION (Months 2-6)", 
+                        points: [
+                            "Lipid Management: Omega-3 supplementation (2-3g EPA/DHA daily). Increase local fish consumption.",
+                            "Inflammation Reduction: Anti-inflammatory diet (increase turmeric/ginger). Stress and sleep optimization.",
+                            "Hormonal: Address root causes of low-normal Testosterone before replacement."
+                        ]
+                    }
+                ];
+
+            // --- Final Prognosis (DYNAMIC) ---
+            const finalPrognosis = isOptimalPatient ?
+                `The overall prognosis is excellent. Continued adherence to current lifestyle protocols suggests a high probability of preserving optimal systemic function and maintaining a biological age below chronological age.`
+                :
+                `**Target Outcomes (6 months):** HbA1c: <5.7%, HOMA-IR: <2.5, Vitamin D: >40 ng/mL, hs-CRP: <1.0 mg/L.
+                
+                With aggressive, culturally-aware intervention, this patient has an 80% probability of reversing the pre-diabetic state and significantly reducing cardiovascular risk. Without intervention, this patient faces a 65% risk of Type 2 Diabetes and 3.5x increased cardiovascular risk within 5 years.
+            `;
+
+
+            return {
+                integrityStats: {
+                    total: totalCritical,
+                    warning: totalWarning,
+                    optimal: totalOptimal
+                },
+                executiveSummary: isOptimalPatient ?
+                    `This ${patient.age}-year-old ${patient.gender} maintains an exceptional **Optimal Health Profile**. Biomarkers demonstrate high metabolic efficiency and minimal systemic inflammation, confirming robust resilience and a low risk for chronic disease development.`
+                    :
+                    `This ${patient.age}-year-old ${patient.gender} presents with a metabolic profile consistent with a **High-Risk Metabolic Storm** pattern, common in specific high-risk demographics globally. The convergence of pre-diabetic markers, dyslipidemia, and chronic inflammation requires immediate intervention tailored to regional lifestyle and metabolic factors.`,
+                criticalFindings: criticalFindings.filter(f => f.status !== 'optimal'), // Only show non-optimal findings
+                interventionStrategy: interventionStrategy,
+                prognosis: finalPrognosis
             };
         };
 
@@ -341,11 +476,23 @@
                             <button onClick={onClose} className="text-2xl text-slate-400 hover:text-white">&times;</button>
                         </div>
                         
+                        {/* 1. STATUS and VALUE/REF RANGE SUMMARY (CLEANED) */}
                         <div className="mb-4">
+                            {/* STATUS ONLY */}
                             <p className={`text-xl font-bold ${valueClass} mb-2`}>
                                 Status: {data.status.toUpperCase()}
                             </p>
-                            <p className="text-slate-300 text-sm">{data.description}</p>
+                            
+                            {/* VALUE AND REFERENCE RANGE (if available from KPI/Pillar click) */}
+                            {data.value && data.units && data.ref && (
+                                <p className="text-slate-300 text-sm font-mono">
+                                    Value: <span className={valueClass}>{data.value} {data.units}</span> (Ref: {data.ref})
+                                </p>
+                            )}
+
+                            {/* 2. DESCRIPTION (Pillar Context / KPI Description) */}
+                            {/* This is the contextual line, which is non-vague after the previous fix. */}
+                            <p className="text-slate-300 text-sm mt-3">{data.description}</p>
                         </div>
 
                         {data.markers && data.markers.length > 0 && (
@@ -384,6 +531,32 @@
         };
 
         const GCCHealthPillars = ({ selectedPatient, onPillarClick }) => {
+            const m = selectedPatient.markers;
+
+            // Helper function to provide rich contextual description for GCC pillars
+            const getPillarContext = (markerKey, m) => {
+                const marker = m[markerKey];
+                if (!marker) return "No specific context available for this marker.";
+                const value = marker.value;
+                const unit = marker.unit;
+                const status = marker.status;
+                const ref = marker.ref;
+
+                switch (markerKey) {
+                    case 'bmi':
+                        return `BMI at ${value} ${unit} (Reference: ${ref}, Status: ${status.toUpperCase()}). This is a critical risk factor for metabolic syndrome, strongly linked to sedentary lifestyle patterns prevalent in the GCC region.`;
+                    case 'homa_ir':
+                        return `The HOMA-IR score of ${value} (Reference: ${ref}, Status: ${status.toUpperCase()}) confirms insulin sensitivity status. This is the primary metabolic driver of chronic disease, directly linking to the regional challenge of Type 2 Diabetes (T2D).`;
+                    case 'uric_acid':
+                        return `Uric Acid at ${value} ${unit} (Reference: ${ref}, Status: ${status.toUpperCase()}). This is often tied to high metabolic load and kidney strain, common findings associated with high protein diets and metabolic syndrome in the GCC demographic.`;
+                    case 'vitamin_d':
+                        return `Vitamin D is at ${value} ${unit} (Reference: ${ref}, Status: ${status.toUpperCase()}). This paradoxical deficiency, despite the sunny climate, severely compromises immune function and exacerbates metabolic risk factors endemic to the GCC.`;
+                    default:
+                        return `${marker.role} value is ${value} ${unit} (Reference: ${ref}).`;
+                }
+            }
+
+
             const pillars = [
                 { name: "BMI/Obesity", markerKey: 'bmi', icon: '⚖️', title: 'BMI/Obesity Status', subtitle: 'A key regional health challenge indicator.' },
                 { name: "HOMA-IR Score", markerKey: 'homa_ir', icon: '💉', title: 'HOMA-IR Status', subtitle: 'Primary measure of insulin sensitivity.' },
@@ -420,7 +593,10 @@
                                         icon: pillar.icon,
                                         subtitle: pillar.subtitle,
                                         status: marker.status,
-                                        description: `${marker.role}: ${marker.value} ${marker.unit} (Reference: ${marker.ref}). This marker is crucial for regional risk assessment.`,
+                                        description: getPillarContext(pillar.markerKey, m), // USE ENRICHED CONTEXT
+                                        value: marker.value, // Pass value explicitly
+                                        units: marker.unit, // Pass unit explicitly
+                                        ref: marker.ref, // Pass ref explicitly
                                         markers: primaryMarkersInSystem
                                     })}
                                 >
@@ -451,7 +627,7 @@
                 }));
 
             return (
-                <div className="mt-6 bg-slate-700 p-4 rounded-lg border border-slate-600">
+                <div className="mt-6 bg-slate-700 p-4 rounded-lg border border-slate-600 shadow-inner">
                     <h3 className="font-bold text-xl text-white mb-3 flex items-center">
                         <span className="text-2xl mr-2">🔬</span> Core 27 Primary Marker Snapshot
                     </h3>
@@ -490,6 +666,21 @@
                 </div>
             );
         };
+        
+        const ReportCard = ({ icon, title, status, children, className = '', colorClass = 'border-blue-500' }) => (
+            <div className={`insight-card ${className} border-l-4 ${colorClass} p-4 rounded-lg shadow-md`}>
+                <div className="flex justify-between items-start">
+                    <h4 className="title text-base mb-2 flex items-center text-white">
+                        <span className="text-2xl mr-2">{icon}</span> {title}
+                    </h4>
+                    <StatusBadge status={status || 'optimal'} />
+                </div>
+                <div className="text-sm text-slate-300 space-y-2">
+                    {children}
+                </div>
+            </div>
+        );
+
         
         // --- NEW: AI GENERATION SCREEN COMPONENT ---
         const AIGenerationScreen = ({ onComplete }) => {
@@ -718,13 +909,29 @@
 
             // --- DEEP DIVE HANDLERS ---
             const handleKpiClick = (kpi) => {
-                // For KPIs, we want to show the specific KPI details
+                // Determine a clearer description for the modal content
+                let detailedDescription = "";
+
+                if (kpi.name === "Biological Age") {
+                    detailedDescription = `Your calculated biological age is ${kpi.value} ${kpi.units} (Actual Age: ${selectedPatient.age} yrs). This metric provides a synthetic measure of aging derived from epigenetic and metabolic markers. Status: **${kpi.status.toUpperCase()}**.`;
+                } else if (kpi.name === "Systemic Risk") {
+                    detailedDescription = `The Systemic Risk score is currently **${kpi.status.toUpperCase()}** at ${kpi.value}${kpi.units}. This score assesses the combined threat from chronic metabolic and inflammatory markers, indicating the urgency of intervention.`;
+                } else if (kpi.name === "Metabolic Trajectory (MET)") {
+                    const trend = kpi.value > 0 ? "an improving" : kpi.value < 0 ? "a worsening" : "a stable";
+                    detailedDescription = `The Metabolic Trajectory score of ${kpi.value} indicates ${trend} trend in core risk markers (Glucose, HOMA-IR). This measures the velocity of metabolic health over time.`;
+                } else {
+                    detailedDescription = `${kpi.name} is currently rated **${kpi.status.toUpperCase()}** at ${kpi.value} ${kpi.units}. ${kpi.description}`;
+                }
+                
                 setActiveModalData({
                     title: kpi.name,
                     icon: '💡',
                     subtitle: 'Key Performance Indicator Details',
                     status: kpi.status,
-                    description: `${kpi.description} Current Value: ${kpi.value} ${kpi.units}. Reference/Goal: > ${kpi.compare}. This metric provides a synthesized view of the underlying markers.`,
+                    description: detailedDescription,
+                    value: kpi.value,
+                    units: kpi.units,
+                    ref: kpi.compare,
                     markers: [] 
                 });
             };
@@ -755,6 +962,7 @@
             // --- REPORT GENERATION TRIGGER ---
             const handleReportClick = () => {
                 if (activeTab !== 'report') {
+                    setActiveTab('report');
                     setIsGeneratingReport(true);
                 } else {
                     setActiveTab('cockpit'); // Allow toggling off report if already active
@@ -793,6 +1001,15 @@
             const [isGated, setIsGated] = useState(
                 typeof localStorage !== 'undefined' && localStorage.getItem('burak_access') !== 'granted'
             );
+            
+            // Calculate total marker counts for the AI Report integrity summary
+            const totalMarkers = Object.entries(selectedPatient.fullMarkers).map(([_, m]) => m.status);
+            const integrityStats = {
+                critical: totalMarkers.filter(s => s === 'critical').length,
+                warning: totalMarkers.filter(s => s === 'warning').length,
+                optimal: totalMarkers.filter(s => s === 'optimal').length,
+                total: totalMarkers.length,
+            };
 
 
             if (isGated) {
@@ -1033,35 +1250,110 @@
                         
                         {/* --- AI REPORT VIEW --- */}
                         {activeTab === 'report' && (
-                            <div className="bg-slate-800 p-8 rounded-lg shadow-xl border border-blue-500">
-                                <div className="border-b border-slate-600 pb-6 mb-6">
-                                    <h2 className="text-4xl font-bold mb-2 text-blue-400">🧠 AI Health Intelligence Report</h2>
-                                    <p className="text-slate-400 text-lg">Detailed interpretation of predictive models for {selectedPatient.name}.</p>
+                            <div className="ai-report-container">
+                                <div className="ai-report-header">
+                                    <h2 className="text-4xl font-bold mb-1 text-cyan-400">CLINICAL INTELLIGENCE REPORT - GCC PRECISION MEDICINE</h2>
+                                    <p className="text-blue-200 text-lg">Generated: {new Date("2025-12-16").toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} | Patient: GCC-2024-00{selectedPatient.id} | Region: Qatar</p>
                                 </div>
-                                <div className="space-y-6">
+                                <div className="space-y-0 pt-0">
+
+                                    {/* AI TRANSPARENCY WARNING */}
+                                    <div className="report-section bg-yellow-900/30 border-l-4 border-yellow-500">
+                                        <h3 className="report-section-title text-yellow-300">
+                                            ⚠️ POC STATUS WARNING: TEMPLATE NARRATIVE
+                                        </h3>
+                                        <p className="text-sm text-yellow-200 font-semibold">
+                                            The narrative and clinical context below are **dynamically populated with patient data** but generated from generic templates based on the patient's risk profile (Critical/Warning/Optimal).
+                                        </p>
+                                        <p className="text-xs text-yellow-300 mt-1">
+                                            In production, Gemini AI will perform true Natural Language Processing (NLP) to create a unique, highly personalized report.
+                                        </p>
+                                    </div>
+                                    
+                                    {/* EXECUTIVE SUMMARY */}
+                                    <div className="report-section">
+                                        <h3 className="report-section-title text-slate-300">EXECUTIVE SUMMARY</h3>
+                                        <p className="text-slate-300 whitespace-pre-wrap">{reportData.executiveSummary}</p>
+                                    </div>
+                                    
+                                    {/* MARKER INTEGRITY SUMMARY (NEW BLOB SECTION) */}
+                                    <div className="report-section">
+                                        <h3 className="report-section-title">BIOMARKER INTEGRITY SUMMARY ({integrityStats.total} TOTAL MARKERS)</h3>
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+                                            <div className="bg-green-900/40 p-4 rounded-xl border border-green-700">
+                                                <span className="text-3xl block text-green-400">{integrityStats.optimal}</span>
+                                                <p className="text-xs text-green-300 font-semibold">Optimal Range</p>
+                                            </div>
+                                            <div className="bg-yellow-900/40 p-4 rounded-xl border border-yellow-700">
+                                                <span className="text-3xl block text-yellow-400">{integrityStats.warning}</span>
+                                                <p className="text-xs text-yellow-300 font-semibold">Warning/Elevated</p>
+                                            </div>
+                                            <div className="bg-red-900/40 p-4 rounded-xl border border-red-700">
+                                                <span className="text-3xl block text-red-400">{integrityStats.critical}</span>
+                                                <p className="text-xs text-red-300 font-semibold">Critical Attention</p>
+                                            </div>
+                                            <div className="bg-blue-900/40 p-4 rounded-xl border border-blue-700">
+                                                <span className="text-3xl block text-blue-400">{integrityStats.total}</span>
+                                                <p className="text-xs text-blue-300 font-semibold">Total Analyzed</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    {/* CRITICAL FINDINGS (Insight Cards) */}
+                                    <div className="report-section">
+                                        <h3 className="report-section-title text-red-400">CRITICAL FINDINGS (GCC-CONTEXTUALIZED)</h3>
+                                        <div className="space-y-4">
+                                            {reportData.criticalFindings.map((finding, index) => {
+                                                const status = finding.status;
+                                                const color = status === 'critical' ? 'border-red-500' : 'border-yellow-500';
+
+                                                return (
+                                                    <div key={index} className={`insight-card ${color} border-l-4 p-4 rounded-lg shadow-md bg-slate-900/80`}>
+                                                        <div className="flex justify-between items-start">
+                                                            <h4 className="title text-lg mb-2 flex items-center text-red-300">
+                                                                <span className="text-2xl mr-2">💡</span> {finding.title}
+                                                            </h4>
+                                                            <StatusBadge status={status} />
+                                                        </div>
+
+                                                        <div className="text-sm text-slate-300 space-y-2 pt-1">
+                                                            <p className="font-semibold text-white whitespace-pre-wrap">{finding.pattern}</p>
+                                                            <p className="text-yellow-400 whitespace-pre-wrap">{finding.risk}</p>
+                                                            <p className="text-slate-400 whitespace-pre-wrap">{finding.context}</p>
+                                                            <p className="text-cyan-400 whitespace-pre-wrap">{finding.ramadan}</p>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                    
                                     
                                     {/* Primary Marker Table Snapshot */}
                                     <AIReportPrimaryMarkerTable selectedPatient={selectedPatient} />
 
-                                    <div className="bg-slate-700 p-4 rounded-lg border-l-4 border-cyan-500">
-                                        <h3 className="font-bold text-xl text-cyan-400 flex items-center"><span className="text-2xl mr-2">💡</span> Executive Summary & Prognosis</h3>
-                                        <p className="text-slate-300 mt-2">{reportData.summary} {reportData.convergence}</p>
+                                    {/* INTERVENTION STRATEGY */}
+                                    <div className="report-section">
+                                        <h3 className="report-section-title text-green-400">GCC-SPECIFIC INTERVENTION STRATEGY</h3>
+                                        <div className="space-y-4">
+                                            {reportData.interventionStrategy.map((section, index) => (
+                                                <div key={index} className="bg-slate-700/50 p-4 rounded-lg border-l-4 border-green-500">
+                                                    <h4 className="font-bold text-base text-white mb-2">{section.title}</h4>
+                                                    <ul className="list-disc list-inside text-slate-300 ml-4 space-y-1">
+                                                        {section.points.map((item, i) => <li key={i} className="text-sm">{item}</li>)}
+                                                    </ul>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                     
-                                    <div className="bg-slate-700 p-4 rounded-lg border-l-4 border-red-500">
-                                        <h3 className="font-bold text-xl text-red-400 flex items-center"><span className="text-2xl mr-2">🚨</span> Primary Systemic Concerns (27 Core Markers)</h3>
-                                        <p className="text-slate-300 mt-2">
-                                            The most critical risk clusters identified are: 
-                                            <span className="block mt-1 font-semibold text-yellow-300">{reportData.primaryConcerns}</span>
-                                        </p>
+                                    {/* PROGNOSIS */}
+                                    <div className="report-section">
+                                        <h3 className="report-section-title text-cyan-400">PROGNOSIS</h3>
+                                        <p className="text-slate-300 whitespace-pre-wrap">{reportData.prognosis}</p>
                                     </div>
                                     
-                                    <div className="bg-slate-700 p-4 rounded-lg border-l-4 border-green-500">
-                                        <h3 className="font-bold text-xl text-green-400 flex items-center"><span className="text-2xl mr-2">📋</span> Actionable Recommendations</h3>
-                                        <ul className="list-disc list-inside text-slate-300 ml-4 mt-2 space-y-1">
-                                            {reportData.recommendations.map((rec, i) => <li key={i}>{rec}</li>)}
-                                        </ul>
-                                    </div>
                                 </div>
                             </div>
                         )}
