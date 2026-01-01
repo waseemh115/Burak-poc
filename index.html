@@ -60,7 +60,7 @@
             0%, 100% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
         }
-        .container { max-width: 1920px; margin: 0 auto; position: relative; z-index: 1; }
+        .container { max-width: 1600px; margin: 0 auto; position: relative; z-index: 1; }
         .header {
             background: rgba(255,255,255,0.04);
             backdrop-filter: blur(12px);
@@ -1577,18 +1577,32 @@
     
     function buildScoreRings(p){
         const scores=[
-            {label:"GCC Score",value:calculateGCC(p).score,max:100,color:"#60a5fa",ref:"90+ Excellent | 70-89 Good | 50-69 Fair | <50 Poor",desc:"Critical biomarkers health grade"},
-            {label:"Inflammation",value:getInflammationScore(p),max:100,color:"#ef4444",ref:"70+ Low | 40-69 Moderate | <40 High",desc:"Systemic inflammation burden"},
-            {label:"Metabolic",value:getMetabolicScore(p),max:100,color:"#10b981",ref:"70+ Optimal | 40-69 At Risk | <40 Dysfunction",desc:"Blood sugar & fat metabolism"},
-            {label:"Microbiome",value:getMicrobiomeScore(p),max:100,color:"#8b5cf6",ref:"70+ Balanced | 40-69 Imbalanced | <40 Dysbiotic",desc:"Gut bacteria health status"}
+            {label:"GCC Score",value:calculateGCC(p).score,max:100,ref:"90+ Excellent | 70-89 Good | 50-69 Fair | <50 Poor",desc:"Critical biomarkers health grade"},
+            {label:"Inflammation",value:getInflammationScore(p),max:100,ref:"70+ Low | 40-69 Moderate | <40 High",desc:"Systemic inflammation burden"},
+            {label:"Metabolic",value:getMetabolicScore(p),max:100,ref:"70+ Optimal | 40-69 At Risk | <40 Dysfunction",desc:"Blood sugar & fat metabolism"},
+            {label:"Microbiome",value:getMicrobiomeScore(p),max:100,ref:"70+ Balanced | 40-69 Imbalanced | <40 Dysbiotic",desc:"Gut bacteria health status"}
         ];
         let html='';
         scores.forEach(s=>{
             const circumference=2*Math.PI*80;
             const offset=circumference-(s.value/s.max)*circumference;
-            const colorClass=s.value>=70?'green':s.value>=40?'amber':'rose';
-            const statusText=s.value>=70?'OPTIMAL':s.value>=40?'WARNING':'CRITICAL';
-            html+=`<div><div class="score-ring"><svg class="ring-svg" viewBox="0 0 180 180"><circle class="ring-bg" cx="90" cy="90" r="80"></circle><circle class="ring-progress" cx="90" cy="90" r="80" stroke="${s.color}" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"></circle></svg><div class="ring-content"><div class="ring-score ${colorClass}">${Math.round(s.value)}</div><div class="ring-label">${s.label}</div><div class="ring-status ${colorClass}">${statusText}</div></div></div><div style="margin-top:10px; font-size:10px; color:var(--text-muted); text-align:center; line-height:1.4;"><div style="font-size:9px; color:#94a3b8; margin-bottom:3px;">${s.desc}</div><div style="font-size:9px;">${s.ref}</div></div></div>`;
+            
+            let ringColor, textColorClass, statusText;
+            if(s.value >= 70) {
+                ringColor = '#34d399';
+                textColorClass = 'green';
+                statusText = 'OPTIMAL';
+            } else if(s.value >= 40) {
+                ringColor = '#fbbf24';
+                textColorClass = 'amber';
+                statusText = 'WARNING';
+            } else {
+                ringColor = '#fb7185';
+                textColorClass = 'rose';
+                statusText = 'CRITICAL';
+            }
+            
+            html+=`<div><div class="score-ring"><svg class="ring-svg" viewBox="0 0 180 180"><circle class="ring-bg" cx="90" cy="90" r="80"></circle><circle class="ring-progress" cx="90" cy="90" r="80" stroke="${ringColor}" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"></circle></svg><div class="ring-content"><div class="ring-score ${textColorClass}">${Math.round(s.value)}</div><div class="ring-label">${s.label}</div><div class="ring-status ${textColorClass}">${statusText}</div></div></div><div style="margin-top:8px; font-size:9px; color:var(--text-muted); text-align:center; line-height:1.3;"><div style="color:#94a3b8; margin-bottom:2px;">${s.desc}</div><div>${s.ref}</div></div></div>`;
         });
         document.getElementById('score-rings').innerHTML=html;
     }
@@ -1825,90 +1839,96 @@
             {
                 title: 'NLR (Neutrophil-Lymphocyte)', 
                 value: nlr, 
+                calc: `${inf.neutrophils}% ÷ ${inf.lymphocytes}% = ${nlr}`,
                 max: 10, 
-                status: parseFloat(nlr) < 3 ? 'Normal' : parseFloat(nlr) < 5 ? 'Elevated' : 'High', 
-                ref: 'Optimal: &lt;3 | Elevated: 3-5 | High: &gt;5',
-                disease: 'CVD Risk - High NLR predicts cardiovascular events. Cancer - Elevated in active malignancy. Infections - Rises with bacterial sepsis.',
-                why: 'Compares infection-fighting cells (neutrophils) to immune system cells (lymphocytes). Imbalance indicates chronic inflammation or immune dysfunction.'
+                status: parseFloat(nlr) < 3 ? 'Optimal' : parseFloat(nlr) < 5 ? 'Warning' : 'Critical', 
+                ref: 'Optimal <3 | Warning 3-5 | Critical >5',
+                disease: 'CVD Risk, Cancer, Infections - High NLR predicts cardiovascular events and active malignancy',
+                why: 'Compares infection-fighting cells to immune cells. Imbalance indicates chronic inflammation.'
             },
             {
                 title: 'PLR (Platelet-Lymphocyte)', 
                 value: plr, 
+                calc: `${inf.platelets} ÷ ${inf.lymphocytes}% = ${plr}`,
                 max: 300, 
-                status: parseFloat(plr) < 150 ? 'Normal' : parseFloat(plr) < 200 ? 'Elevated' : 'High', 
-                ref: 'Normal: &lt;150 | Elevated: 150-200 | High: &gt;200',
-                disease: 'Cancer Prognosis - Elevated PLR worse outcomes. Thrombosis - High PLR increases clotting risk. Autoimmune - Elevated in active disease.',
-                why: 'Reflects inflammatory state and clotting potential. High values suggest chronic inflammation with increased cardiovascular and cancer risk.'
+                status: parseFloat(plr) < 150 ? 'Optimal' : parseFloat(plr) < 200 ? 'Warning' : 'Critical', 
+                ref: 'Optimal <150 | Warning 150-200 | Critical >200',
+                disease: 'Cancer Prognosis, Thrombosis - Elevated PLR indicates worse outcomes and clotting risk',
+                why: 'Reflects inflammatory state and clotting potential. High values increase cardiovascular risk.'
             },
             {
                 title: 'SII (Systemic Inflammation)', 
                 value: sii, 
+                calc: `(${inf.platelets} × ${inf.neutrophils}%) ÷ ${inf.lymphocytes}% = ${sii}`,
                 max: 2000, 
-                status: sii < 500 ? 'Low' : sii < 900 ? 'Moderate' : 'High', 
-                ref: 'Low: &lt;500 | Moderate: 500-900 | High: &gt;900',
-                disease: 'Cancer - High SII poor survival. CVD - Predicts heart attack risk. Infections - Spikes during severe sepsis.',
-                why: 'Combines platelets, neutrophils, and lymphocytes for comprehensive inflammation picture. More sensitive than single markers alone.'
+                status: sii < 500 ? 'Optimal' : sii < 900 ? 'Warning' : 'Critical', 
+                ref: 'Optimal <500 | Warning 500-900 | Critical >900',
+                disease: 'Cancer, CVD, Infections - High SII predicts poor survival and heart attack risk',
+                why: 'Combines three markers for comprehensive inflammation picture. More sensitive than single markers.'
             },
             {
                 title: 'CRP (C-Reactive Protein)', 
                 value: (m.crp?.value || 0).toFixed(1) + ' mg/L', 
+                calc: 'Direct lab measurement',
                 max: 20, 
-                status: (m.crp?.value || 0) < 1 ? 'Optimal' : (m.crp?.value || 0) < 3 ? 'Moderate' : 'High', 
-                ref: 'Optimal: &lt;1 | Moderate: 1-3 | High: &gt;3',
-                disease: 'CVD - Values over 3 mg/L double heart attack risk. Infections - Rises dramatically in acute infections. IBD - Tracks disease activity.',
-                why: 'Liver produces CRP in response to inflammation anywhere in body. Gold standard marker for systemic inflammation.'
+                status: (m.crp?.value || 0) < 1 ? 'Optimal' : (m.crp?.value || 0) < 3 ? 'Warning' : 'Critical', 
+                ref: 'Optimal <1 | Warning 1-3 | Critical >3',
+                disease: 'CVD, Infections, IBD - Values over 3 mg/L double heart attack risk',
+                why: 'Gold standard marker for systemic inflammation. Liver produces CRP in response to inflammation.'
             },
             {
                 title: 'IL-6 (Interleukin-6)', 
                 value: (inf.il6 || 0).toFixed(1) + ' pg/mL', 
+                calc: 'Direct lab measurement',
                 max: 25, 
-                status: (inf.il6 || 0) < 5 ? 'Normal' : 'Elevated', 
-                ref: 'Normal: &lt;5 pg/mL | Elevated: &gt;5',
-                disease: 'Cytokine Storm - Massively elevated in severe COVID. Cancer - Drives tumor growth and metastasis. Autoimmune - Key driver in rheumatoid arthritis.',
-                why: 'Master inflammatory cytokine. Triggers cascade of other inflammatory molecules. Directly causes fever, fatigue, and tissue damage.'
+                status: (inf.il6 || 0) < 5 ? 'Optimal' : 'Critical', 
+                ref: 'Optimal <5 | Critical >5',
+                disease: 'Cytokine Storm, Cancer, Autoimmune - Master inflammatory cytokine',
+                why: 'Triggers cascade of other inflammatory molecules. Directly causes fever and tissue damage.'
             },
             {
                 title: 'Ferritin (Iron Storage)', 
                 value: Math.round(m.ferritin?.value || 0) + ' ng/mL', 
+                calc: 'Direct lab measurement',
                 max: 500, 
-                status: (m.ferritin?.value || 0) < 200 ? 'Normal' : 'Elevated', 
-                ref: 'Normal: &lt;200 | Elevated: &gt;200',
-                disease: 'Hemochromatosis - Values over 1000 indicate iron overload. Chronic Inflammation - Elevated in IBD and RA. Infections - Bacteria thrive on iron.',
-                why: 'Iron storage protein that also rises with inflammation. Elevated ferritin means either excess iron OR chronic inflammation (or both).'
+                status: (m.ferritin?.value || 0) < 200 ? 'Optimal' : 'Critical', 
+                ref: 'Optimal <200 | Critical >200',
+                disease: 'Hemochromatosis, Chronic Inflammation - Elevated in IBD and RA',
+                why: 'Iron storage protein that also rises with inflammation. Elevated means excess iron OR inflammation.'
             }
         ];
 
-        let html = '<div style="margin-bottom:16px; padding:12px 16px; background:rgba(139,92,246,0.06); border-radius:8px; border-left:3px solid #8b5cf6;"><div style="font-size:11px; font-weight:700; color:#c4b5fd; margin-bottom:6px;">💡 Composite Inflammation Indices</div><div style="font-size:10px; color:#94a3b8; line-height:1.6;">These composite indices combine protein markers and cellular counts to reveal inflammatory patterns invisible to standard bloodwork, predicting disease years before symptoms.</div></div>';
+        let html = '<div style="margin-bottom:14px; padding:10px 14px; background:rgba(139,92,246,0.06); border-radius:8px; border-left:3px solid #8b5cf6;"><div style="font-size:10px; font-weight:700; color:#c4b5fd; margin-bottom:4px;">💡 Composite Inflammation Indices</div><div style="font-size:9px; color:#94a3b8; line-height:1.5;">These composite indices combine protein markers and cellular counts to reveal inflammatory patterns invisible to standard bloodwork.</div></div>';
         
         indices.forEach(ind => {
             const numValue = parseFloat(ind.value);
             const barPercent = Math.min((numValue / ind.max) * 100, 100);
             
-            // FORCE COLOR LOGIC - No CSS classes, pure inline
             let bgColor, textColor, borderColor;
-            if (ind.status === 'Normal' || ind.status === 'Optimal' || ind.status === 'Low') {
-                bgColor = 'rgba(16,185,129,0.15)';
-                textColor = '#10b981';
-                borderColor = '#10b981';
-            } else if (ind.status === 'Moderate' || ind.status === 'Elevated') {
-                bgColor = 'rgba(245,158,11,0.15)';
-                textColor = '#f59e0b';
-                borderColor = '#f59e0b';
+            if (ind.status === 'Optimal') {
+                bgColor = 'rgba(52,211,153,0.15)';
+                textColor = '#34d399';
+                borderColor = '#34d399';
+            } else if (ind.status === 'Warning') {
+                bgColor = 'rgba(251,191,36,0.15)';
+                textColor = '#fbbf24';
+                borderColor = '#fbbf24';
             } else {
-                bgColor = 'rgba(239,68,68,0.15)';
-                textColor = '#ef4444';
-                borderColor = '#ef4444';
+                bgColor = 'rgba(251,113,133,0.15)';
+                textColor = '#fb7185';
+                borderColor = '#fb7185';
             }
             
-            html += `<div style="background:var(--bg-card); border-radius:12px; padding:20px; border:1px solid var(--border);">
-                <div style="font-size:11px; font-weight:800; color:var(--text-muted); margin-bottom:12px; letter-spacing:0.5px;">${ind.title}</div>
-                <div style="font-size:28px; font-weight:900; margin-bottom:12px; font-family:'JetBrains Mono'; color:#60a5fa;">${ind.value}</div>
-                <div style="padding:6px 12px; border-radius:6px; font-size:11px; font-weight:700; display:inline-block; margin-bottom:12px; background:${bgColor}; color:${textColor}; border:1px solid ${borderColor};">${ind.status}</div>
-                <div style="height:8px; background:rgba(255,255,255,0.05); border-radius:4px; overflow:hidden; margin-bottom:12px;"><div style="height:100%; width:${barPercent}%; background:linear-gradient(90deg, #10b981 0%, #f59e0b 50%, #ef4444 100%); transition:width 0.6s ease;"></div></div>
-                <div style="margin-top:12px; padding-top:12px; border-top:1px solid rgba(148,163,184,0.1);">
-                    <div style="font-size:10px; color:var(--text-muted); margin-bottom:8px; line-height:1.4;"><strong style="color:#94a3b8;">Reference:</strong> ${ind.ref}</div>
-                    <div style="font-size:10px; color:#94a3b8; margin-bottom:6px; line-height:1.5;"><strong style="color:#cbd5e1;">What it measures:</strong> ${ind.why}</div>
-                    <div style="font-size:10px; color:#94a3b8; line-height:1.5;"><strong style="color:#cbd5e1;">Disease links:</strong> ${ind.disease}</div>
+            html += `<div style="background:var(--bg-card); border-radius:10px; padding:16px; border:1px solid var(--border); margin-bottom:10px;">
+                <div style="font-size:10px; font-weight:800; color:var(--text-muted); margin-bottom:8px; letter-spacing:0.5px;">${ind.title}</div>
+                <div style="font-size:26px; font-weight:900; margin-bottom:6px; font-family:'JetBrains Mono'; color:#60a5fa;">${ind.value}</div>
+                <div style="padding:4px 10px; border-radius:6px; font-size:10px; font-weight:700; display:inline-block; margin-bottom:6px; background:${bgColor}; color:${textColor}; border:1px solid ${borderColor};">${ind.status}</div>
+                <div style="font-size:9px; color:#64748b; font-family:'JetBrains Mono'; margin-bottom:8px; font-style:italic;">${ind.calc}</div>
+                <div style="height:5px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden; margin-bottom:8px;"><div style="height:100%; width:${barPercent}%; background:linear-gradient(90deg, #34d399 0%, #fbbf24 50%, #fb7185 100%); transition:width 0.6s ease;"></div></div>
+                <div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(148,163,184,0.08);">
+                    <div style="font-size:9px; color:${textColor}; margin-bottom:4px; line-height:1.3; font-weight:600;">${ind.ref}</div>
+                    <div style="font-size:8px; color:#94a3b8; margin-bottom:3px; line-height:1.4;">${ind.why}</div>
+                    <div style="font-size:8px; color:#94a3b8; line-height:1.4;">${ind.disease}</div>
                 </div>
             </div>`;
         });
