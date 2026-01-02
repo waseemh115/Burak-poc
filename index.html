@@ -1804,19 +1804,6 @@
                         <strong>Total: 41 biomarkers</strong> integrated across 3 biological layers to reveal metabolic state, inflammatory burden, and microbiome health
                     </div>
                 </div>
-                
-                <div style="margin-top:20px; padding:14px 18px; background:rgba(96,165,250,0.06); border-radius:8px; border:1px solid rgba(96,165,250,0.2);">
-                    <div style="display:flex; align-items:start; gap:12px;">
-                        <div style="font-size:18px; margin-top:2px;">📤</div>
-                        <div>
-                            <div style="font-size:11px; font-weight:800; color:#60a5fa; margin-bottom:6px; letter-spacing:0.5px;">DATA INGESTION IN PRODUCTION</div>
-                            <div style="font-size:11px; color:#cbd5e1; line-height:1.6;">
-                                <strong>Individual uploads:</strong> PDF lab reports processed via OCR → structured data extraction → validation → platform ingestion. 
-                                <strong>Batch processing:</strong> CSV/Excel files from labs → automated parsing → 100+ reports/hour → real-time dashboard updates.
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
             <div class="patient-header" id="patient-header"></div>
             <div class="kpi-grid" id="kpi-grid"></div>
@@ -1836,11 +1823,11 @@
             <div class="page-context">
                 <div class="page-context-icon">🔥</div>
                 <div class="page-context-content">
-                    <div class="page-context-title">INFLAMMATION CONTAINER - Deep Systemic Analysis</div>
+                    <div class="page-context-title">INFLAMMATION CONTAINER - Multi-Level Analysis</div>
                     <div class="page-context-description">
-                        Comprehensive inflammation profiling combining cytokine panels, cellular markers, and systemic indicators. Auto-calculated ratios (NLR, PLR, CRP:Albumin) reveal inflammatory patterns invisible to standard bloodwork.
+                        Analyzes inflammation at three biological levels: acute phase proteins, cytokine activation, and immune cell dynamics. Traces upstream to identify source—gut-driven or metabolic.
                     </div>
-                    <div class="page-context-flow">DATA FLOW: Cytokines + Cellular Counts + Systemic Markers → Composite Ratios → Overall Inflammation State</div>
+                    <div class="page-context-flow">TRIGGER → CYTOKINE CASCADE → SYSTEMIC MARKERS → CLINICAL OUTCOMES</div>
                 </div>
             </div>
             <div id="layer2-content"></div>
@@ -1851,11 +1838,11 @@
             <div class="page-context">
                 <div class="page-context-icon">🎯</div>
                 <div class="page-context-content">
-                    <div class="page-context-title">SENTINEL MARKERS - Critical Threshold Detection</div>
+                    <div class="page-context-title">SENTINEL MARKERS - Evidence-Based Thresholds</div>
                     <div class="page-context-description">
-                        Identifies when key inflammatory and stress markers cross critical thresholds requiring immediate intervention. Binary decision trees determine FIRE/NO FIRE and STRESS/NO STRESS states.
+                        Three markers with documented predictive power: CRP >3 doubles CVD risk (Ridker, NEJM 2002). Ferritin >200 indicates iron overload or inflammation. Cortisol >23 signals HPA dysregulation.
                     </div>
-                    <div class="page-context-flow">INPUT: CRP + Ferritin + Cortisol → ANALYSIS: Threshold Detection → OUTPUT: Intervention Triggers</div>
+                    <div class="page-context-flow">EVIDENCE → THRESHOLD → MECHANISM → INTERVENTION</div>
                 </div>
             </div>
             <div class="sentinel-grid" id="sentinel-grid"></div>
@@ -1866,11 +1853,11 @@
             <div class="page-context">
                 <div class="page-context-icon">🧬</div>
                 <div class="page-context-content">
-                    <div class="page-context-title">COHORT MATRIX - Disease Pattern Recognition</div>
+                    <div class="page-context-title">COHORT MATRIX - Hypothesis-Driven Pattern Recognition</div>
                     <div class="page-context-description">
-                        Mathematical pattern matching across 9 disease cohorts using Boolean decision trees. Each biomarker combination contributes weighted points to calculate disease-specific risk percentages (0-95%).
+                        Multi-marker patterns across 9 disease cohorts. Each includes: pattern justification, pathophysiology, evidence base, clinical significance, and diagnostic insights. Hypothesis-driven, not correlation mining.
                     </div>
-                    <div class="page-context-flow">INPUT: Multi-marker combinations → PROCESSING: Boolean logic trees → OUTPUT: 9 disease risk scores</div>
+                    <div class="page-context-flow">HYPOTHESIS → MARKER PATTERN → MECHANISM → RISK SCORE → CLINICAL ACTION</div>
                 </div>
             </div>
             <div class="cohort-grid" id="cohort-grid"></div>
@@ -1971,6 +1958,175 @@
     </div>
     <script>
     // PATIENT DATA WITH INFLAMMATION MARKERS - All 10 patients enhanced
+// ============================================================================
+// COMPLETE CLINICAL DEPTH IMPLEMENTATION
+// All data structures and rendering functions for full clinical implementation
+// ============================================================================
+
+// LAYER 4: COMPLETE COHORT CLINICAL DEPTH
+const COHORT_CLINICAL_DEPTH = {
+    t2d: {
+        name: 'Type 2 Diabetes Syndrome',
+        patternJustification: `These markers cluster because they reflect the same underlying insulin resistance pathophysiology. HOMA-IR directly measures insulin resistance. HbA1c results from impaired glucose disposal. Triglycerides elevate due to decreased lipoprotein lipase activity. Elevated Firmicutes:Bacteroides ratio indicates gut dysbiosis that drives metabolic endotoxemia. This is mechanistically linked, not correlation.`,
+        pathophysiology: `<strong>STAGE 1 - Insulin Resistance:</strong> Visceral adiposity and inflammation → Impaired insulin receptor signaling → Decreased GLUT4 translocation → Reduced glucose uptake.<br><br><strong>STAGE 2 - Compensatory Phase:</strong> Pancreatic β-cells increase insulin production → Hyperinsulinemia → Elevated HOMA-IR.<br><br><strong>STAGE 3 - Metabolic Cascade:</strong> Hyperinsulinemia inhibits hormone-sensitive lipase → Increased VLDL synthesis → Elevated triglycerides.<br><br><strong>STAGE 4 - Gut-Metabolic Axis:</strong> Dysbiosis → Increased energy harvest → Worsening insulin resistance.<br><br><strong>STAGE 5 - β-Cell Failure:</strong> Chronic glucotoxicity → β-cell apoptosis → Frank diabetes.`,
+        evidenceBase: `• <strong>HOMA-IR >2.5:</strong> Diabetes Prevention Program (DPP) trial showed 6.9-fold increased diabetes risk<br>• <strong>HbA1c 5.7-6.4%:</strong> American Diabetes Association prediabetes definition<br>• <strong>Triglycerides >150:</strong> NCEP ATP III metabolic syndrome criteria<br>• <strong>F:B Ratio >1.5:</strong> Multiple studies link elevated ratio to obesity and metabolic dysfunction`,
+        clinicalSignificance: `High match indicates established insulin resistance with impaired glucose metabolism. Without intervention, progression to frank diabetes likely within 3-5 years. Cardiovascular risk already elevated due to atherogenic dyslipidemia. Requires comprehensive metabolic intervention.`,
+        diagnosticInsights: `<strong>NEXT STEPS:</strong><br>1. Oral Glucose Tolerance Test - confirm diabetes vs prediabetes, assess β-cell function<br>2. Liver imaging (ultrasound/MRI) - screen for NAFLD (commonly present)<br>3. Coronary calcium score if age >40 - assess atherosclerotic burden<br>4. Continuous glucose monitoring - evaluate glycemic variability<br><br><strong>TREATMENT PRIORITIES:</strong><br>• Lifestyle intervention: 7-10% weight loss target<br>• Consider metformin if prediabetes confirmed<br>• Mediterranean diet + resistance training<br>• Address gut dysbiosis: targeted prebiotics/probiotics<br>• Aggressive cardiovascular risk factor management`
+    },
+    cardio: {
+        name: 'Cardiovascular Hazard',
+        patternJustification: `ApoB, Lp(a), and uric acid cluster as independent cardiovascular risk factors. ApoB measures atherogenic particle number (superior to LDL-C). Lp(a) represents genetically determined thrombotic risk. Uric acid indicates oxidative stress and endothelial dysfunction. Together they capture lipid-driven atherogenesis, genetic thrombotic predisposition, and inflammatory vascular damage.`,
+        pathophysiology: `<strong>ATHEROGENESIS:</strong> ApoB-containing particles penetrate arterial intima → Retained by proteoglycans → Oxidative modification → Macrophage uptake → Foam cell formation → Atherosclerotic plaque.<br><br><strong>LP(A) MECHANISM:</strong> Structurally similar to plasminogen → Competes for binding sites → Impairs fibrinolysis → Promotes thrombosis. Contains oxidized phospholipids → Pro-inflammatory.<br><br><strong>URIC ACID PATHWAY:</strong> Xanthine oxidase produces reactive oxygen species → Endothelial dysfunction → Reduced nitric oxide → Impaired vasodilation.`,
+        evidenceBase: `• <strong>ApoB >100 mg/dL:</strong> Superior CVD prediction vs LDL-C (Lancet 2009)<br>• <strong>Lp(a) >30 mg/dL:</strong> European Atherosclerosis Society consensus - causal CVD risk factor<br>• <strong>Uric Acid >7 mg/dL:</strong> 2-fold increased CVD mortality (NHANES)`,
+        clinicalSignificance: `High match indicates significant atherosclerotic burden accumulation. Active atherogenic process requiring aggressive risk factor modification. Ten-year ASCVD risk likely elevated. Plaque formation may be underway even without symptoms.`,
+        diagnosticInsights: `<strong>NEXT STEPS:</strong><br>1. Coronary calcium score - quantify atherosclerotic burden<br>2. Carotid intima-media thickness - subclinical disease assessment<br>3. Advanced lipid panel - particle size/number analysis<br>4. Genetic testing if Lp(a) >50 (familial screening)<br><br><strong>TREATMENT:</strong><br>• Statin therapy if ASCVD risk warrants<br>• PCSK9 inhibitor if LDL/ApoB remains elevated on statin<br>• Lp(a): Consider lipoprotein apheresis if very high (>100)<br>• Uric acid: Allopurinol if >8 or gout present<br>• Aggressive lifestyle: Mediterranean diet, exercise 150+ min/week`
+    },
+    ibd: {
+        name: 'Inflammatory Bowel Disease Pattern',
+        patternJustification: `CRP, ferritin, and Akkermansia cluster in IBD because they reflect intestinal inflammation and barrier dysfunction. CRP elevates from hepatic acute phase response to IL-6. Ferritin rises as acute phase reactant and from chronic GI blood loss. Low Akkermansia indicates compromised mucin layer → barrier permeability → inflammation. This pattern captures the gut inflammation-systemic response axis.`,
+        pathophysiology: `<strong>BARRIER BREAKDOWN:</strong> Genetic susceptibility + triggers → Loss of intestinal barrier integrity. Akkermansia depletion → Reduced mucin → Exposed epithelium → Bacterial translocation.<br><br><strong>IMMUNE ACTIVATION:</strong> Luminal antigens contact immune cells → Inappropriate immune response → Pro-inflammatory cytokines (TNF-α, IL-6, IL-1β).<br><br><strong>SYSTEMIC EFFECTS:</strong> IL-6 → Hepatic acute phase response → CRP and ferritin elevation. Chronic inflammation → Iron sequestration → Anemia.`,
+        evidenceBase: `• <strong>CRP >5 mg/L:</strong> Correlates with disease activity in IBD<br>• <strong>Ferritin >300 ng/mL:</strong> Common in active IBD (inflammation + GI bleeding)<br>• <strong>Akkermansia depletion:</strong> Consistently observed in IBD vs controls. Inversely correlated with severity.`,
+        clinicalSignificance: `High match suggests active intestinal inflammation with barrier compromise. May indicate undiagnosed IBD (Crohn's or UC) or severe dysbiosis mimicking IBD. Requires gastroenterology evaluation. Long-term risks: strictures, fistulas, malignancy.`,
+        diagnosticInsights: `<strong>NEXT STEPS:</strong><br>1. Fecal calprotectin - non-invasive inflammation marker<br>2. Colonoscopy with biopsy - definitive diagnosis<br>3. CT/MR enterography - small bowel assessment if Crohn's suspected<br>4. Nutritional assessment - common deficiencies<br><br><strong>TREATMENT:</strong><br>• If confirmed IBD: Biologics (anti-TNF, anti-integrin), immunomodulators<br>• Barrier support: L-glutamine 5-10g/day, zinc carnosine<br>• Akkermansia restoration: Inulin, cranberry extract, polyphenols<br>• Anti-inflammatory diet: Specific Carbohydrate Diet or Mediterranean`
+    },
+    obesity: {
+        name: 'Metabolic Obesity Pattern',
+        patternJustification: `Triglycerides, low HDL, and elevated HOMA-IR cluster as the "lipid triad" of metabolic syndrome. This pattern reflects visceral adiposity-driven insulin resistance. Mechanistic link: Insulin resistance → Impaired lipoprotein lipase → Reduced triglyceride clearance and HDL synthesis. Classic atherogenic dyslipidemia pattern independent of total weight.`,
+        pathophysiology: `<strong>VISCERAL ADIPOSITY:</strong> Metabolically active fat → Adipokine dysregulation → Increased free fatty acid flux to liver.<br><br><strong>HEPATIC LIPOGENESIS:</strong> Hyperinsulinemia + FFA → Increased VLDL synthesis → Elevated triglycerides.<br><br><strong>LIPID CASCADE:</strong> CETP exchanges triglycerides for cholesterol between VLDL and HDL → Triglyceride-rich HDL → Hepatic lipase hydrolysis → Small, dense HDL → Rapid clearance → Low HDL.<br><br><strong>AMPLIFICATION:</strong> Ectopic lipid in muscle and liver → Further insulin resistance → Positive feedback.`,
+        evidenceBase: `• <strong>Triglycerides >150 + HDL <40/50:</strong> NCEP ATP III metabolic syndrome criteria<br>• <strong>HOMA-IR >2.5:</strong> Significant insulin resistance threshold<br>• <strong>Combined pattern:</strong> Defines "metabolically obese" even in normal-weight individuals`,
+        clinicalSignificance: `High match indicates metabolically obese phenotype requiring intervention regardless of BMI. Significant cardiovascular and diabetes risk. Visceral adiposity likely present even if total weight normal. High-risk metabolic state.`,
+        diagnosticInsights: `<strong>NEXT STEPS:</strong><br>1. DEXA scan - body composition and visceral fat assessment<br>2. Liver elastography - NAFLD screening<br>3. Exercise stress test - functional capacity<br>4. Sleep study if OSA suspected (common comorbidity)<br><br><strong>TREATMENT:</strong><br>• Caloric restriction: 500-750 cal/day deficit<br>• Resistance training: Build lean mass, improve insulin sensitivity<br>• Consider GLP-1 agonist if BMI >27 with comorbidities<br>• Fibrate if triglycerides >500<br>• Omega-3 fatty acids 2-4g/day for triglycerides`
+    },
+    renal: {
+        name: 'Renal Function Decline',
+        patternJustification: `eGFR, creatinine, and uric acid cluster because they all reflect kidney function. eGFR calculated from creatinine - mathematically linked. Uric acid accumulates when filtration declines. Together they capture glomerular filtration capacity and tubular function. Identifies early-to-moderate kidney disease.`,
+        pathophysiology: `<strong>NEPHRON LOSS:</strong> Diabetes, hypertension, or primary kidney disease → Progressive nephron destruction → Reduced GFR.<br><br><strong>HYPERFILTRATION INJURY:</strong> Remaining nephrons compensate → Increased single-nephron GFR → Glomerular hypertension → Further damage.<br><br><strong>CREATININE ACCUMULATION:</strong> As GFR declines, serum creatinine rises exponentially.<br><br><strong>URIC ACID RETENTION:</strong> Reduced excretion → Serum accumulation → Crystal formation → Additional tubular damage.`,
+        evidenceBase: `• <strong>eGFR <60 mL/min:</strong> Defines Stage 3 CKD (KDIGO 2012). Increased CVD mortality<br>• <strong>Creatinine >1.3 mg/dL:</strong> Above normal, indicates reduced function<br>• <strong>Uric Acid >7 mg/dL:</strong> Linked to CKD progression (CRIC study)`,
+        clinicalSignificance: `High match indicates established kidney dysfunction requiring nephrology evaluation. Risk of progression to end-stage renal disease. Cardiovascular risk significantly elevated - CKD is CVD equivalent. Medication dosing adjustments needed.`,
+        diagnosticInsights: `<strong>NEXT STEPS:</strong><br>1. Urine albumin:creatinine ratio - proteinuria severity<br>2. Kidney ultrasound - size and structure evaluation<br>3. HbA1c and BP monitoring - address reversible causes<br>4. Nephrology referral if eGFR <45 or rapid decline<br><br><strong>TREATMENT:</strong><br>• Blood pressure goal <130/80 (KDIGO)<br>• ACE inhibitor or ARB if proteinuric<br>• Avoid NSAIDs and nephrotoxic drugs<br>• Low-protein diet if advanced (0.8g/kg/day)<br>• Allopurinol for elevated uric acid`
+    },
+    nafld: {
+        name: 'Non-Alcoholic Fatty Liver Disease',
+        patternJustification: `ALT, AST, and triglycerides cluster because they reflect hepatic lipid accumulation and cellular injury. Elevated triglycerides indicate increased VLDL synthesis from hepatic steatosis. ALT/AST elevation signals hepatocyte damage from lipotoxicity. This pattern captures liver-metabolic dysfunction axis.`,
+        pathophysiology: `<strong>STAGE 1 - Steatosis:</strong> Insulin resistance → Hepatic de novo lipogenesis → Triglyceride accumulation. >5% liver fat.<br><br><strong>STAGE 2 - Lipotoxicity:</strong> Free fatty acids undergo β-oxidation → Mitochondrial dysfunction → ROS production → Oxidative stress.<br><br><strong>STAGE 3 - NASH:</strong> Oxidative stress + cytokines → Hepatocyte injury → ALT/AST release → Steatohepatitis.<br><br><strong>STAGE 4 - Fibrosis:</strong> Chronic inflammation → Stellate cell activation → Collagen deposition → Progressive fibrosis.`,
+        evidenceBase: `• <strong>ALT >40 or AST >35:</strong> Hepatocellular injury. ALT:AST >1 typical in NAFLD<br>• <strong>Triglycerides >150:</strong> Strongly associated with NAFLD. 75% of NAFLD patients have hypertriglyceridemia<br>• <strong>Combined elevation:</strong> High specificity for NAFLD in appropriate context`,
+        clinicalSignificance: `High match suggests probable NAFLD with possible NASH progression. Liver disease is "silent" but poses long-term risks: cirrhosis, hepatocellular carcinoma, cardiovascular disease. NAFLD now leading cause of liver disease globally.`,
+        diagnosticInsights: `<strong>NEXT STEPS:</strong><br>1. Liver ultrasound - confirm steatosis<br>2. FibroScan or MR elastography - non-invasive fibrosis staging<br>3. NAFLD fibrosis score - risk stratification<br>4. Consider liver biopsy if high fibrosis risk<br><br><strong>TREATMENT:</strong><br>• Weight loss 7-10% - can reverse NASH<br>• Mediterranean diet proven beneficial<br>• Vitamin E 800 IU/day if biopsy-proven NASH<br>• Pioglitazone for NASH (15-30mg/day)<br>• Avoid alcohol completely<br>• Bariatric surgery if BMI >35 with complications`
+    },
+    nutrient: {
+        name: 'Nutrient Depletion Pattern',
+        patternJustification: `Vitamin D, B12, and iron cluster as markers of micronutrient deficiency. These nutrients share absorption sites (small intestine) and are affected by common causes: gut inflammation, malabsorption, dietary inadequacy. Pattern suggests systemic malabsorption or severe dietary insufficiency.`,
+        pathophysiology: `<strong>ABSORPTION IMPAIRMENT:</strong> Celiac, IBD, or dysbiosis → Villous atrophy or inflammation → Reduced absorptive surface → Malabsorption of fat-soluble (Vit D) and water-soluble (B12) vitamins plus minerals (iron).<br><br><strong>B12 SPECIFIC:</strong> Requires intrinsic factor from gastric parietal cells → Absorbed in terminal ileum → Pernicious anemia or ileal disease impairs.<br><br><strong>IRON DEPLETION:</strong> Chronic blood loss or malabsorption → Depleted stores → Impaired hemoglobin synthesis.`,
+        evidenceBase: `• <strong>Vitamin D <30 ng/mL:</strong> Deficiency. Increased infection risk, autoimmune disease, osteoporosis<br>• <strong>B12 <200 pg/mL:</strong> Deficiency range. Causes anemia, neuropathy if untreated<br>• <strong>Combined deficiency:</strong> Suggests malabsorption rather than dietary alone`,
+        clinicalSignificance: `High match suggests either: (1) Malabsorption syndrome requiring GI workup, or (2) Severe dietary inadequacy. Symptoms: fatigue, weakness, neuropathy, bone pain. Long-term risks: anemia, osteoporosis, immune dysfunction, neurological damage.`,
+        diagnosticInsights: `<strong>NEXT STEPS:</strong><br>1. Celiac panel (tTG-IgA) - most common malabsorption cause<br>2. Intrinsic factor antibodies if B12 low - pernicious anemia<br>3. Iron studies (ferritin, TIBC, saturation) - distinguish types<br>4. Upper endoscopy + small bowel biopsy if malabsorption suspected<br><br><strong>TREATMENT:</strong><br>• Vitamin D 5000 IU/day until replete, then maintenance 2000 IU<br>• B12 1000 mcg IM weekly if severe or malabsorption<br>• Iron with vitamin C for absorption<br>• Treat underlying cause: Gluten-free if celiac, IBD management`
+    },
+    thyroid: {
+        name: 'Stress-Inflammatory Pattern',
+        patternJustification: `Cortisol, ferritin, and CRP cluster because chronic stress drives inflammation. Elevated cortisol (HPA axis activation) → Increased pro-inflammatory cytokines → CRP elevation. Ferritin rises as acute phase reactant. Captures neuroendocrine-immune axis dysregulation.`,
+        pathophysiology: `<strong>HPA ACTIVATION:</strong> Chronic stress → Hypothalamus CRH → Pituitary ACTH → Adrenal cortisol → Sustained elevation.<br><br><strong>INFLAMMATORY AMPLIFICATION:</strong> Cortisol normally anti-inflammatory, but chronic elevation → Glucocorticoid resistance → Pro-inflammatory state → IL-6 and TNF-α increase → Hepatic CRP production.<br><br><strong>METABOLIC CONSEQUENCES:</strong> Chronic cortisol → Insulin resistance → Visceral adiposity → Further inflammation.`,
+        evidenceBase: `• <strong>Cortisol >23 μg/dL (AM):</strong> HPA dysregulation. Linked to metabolic syndrome<br>• <strong>CRP >3 mg/L:</strong> Systemic inflammation marker<br>• <strong>Correlation:</strong> Cortisol-CRP correlation documented in chronic stress states`,
+        clinicalSignificance: `High match indicates chronic stress with inflammatory consequences. Associated with: metabolic dysfunction, cardiovascular risk, immune suppression, mood disorders. Represents neuroendocrine-immune dysregulation requiring comprehensive approach.`,
+        diagnosticInsights: `<strong>NEXT STEPS:</strong><br>1. 24-hour urinary free cortisol - better assessment<br>2. Dexamethasone suppression test if Cushing's suspected<br>3. DHEA-S level - cortisol:DHEA ratio for HPA function<br>4. Comprehensive metabolic panel<br><br><strong>TREATMENT:</strong><br>• Stress reduction: CBT, meditation, adequate sleep (7-9 hours)<br>• Exercise: Proven to normalize HPA axis<br>• Adaptogenic herbs: Ashwagandha 300-600mg, Rhodiola 200-400mg<br>• Omega-3 fatty acids for inflammation<br>• Phosphatidylserine 300mg may reduce cortisol`
+    },
+    inflammation: {
+        name: 'Chronic Systemic Inflammation',
+        patternJustification: `IL-6, CRP, and NLR cluster as markers at different levels: cellular (IL-6), protein (CRP), and cellular ratios (NLR). IL-6 is upstream cytokine driving hepatic CRP production. NLR reflects immune cell imbalance. Captures complete inflammatory cascade from initiation to systemic manifestation.`,
+        pathophysiology: `<strong>INFLAMMATORY INITIATION:</strong> Various triggers → Immune cell activation → Pro-inflammatory cytokine release.<br><br><strong>IL-6 CENTRAL ROLE:</strong> Secreted by macrophages and T-cells → Hepatic acute phase protein synthesis including CRP → Induces B and T-cell differentiation → Amplifies immune response.<br><br><strong>NLR ALTERATION:</strong> Stress/inflammation → Cortisol → Neutrophil demargination + Lymphocyte apoptosis → Elevated NLR.<br><br><strong>SYSTEMIC CONSEQUENCES:</strong> Chronic inflammation → Insulin resistance → Endothelial dysfunction → Atherosclerosis.`,
+        evidenceBase: `• <strong>IL-6 >5 pg/mL:</strong> Increased mortality and CVD events (Circulation 2000)<br>• <strong>CRP >3 mg/L:</strong> Established CVD risk factor (JUPITER trial, NEJM 2008)<br>• <strong>NLR >5:</strong> Predicts cardiovascular events and all-cause mortality (meta-analysis)<br>• <strong>Combined elevation:</strong> Robust chronic inflammatory state with significant disease risk`,
+        clinicalSignificance: `High match indicates active chronic systemic inflammation - major driver of chronic disease. Accelerates: atherosclerosis, insulin resistance, neurodegeneration, cancer risk. Inflammation is both consequence and driver of disease progression.`,
+        diagnosticInsights: `<strong>NEXT STEPS:</strong><br>1. Identify source: Infection (dental, GI, urinary), autoimmune screening (ANA, RF), malignancy markers<br>2. Advanced inflammatory panel - TNF-α, IL-1β if available<br>3. Imaging if unclear - CT chest/abdomen/pelvis<br>4. Gut assessment - dysbiosis often missed driver<br><br><strong>TREATMENT:</strong><br>• Source-specific intervention if identified<br>• Anti-inflammatory diet: Mediterranean, eliminate processed foods<br>• Omega-3 fatty acids 2-4g/day<br>• Curcumin 500mg with piperine<br>• Exercise: Moderate intensity proven anti-inflammatory<br>• Consider low-dose aspirin if CVD risk elevated`
+    }
+};
+
+// Function to render cohort with full clinical depth
+function renderCohortWithDepth(cohort, result, cohortId) {
+    const depth = COHORT_CLINICAL_DEPTH[cohortId];
+    if (!depth) return ''; // Fallback if no depth data
+    
+    let riskClass = 'optimal', status = 'Optimal Performance';
+    if (result.pct > 0) {
+        if (result.pct < 30) { riskClass = 'low'; status = 'Low Risk'; }
+        else if (result.pct < 60) { riskClass = 'medium'; status = 'Medium Risk'; }
+        else { riskClass = 'high'; status = 'High Risk'; }
+    }
+    
+    const uniqueId = `cohort-${cohortId}-${Date.now()}`;
+    
+    return `
+    <div class="cohort-card ${riskClass}" style="margin-bottom:32px;">
+        <div class="cohort-main">
+            <div class="cohort-icon">${cohort.i}</div>
+            <div class="cohort-info">
+                <h3>${cohort.n}</h3>
+                <div class="cohort-markers">${cohort.m}</div>
+            </div>
+            <div>
+                <div class="cohort-percent ${riskClass}">${result.pct}%</div>
+                <div class="cohort-label">Match</div>
+                <div class="cohort-status">${status}</div>
+            </div>
+        </div>
+        
+        <div class="cohort-deep-dive">
+            <div class="deep-dive-title">🔬 MATHEMATICAL BREAKDOWN</div>
+            <div class="math-breakdown">
+                ${result.bd.map(b => `
+                    <div class="math-row">
+                        <div class="math-condition">${b.c}</div>
+                        <div class="math-logic">${b.l}</div>
+                        <div class="math-score ${b.s}">${b.p > 0 ? '+' : ''}${b.p} pts</div>
+                    </div>
+                `).join('')}
+                <div class="math-total">TOTAL: ${result.pct}% MATCH ${result.pct === 0 ? '(OPTIMAL)' : ''}</div>
+            </div>
+        </div>
+        
+        ${result.pct > 0 ? `
+        <div style="margin-top:20px; text-align:center;">
+            <button 
+                onclick="document.getElementById('${uniqueId}').style.display = document.getElementById('${uniqueId}').style.display === 'none' ? 'block' : 'none'; this.textContent = this.textContent.includes('Show') ? '▲ Hide Clinical Analysis' : '▼ Show Complete Clinical Analysis';"
+                style="padding:10px 24px; background:linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%); color:white; border:none; border-radius:8px; font-size:11px; font-weight:700; letter-spacing:0.5px; cursor:pointer; box-shadow:0 4px 12px rgba(96,165,250,0.3); transition:all 0.3s ease;"
+                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(96,165,250,0.4)';"
+                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(96,165,250,0.3)';"
+            >
+                ▼ Show Complete Clinical Analysis
+            </button>
+        </div>
+        
+        <div id="${uniqueId}" class="cohort-clinical-depth" style="display:none; margin-top:24px; padding:24px; background:rgba(15,23,42,0.6); border-radius:12px; border:1px solid rgba(96,165,250,0.2);">
+            <div class="clinical-section" style="margin-bottom:20px;">
+                <div class="section-title" style="font-size:12px; font-weight:800; color:#60a5fa; margin-bottom:10px; letter-spacing:0.5px;">📊 PATTERN JUSTIFICATION</div>
+                <div class="section-content" style="font-size:11px; color:#cbd5e1; line-height:1.7;">${depth.patternJustification}</div>
+            </div>
+            
+            <div class="clinical-section" style="margin-bottom:20px;">
+                <div class="section-title" style="font-size:12px; font-weight:800; color:#a78bfa; margin-bottom:10px; letter-spacing:0.5px;">🔬 PATHOPHYSIOLOGY</div>
+                <div class="section-content" style="font-size:11px; color:#cbd5e1; line-height:1.7;">${depth.pathophysiology}</div>
+            </div>
+            
+            <div class="clinical-section" style="margin-bottom:20px;">
+                <div class="section-title" style="font-size:12px; font-weight:800; color:#34d399; margin-bottom:10px; letter-spacing:0.5px;">📚 EVIDENCE BASE</div>
+                <div class="section-content" style="font-size:11px; color:#cbd5e1; line-height:1.7;">${depth.evidenceBase}</div>
+            </div>
+            
+            <div class="clinical-section" style="margin-bottom:20px;">
+                <div class="section-title" style="font-size:12px; font-weight:800; color:#fbbf24; margin-bottom:10px; letter-spacing:0.5px;">⚕️ CLINICAL SIGNIFICANCE</div>
+                <div class="section-content" style="font-size:11px; color:#cbd5e1; line-height:1.7;">${depth.clinicalSignificance}</div>
+            </div>
+            
+            <div class="clinical-section">
+                <div class="section-title" style="font-size:12px; font-weight:800; color:#fb7185; margin-bottom:10px; letter-spacing:0.5px;">🎯 DIAGNOSTIC INSIGHTS & NEXT STEPS</div>
+                <div class="section-content" style="font-size:11px; color:#cbd5e1; line-height:1.7;">${depth.diagnosticInsights}</div>
+            </div>
+        </div>
+        ` : ''}
+    </div>
+    `;
+}
+
+console.log('✅ Complete clinical depth system loaded - All layers enhanced');
+
     const PATIENTS=[
       {id:0,name:"Peak Sovereignty",age:32,bioAge:26,case:"Optimal Baseline",
         inflam:{il6:2.1,il2:25,il10:15,tnf_alpha:4.5,il1beta:1.8,neutrophils:55,lymphocytes:32,platelets:250,ldh:180},
@@ -2232,7 +2388,76 @@
     // Layer 4: Complete Cohort Matrix
     function analyzeCohorts(){showProcessing('ANALYZING COHORTS','Computing disease pattern matching...');setTimeout(()=>{unlockLayer(4);renderCohortMatrix();hideProcessing()},1500)}
 
-    function renderCohortMatrix(){const p=PATIENTS[currentPatient],g=document.getElementById('cohort-grid');g.innerHTML='';const cohorts=[{i:'🍬',n:'T2D Syndrome',m:'HOMA-IR + HbA1c + F:B',f:calcT2D},{i:'❤️',n:'Cardio Hazard',m:'ApoB + Lp(a) + Urate',f:calcCardio},{i:'🔥',n:'IBD Pattern',m:'CRP + Ferritin + Akkermansia',f:calcIBD},{i:'💊',n:'Metabolic Obesity',m:'Triglycerides + HDL + HOMA',f:calcObesity},{i:'🔬',n:'Renal Decay',m:'eGFR + Urate + Creatinine',f:calcRenal},{i:'💧',n:'NAFLD Risk',m:'ALT + AST + Triglycerides',f:calcNAFLD},{i:'🧬',n:'Nutrient Depletion',m:'Vit-D + B12 + Iron',f:calcNutrient},{i:'⚡',n:'Thyroid Stress',m:'Cortisol + Ferritin + CRP',f:calcThyroid},{i:'🔥',n:'Chronic Inflammation',m:'IL-6 + CRP + NLR',f:calcInflammation}];cohorts.forEach(co=>{const res=co.f(p);let r='optimal',st='Optimal Performance';if(res.pct>0){if(res.pct<30){r='low';st='Low Risk'}else if(res.pct<60){r='medium';st='Medium Risk'}else{r='high';st='High Risk'}}const c=document.createElement('div');c.className=`cohort-card ${r}`;c.innerHTML=`<div class="cohort-main"><div class="cohort-icon">${co.i}</div><div class="cohort-info"><h3>${co.n}</h3><div class="cohort-markers">${co.m}</div></div><div><div class="cohort-percent ${r}">${res.pct}%</div><div class="cohort-label">Match</div><div class="cohort-status">${st}</div></div></div><div class="cohort-deep-dive"><div class="deep-dive-title">🔬 MATHEMATICAL BREAKDOWN</div><div class="math-breakdown">${res.bd.map(b=>`<div class="math-row"><div class="math-condition">${b.c}</div><div class="math-logic">${b.l}</div><div class="math-score ${b.s}">${b.p>0?'+':''}${b.p} pts</div></div>`).join('')}<div class="math-total">TOTAL: ${res.pct}% MATCH ${res.pct===0?'(OPTIMAL)':''}</div></div></div>`;g.appendChild(c)})}
+    function renderCohortMatrix() {
+        const p = PATIENTS[currentPatient];
+        const g = document.getElementById('cohort-grid');
+        g.innerHTML = '';
+        
+        const cohorts = [
+            {i:'🍬', n:'T2D Syndrome', m:'HOMA-IR + HbA1c + F:B', f:calcT2D, id:'t2d'},
+            {i:'❤️', n:'Cardio Hazard', m:'ApoB + Lp(a) + Urate', f:calcCardio, id:'cardio'},
+            {i:'🔥', n:'IBD Pattern', m:'CRP + Ferritin + Akkermansia', f:calcIBD, id:'ibd'},
+            {i:'💊', n:'Metabolic Obesity', m:'Triglycerides + HDL + HOMA', f:calcObesity, id:'obesity'},
+            {i:'🔬', n:'Renal Decay', m:'eGFR + Urate + Creatinine', f:calcRenal, id:'renal'},
+            {i:'💧', n:'NAFLD Risk', m:'ALT + AST + Triglycerides', f:calcNAFLD, id:'nafld'},
+            {i:'🧬', n:'Nutrient Depletion', m:'Vit-D + B12 + Iron', f:calcNutrient, id:'nutrient'},
+            {i:'⚡', n:'Thyroid Stress', m:'Cortisol + Ferritin + CRP', f:calcThyroid, id:'thyroid'},
+            {i:'🔥', n:'Chronic Inflammation', m:'IL-6 + CRP + NLR', f:calcInflammation, id:'inflammation'}
+        ];
+        
+        cohorts.forEach(co => {
+            const res = co.f(p);
+            
+            // Check if renderCohortWithDepth function exists
+            if (typeof renderCohortWithDepth === 'function' && COHORT_CLINICAL_DEPTH && COHORT_CLINICAL_DEPTH[co.id]) {
+                // Use enhanced rendering with clinical depth
+                const html = renderCohortWithDepth(co, res, co.id);
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                g.appendChild(tempDiv.firstElementChild);
+            } else {
+                // Fallback to original rendering
+                let r = 'optimal', st = 'Optimal Performance';
+                if (res.pct > 0) {
+                    if (res.pct < 30) { r = 'low'; st = 'Low Risk'; }
+                    else if (res.pct < 60) { r = 'medium'; st = 'Medium Risk'; }
+                    else { r = 'high'; st = 'High Risk'; }
+                }
+                
+                const c = document.createElement('div');
+                c.className = `cohort-card ${r}`;
+                c.innerHTML = `
+                    <div class="cohort-main">
+                        <div class="cohort-icon">${co.i}</div>
+                        <div class="cohort-info">
+                            <h3>${co.n}</h3>
+                            <div class="cohort-markers">${co.m}</div>
+                        </div>
+                        <div>
+                            <div class="cohort-percent ${r}">${res.pct}%</div>
+                            <div class="cohort-label">Match</div>
+                            <div class="cohort-status">${st}</div>
+                        </div>
+                    </div>
+                    <div class="cohort-deep-dive">
+                        <div class="deep-dive-title">🔬 MATHEMATICAL BREAKDOWN</div>
+                        <div class="math-breakdown">
+                            ${res.bd.map(b => `
+                                <div class="math-row">
+                                    <div class="math-condition">${b.c}</div>
+                                    <div class="math-logic">${b.l}</div>
+                                    <div class="math-score ${b.s}">${b.p > 0 ? '+' : ''}${b.p} pts</div>
+                                </div>
+                            `).join('')}
+                            <div class="math-total">TOTAL: ${res.pct}% MATCH ${res.pct === 0 ? '(OPTIMAL)' : ''}</div>
+                        </div>
+                    </div>
+                `;
+                g.appendChild(c);
+            }
+        });
+    }
+
 
     function calcT2D(p){const hm=p.markers.homa_ir.value,hb=p.markers.hba1c.value,fb=p.phyla.firmicutes.value/p.phyla.bacteroides.value;const bd=[];let sc=0;if(hm>3){sc+=40;bd.push({c:'HOMA-IR > 3.0',l:`Value: ${hm} → TRUE`,p:40,s:'rose'})}else if(hm>1.8){sc+=20;bd.push({c:'HOMA-IR > 1.8',l:`Value: ${hm} → TRUE`,p:20,s:'amber'})}else{bd.push({c:'HOMA-IR < 1.8',l:`Value: ${hm} → OPTIMAL`,p:0,s:'green'})}if(hb>6){sc+=30;bd.push({c:'HbA1c > 6.0',l:`Value: ${hb} → TRUE`,p:30,s:'rose'})}else if(hb>5.6){sc+=15;bd.push({c:'HbA1c > 5.6',l:`Value: ${hb} → TRUE`,p:15,s:'amber'})}else{bd.push({c:'HbA1c < 5.6',l:`Value: ${hb} → OPTIMAL`,p:0,s:'green'})}if(fb>1.2){sc+=30;bd.push({c:'F:B Ratio > 1.2',l:`Value: ${fb.toFixed(2)} → TRUE`,p:30,s:'rose'})}else if(fb>1){sc+=15;bd.push({c:'F:B Ratio > 1.0',l:`Value: ${fb.toFixed(2)} → TRUE`,p:15,s:'amber'})}else{bd.push({c:'F:B Ratio < 1.0',l:`Value: ${fb.toFixed(2)} → OPTIMAL`,p:0,s:'green'})}return{pct:Math.min(sc,95),bd}}
 
